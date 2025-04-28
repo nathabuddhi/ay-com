@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package email;
+
+option go_package = "email/";
+
+service EmailService {
+  rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse);
+  rpc SendNotificationEmail(SendNotificationEmailRequest) returns (SendNotificationEmailResponse);
+}
+
+message SendVerificationEmailRequest {
+  string to_email = 1;
+  string verification_code = 2;
+}
+
+message SendVerificationEmailResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SendNotificationEmailRequest {
+  string to_email = 1;
+  string subject = 2;
+  string body = 3;
+}
+
+message SendNotificationEmailResponse {
+  bool success = 1;
+  string message = 2;
+}

@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package user;
+
+import "google/protobuf/any.proto";
+
+option go_package = "user/";
+
+service UserService {
+  rpc User_Register (RegisterRequest) returns (ApiResponse);
+  rpc User_Login (LoginRequest) returns (ApiResponse);
+  rpc User_GetProfile (GetUserRequest) returns (ApiResponse);
+
+  // New
+  rpc RequestVerificationCode (VerificationRequest) returns (ApiResponse);
+  rpc ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
+}
+
+message ApiResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Any data = 3;
+}
+
+message String {
+  string value = 1;
+}
+
+message Bool {
+  bool value = 1;
+}
+
+message UserProfile {
+  string user_id = 1;
+  string username = 2;
+  string name = 3;
+  string bio = 4;
+  bool is_verified = 5;
+  string profile_picture = 6;
+  string banner = 7;
+  int32 followers = 8;
+  int32 following = 9;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string google_auth_id = 3;
+  string username = 4;
+  string name = 5;
+  string security_question = 6;
+  string security_answer = 7;
+  string date_of_birth = 8;
+  bytes profile_picture = 9;
+  bytes banner = 10;
+  bool wants_newsletter = 11;
+  string gender = 12;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message VerificationRequest {
+  string email = 1;
+}
+
+message ValidateCodeRequest {
+  string email = 1;
+  string code = 2;
+}
