@@ -11,6 +11,7 @@ import (
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -57,10 +58,33 @@ func forwardRequest[TReq any, TRes any](w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
+	var payload any
+
+	if res.Data != nil {
+		newResponse := new(TRes)
+
+		if pm, ok := any(newResponse).(proto.Message); ok {
+			err := res.Data.UnmarshalTo(pm)
+			if err != nil {
+				zap.L().Error("Failed to unmarshal response: " + err.Error())
+				payload = nil
+			} else {
+				switch v := any(newResponse).(type) {
+				case **pb.String:
+					payload = (*v).Value
+				default:
+					payload = newResponse
+				}
+			}
+		} else {
+			payload = nil
+		}
+	}
+
 	response := types.ApiResponse{
 		Success: res.Success,
 		Message: res.Message,
-		Payload: res.Data,
+		Payload: payload,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

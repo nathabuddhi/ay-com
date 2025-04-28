@@ -67,12 +67,14 @@ func main() {
 		zap.L().Fatal("Failed to connect to Redis service: " + err.Error())
 	}
 	redisClient := redispb.NewRedisServiceClient(redisConn)
+	zap.L().Info("Connected to Redis service.")
 
 	emailConn, err := grpc.NewClient(os.Getenv("EMAIL_SERVICE_PATH"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Fatal("Failed to connect to Email service: " + err.Error())
 	}
 	emailClient := emailpb.NewEmailServiceClient(emailConn)
+	zap.L().Info("Connected to Email service.")
 
 	userServer := server.NewUserServer(db, redisClient, emailClient)
 

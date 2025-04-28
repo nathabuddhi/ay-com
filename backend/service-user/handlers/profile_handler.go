@@ -8,13 +8,20 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
+func safeString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func (h *Handlers) GetProfile(ctx context.Context, req *pb.GetUserRequest) (*pb.ApiResponse, error) {
 	var user models.User
-	if err := h.DB.First(&user, "id = ?", req.UserId).Error; err != nil {
+	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponse{
 			Success: false,
-			Message: "User not found",
-		}, err
+			Message: "User Not Found.",
+		}, nil
 	}
 
 	userData := &pb.UserProfile{
@@ -22,16 +29,20 @@ func (h *Handlers) GetProfile(ctx context.Context, req *pb.GetUserRequest) (*pb.
 		Username:       user.Username,
 		IsVerified:     user.IsVerified,
 		Name:           user.Name,
-		Banner:         *user.Banner,
-		ProfilePicture: *user.ProfilePicture,
-		Bio:            *user.Bio,
+		Banner:         safeString(user.Banner),
+		ProfilePicture: safeString(user.ProfilePicture),
+		Bio:            safeString(user.Bio),
 		Followers:      0,
 		Following:      0,
 	}
 
 	anyUser, err := anypb.New(userData)
 	if err != nil {
-		return nil, err
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
 	}
 
 	return &pb.ApiResponse{
