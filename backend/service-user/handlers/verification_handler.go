@@ -8,18 +8,32 @@ import (
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
+	"go.uber.org/zap"
 )
 
 func (h *Handlers) RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
+	var user models.User
+	err := h.DB.WithContext(ctx).
+		Where("email = ?", req.Email).
+		First(&user).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Email isn't registered."}, nil
+	}
+
+	if !user.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "Email is already active."}, nil
+	}
+
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
 
-	err := h.DB.WithContext(ctx).Exec(`
+	err = h.DB.WithContext(ctx).Exec(`
 		INSERT INTO verification_codes (email, code) 
 		VALUES (?, ?) 
 		ON CONFLICT(email) DO UPDATE SET code = excluded.code
 	`, req.Email, code).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to store verification code: " + err.Error()}, nil
+		zap.L().Error("Failed to sign token: " + err.Error())
+		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
 	body := fmt.Sprintf("Your verification code is: <b>%s</b><br><br>This code is only valid for <b>5 minutes</b>.<br><i>You may request another code.<br>Ignore this email if this wasn't you.</i>", code)

@@ -137,10 +137,6 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 	// 	return &pb.ApiResponse{Success: false, Message: "reCAPTCHA verification failed."}, nil
 	// }
 
-	h.RequestVerificationCode(ctx, &pb.VerificationRequest{
-		Email: req.Email,
-	})
-
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -155,7 +151,7 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 	}
 
 	user := models.User{
-		UserId:           uuid.New().String(),
+		UserId:           generatedId,
 		Name:             req.Name,
 		Username:         req.Username,
 		Email:            req.Email,
@@ -173,8 +169,13 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 	}
 
 	if err := h.DB.Create(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to register user."}, err
+		return &pb.ApiResponse{Success: false, Message: "Failed to register user: " + err.Error()}, nil
 	}
 
-	return &pb.ApiResponse{Success: true, Message: "User registered successfully. Please verify your email."}, nil
+	h.RequestVerificationCode(ctx, &pb.VerificationRequest{
+		Email: req.Email,
+	})
+
+	anyGeneratedId, _ := anypb.New(&pb.String{Value: generatedId})
+	return &pb.ApiResponse{Success: true, Message: "User registered successfully. Please verify your email.", Data: anyGeneratedId}, nil
 }
