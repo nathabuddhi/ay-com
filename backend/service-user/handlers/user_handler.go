@@ -1,21 +1,15 @@
 package handlers
 
 import (
-	emailpb "github.com/nathabuddhi/ay-com/backend/service-user/proto/email"
-	redispb "github.com/nathabuddhi/ay-com/backend/service-user/proto/redis"
 	"gorm.io/gorm"
 )
 
 type Handlers struct {
-	DB          *gorm.DB
-	RedisClient redispb.RedisServiceClient
-	EmailClient emailpb.EmailServiceClient
+	DB *gorm.DB
 }
 
-func NewHandlers(db *gorm.DB, redisClient redispb.RedisServiceClient, emailClient emailpb.EmailServiceClient) *Handlers {
+func NewHandlers(db *gorm.DB) *Handlers {
 	return &Handlers{
-		DB:          db,
-		RedisClient: redisClient,
-		EmailClient: emailClient,
+		DB: db,
 	}
 }

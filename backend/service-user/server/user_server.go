@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/handlers"
-	emailpb "github.com/nathabuddhi/ay-com/backend/service-user/proto/email"
-	redispb "github.com/nathabuddhi/ay-com/backend/service-user/proto/redis"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
 	"gorm.io/gorm"
 )
@@ -15,9 +13,9 @@ type UserServer struct {
 	Handlers *handlers.Handlers
 }
 
-func NewUserServer(db *gorm.DB, redisClient redispb.RedisServiceClient, emailClient emailpb.EmailServiceClient) *UserServer {
+func NewUserServer(db *gorm.DB) *UserServer {
 	return &UserServer{
-		Handlers: handlers.NewHandlers(db, redisClient, emailClient),
+		Handlers: handlers.NewHandlers(db),
 	}
 }
 

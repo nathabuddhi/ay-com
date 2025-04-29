@@ -6,64 +6,66 @@ import (
 	"math/rand"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
-	emailpb "github.com/nathabuddhi/ay-com/backend/service-user/proto/email"
-	redispb "github.com/nathabuddhi/ay-com/backend/service-user/proto/redis"
-	userpb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
-	"go.uber.org/zap"
+	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
+	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
 )
 
-func (h *Handlers) RequestVerificationCode(ctx context.Context, req *userpb.VerificationRequest) (*userpb.ApiResponse, error) {
+func (h *Handlers) RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
 
-	_, err := h.RedisClient.SetKey(ctx, &redispb.SetKeyRequest{
-		Key:               fmt.Sprintf("verify:%s", req.Email),
-		Value:             code,
-		ExpirationSeconds: 300,
-	})
+	err := h.DB.WithContext(ctx).Exec(`
+		INSERT INTO verification_codes (email, code) 
+		VALUES (?, ?) 
+		ON CONFLICT(email) DO UPDATE SET code = excluded.code
+	`, req.Email, code).Error
 	if err != nil {
-		return &userpb.ApiResponse{Success: false, Message: "Failed to store verification code"}, err
+		return &pb.ApiResponse{Success: false, Message: "Failed to store verification code: " + err.Error()}, nil
 	}
 
-	_, err = h.EmailClient.SendVerificationEmail(ctx, &emailpb.SendVerificationEmailRequest{
-		ToEmail:          req.Email,
-		VerificationCode: code,
-	})
-	if err != nil {
-		return &userpb.ApiResponse{Success: false, Message: "Failed to send verification email"}, err
-	}
+	body := fmt.Sprintf("Your verification code is: <b>%s</b><br><br>This code is only valid for <b>5 minutes</b>.<br><i>You may request another code.<br>Ignore this email if this wasn't you.</i>", code)
 
-	return &userpb.ApiResponse{Success: true, Message: "Verification code sent successfully"}, nil
+	rabbitmq.PublishEmail(req.Email, "AY.com Verification Code", body)
+	return &pb.ApiResponse{Success: true, Message: "Verification code sent successfully."}, nil
 }
 
-func (h *Handlers) ValidateVerificationCode(ctx context.Context, req *userpb.ValidateCodeRequest) (*userpb.ApiResponse, error) {
-	resp, err := h.RedisClient.GetKey(ctx, &redispb.GetKeyRequest{
-		Key: fmt.Sprintf("verify:%s", req.Email),
-	})
-	if err != nil || !resp.Found {
-		return &userpb.ApiResponse{Success: false, Message: "Verification code not found or expired"}, err
-	}
+func (h *Handlers) ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+	var verificationCode models.VerificationCode
 
-	if resp.Value != req.Code {
-		return &userpb.ApiResponse{Success: false, Message: "Invalid verification code"}, nil
-	}
-
-	err = h.DB.WithContext(ctx).Model(&models.User{}).Where("email = ?", req.Email).Update("is_deactivated", false).Error
+	err := h.DB.WithContext(ctx).
+		Where("email = ?", req.Email).
+		First(&verificationCode).Error
 	if err != nil {
-		return &userpb.ApiResponse{Success: false, Message: "Failed to activate user account"}, err
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "Verification code not found or expired.",
+		}, nil
 	}
 
-	h.RedisClient.DeleteKey(ctx, &redispb.DeleteKeyRequest{
-		Key: fmt.Sprintf("verify:%s", req.Email),
-	})
+	if verificationCode.Code != req.Code {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "Invalid verification code",
+		}, nil
+	}
 
-	_, err = h.EmailClient.SendNotificationEmail(ctx, &emailpb.SendNotificationEmailRequest{
-		ToEmail: req.Email,
-		Subject: "Your account has been successfully activated!",
-		Body:    "Congratulations! Your account has been verified and activated. You can now log in and start using our services.",
-	})
+	err = h.DB.WithContext(ctx).
+		Model(&models.User{}).
+		Where("email = ?", req.Email).
+		Update("is_deactivated", false).Error
 	if err != nil {
-		zap.L().Error("Failed to send account activation email: " + err.Error())
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "Failed to activate user account:" + err.Error(),
+		}, nil
 	}
 
-	return &userpb.ApiResponse{Success: true, Message: "Account verified successfully,"}, nil
+	rabbitmq.PublishEmail(req.Email,
+		"AY.com Account Activation",
+		"Congratulations! Your account has been verified and activated. You can now log in and start using our services.",
+	)
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Account verified successfully.",
+	}, nil
 }

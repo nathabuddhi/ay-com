@@ -146,6 +146,14 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 		return nil, err
 	}
 
+	var generatedId string
+	for {
+		generatedId = uuid.New().String()
+		if err := h.DB.Where("user_id = ?", generatedId).First(&existingUser).Error; err != nil {
+			break
+		}
+	}
+
 	user := models.User{
 		UserId:           uuid.New().String(),
 		Name:             req.Name,
