@@ -47,6 +47,7 @@ func forwardRequest[TReq any, TRes any](w http.ResponseWriter, r *http.Request, 
 	defer cancel()
 
 	var req TReq
+
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		returnErrorResponse(w, "Invalid request payload: "+err.Error())
 		return

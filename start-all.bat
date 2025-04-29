@@ -5,5 +5,4 @@ new-tab -d .\backend\api-gateway --title "API Gateway" cmd /k "go build -o main.
 new-tab -d .\backend\service-user --title "USER" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\util-email --title "EMAIL" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\util-redis --title "REDIS" cmd /k "go build -o main.exe && main.exe" ; ^
-new-tab -d .\backend\util-media --title "MEDIA" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab --title "WSL" cmd /k "wsl"

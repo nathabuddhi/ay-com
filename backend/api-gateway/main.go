@@ -8,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/handlers"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
+	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -50,7 +52,10 @@ func main() {
 	if err != nil {
 		zap.L().Error("Error loading .env file")
 	}
+
 	handlers.InitEnvironmentVariables()
+	redis_client.InitRedis()
+	supabase.InitSupabase()
 
 	r := mux.NewRouter()
 
@@ -61,7 +66,7 @@ func main() {
 
 	secured := r.PathPrefix("/").Subrouter()
 	secured.Use(middleware.JwtAuthMiddleware)
-	secured.HandleFunc("/user/getprofile", handlers.User_GetProfile).Methods("POST")
+	// secured.HandleFunc("/user/getprofile/:id", handlers.User_GetProfile).Methods("GET")
 
 	httpHandler := allowCors(r)
 

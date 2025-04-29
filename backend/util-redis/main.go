@@ -1,16 +1,14 @@
 package main
 
 import (
-	"net"
 	"os"
 
 	"github.com/joho/godotenv"
-	pb "github.com/nathabuddhi/ay-com/backend/util-redis/proto"
+	"github.com/nathabuddhi/ay-com/backend/util-redis/rabbitmq"
 	"github.com/nathabuddhi/ay-com/backend/util-redis/redis_client"
-	"github.com/nathabuddhi/ay-com/backend/util-redis/server"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"google.golang.org/grpc"
 )
 
 func getLogLevel() zapcore.Level {
@@ -54,19 +52,19 @@ func main() {
 
 	redis_client.InitRedis()
 
-	lis, err := net.Listen("tcp", ":5012")
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
-		zap.L().Fatal("Failed to listen: " + err.Error())
+		zap.L().Fatal("Failed to connect to RabbitMQ: " + err.Error())
 	}
+	defer conn.Close()
 
-	grpcServer := grpc.NewServer()
-	pb.RegisterRedisServiceServer(grpcServer, server.NewRedisServer())
+	rabbitmq.InitSetRedisChannel(conn)
+	rabbitmq.InitDeleteRedisChannel(conn)
 
-	zap.L().Info("Redis Service gRPC server started successfully.")
+	rabbitmq.StartConsumingSet()
+	rabbitmq.StartConsumingDelete()
 
-	zap.L().Info("Redis Service Running. Listening on port 5012.")
+	zap.L().Info("Redis Service Running. Listening for RabbitMQ messages.")
 
-	if err := grpcServer.Serve(lis); err != nil {
-		zap.L().Fatal("Failed to serve: " + err.Error())
-	}
+	<-rabbitmq.Forever
 }
