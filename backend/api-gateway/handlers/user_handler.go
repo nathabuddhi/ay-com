@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
+	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
@@ -163,55 +164,69 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
-	conn := getUserServiceConn()
-	client := pb.NewUserServiceClient(conn)
 
 	vars := mux.Vars(r)
 	userID := vars["id"]
 
-	if userID == "" {
-		zap.L().Error("User ID parameter missing")
-		returnErrorResponse(w, "User ID is required")
-		return
+	redisProfile := redis_client.GetCache("getprofile/" + userID)
+
+	if redisProfile != nil {
+		response := types.ApiResponse{
+			Success: true,
+			Message: "Get User Profile successful.",
+			Payload: redisProfile,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	} else {
+		conn := getUserServiceConn()
+		client := pb.NewUserServiceClient(conn)
+
+		if userID == "" {
+			zap.L().Error("User ID parameter missing")
+			returnErrorResponse(w, "User ID is required")
+			return
+		}
+
+		zap.L().Info("Fetching profile for user ID: " + userID)
+
+		var req pb.GetProfileRequest
+		req.UserId = userID
+
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+
+		resp, err := client.User_GetProfile(ctx, &req)
+		if err != nil {
+			zap.L().Error("Error forwarding request", zap.Error(err))
+			returnErrorResponse(w, "Error forwarding request: "+err.Error())
+			return
+		}
+
+		if resp.Data == nil {
+			zap.L().Error("No data found in response")
+			returnErrorResponse(w, "No profile data found")
+			return
+		}
+
+		binaryData := resp.Data.GetValue()
+		userProfile, err := decodeResponse[pb.UserProfile](binaryData)
+		if err != nil {
+			zap.L().Error("Failed to decode user profile", zap.Error(err))
+			returnErrorResponse(w, "Failed to process user profile data.")
+			return
+		}
+
+		response := types.ApiResponse{
+			Success: resp.Success,
+			Message: resp.Message,
+			Payload: userProfile,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
-
-	zap.L().Info("Fetching profile for user ID: " + userID)
-
-	var req pb.GetProfileRequest
-	req.UserId = userID
-
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	resp, err := client.User_GetProfile(ctx, &req)
-	if err != nil {
-		zap.L().Error("Error forwarding request", zap.Error(err))
-		returnErrorResponse(w, "Error forwarding request: "+err.Error())
-		return
-	}
-
-	if resp.Data == nil {
-		zap.L().Error("No data found in response")
-		returnErrorResponse(w, "No profile data found")
-		return
-	}
-
-	binaryData := resp.Data.GetValue()
-	userProfile, err := decodeResponse[pb.UserProfile](binaryData)
-	if err != nil {
-		zap.L().Error("Failed to decode user profile", zap.Error(err))
-		returnErrorResponse(w, "Failed to process user profile data.")
-		return
-	}
-
-	response := types.ApiResponse{
-		Success: resp.Success,
-		Message: resp.Message,
-		Payload: userProfile,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {

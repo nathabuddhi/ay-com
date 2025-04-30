@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
+	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -60,6 +62,17 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 			Data:    nil,
 		}, nil
 	}
+
+	data, err := json.Marshal(userData)
+	if err != nil {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "Failed to encode user data: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	rabbitmq.PublishSetRedis("getprofile/"+user.UserId, string(data))
 
 	return &pb.ApiResponse{
 		Success: true,

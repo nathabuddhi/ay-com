@@ -2,7 +2,7 @@ package rabbitmq
 
 import (
 	"context"
-	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/nathabuddhi/ay-com/backend/util-redis/redis_client"
@@ -83,20 +83,19 @@ func StartConsumingSet() {
 
 	go func() {
 		for d := range msgs {
-			var payload RedisPayload
-			err := json.Unmarshal(d.Body, &payload)
-			if err != nil {
-				zap.L().Error("Failed to parse set_redis message: " + err.Error())
+			data := strings.Split(string(d.Body), "|")
+			if len(data) != 2 {
+				zap.L().Error("Invalid message format.")
 				continue
 			}
 
-			zap.L().Info("Setting Redis key: " + payload.Key)
+			zap.L().Info("Setting Redis key: " + data[1])
 
 			err = redis_client.Client.SetEx(
 				context.Background(),
-				payload.Key,
-				payload.Value,
-				time.Duration(payload.TTL)*time.Second,
+				data[0],
+				data[1],
+				time.Duration(60)*time.Second,
 			).Err()
 
 			if err != nil {
