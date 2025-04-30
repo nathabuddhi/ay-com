@@ -25,20 +25,20 @@ func InitUserRoutes(r *mux.Router) {
 	r.HandleFunc("/user/register", User_Register).Methods("POST")
 	r.HandleFunc("/user/requestverificationcode", User_RequestVerificationCode).Methods("POST")
 	r.HandleFunc("/user/validateverificationcode", User_ValidateVerificationCode).Methods("POST")
-	r.HandleFunc("/user/getsecurityquestion", User_GetSecurityQuestion).Methods("POST")
+	r.HandleFunc("/user/getsecurityquestion", User_GetSecurityQuestion).Methods("GET")
 	r.HandleFunc("/user/validatesecurityanswer", User_ValidateSecurityAnswer).Methods("POST")
-	r.HandleFunc("/user/resetpassword", User_ResetPassword).Methods("POST")
+	r.HandleFunc("/user/resetpassword", User_ResetPassword).Methods("PUT")
 
 }
 
 func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{id}", User_GetProfile).Methods("GET")
-	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("POST")
+	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("PATCH")
 
 	secured.HandleFunc("/user/followuser", User_FollowUser).Methods("POST")
 	secured.HandleFunc("/user/unfollowuser", User_UnFollowUser).Methods("POST")
 	secured.HandleFunc("/user/blockuser", User_BlockUser).Methods("POST")
 	secured.HandleFunc("/user/unblockuser", User_UnBlockUser).Methods("POST")
 	secured.HandleFunc("/user/getsettings", User_GetSettings).Methods("GET")
-	secured.HandleFunc("/user/updatesettings", User_UpdateSettings).Methods("POST")
+	secured.HandleFunc("/user/updatesettings", User_UpdateSettings).Methods("PATCH")
 }

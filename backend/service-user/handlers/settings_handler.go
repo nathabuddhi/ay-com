@@ -92,6 +92,18 @@ func (h *Handlers) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettin
 				Data:    nil,
 			}, nil
 		}
+	} else {
+		userSettings.FontSize = req.FontSize
+		userSettings.FontColor = req.FontColor
+
+		err = h.DB.WithContext(ctx).Save(&userSettings).Error
+		if err != nil {
+			return &pb.ApiResponse{
+				Success: false,
+				Message: "An error occurred while updating user settings: " + err.Error(),
+				Data:    nil,
+			}, nil
+		}
 	}
 
 	return &pb.ApiResponse{
