@@ -21,9 +21,10 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UserService_User_Register_FullMethodName            = "/user.UserService/User_Register"
 	UserService_User_Login_FullMethodName               = "/user.UserService/User_Login"
-	UserService_User_GetProfile_FullMethodName          = "/user.UserService/User_GetProfile"
 	UserService_RequestVerificationCode_FullMethodName  = "/user.UserService/RequestVerificationCode"
 	UserService_ValidateVerificationCode_FullMethodName = "/user.UserService/ValidateVerificationCode"
+	UserService_User_GetProfile_FullMethodName          = "/user.UserService/User_GetProfile"
+	UserService_ChangePassword_FullMethodName           = "/user.UserService/ChangePassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -32,10 +33,11 @@ const (
 type UserServiceClient interface {
 	User_Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 	User_Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetProfile(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	// New
 	RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 	ValidateVerificationCode(ctx context.Context, in *ValidateCodeRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	// protected routes
+	User_GetProfile(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 }
 
 type userServiceClient struct {
@@ -66,16 +68,6 @@ func (c *userServiceClient) User_Login(ctx context.Context, in *LoginRequest, op
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetProfile(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
-	err := c.cc.Invoke(ctx, UserService_User_GetProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponse)
@@ -96,16 +88,37 @@ func (c *userServiceClient) ValidateVerificationCode(ctx context.Context, in *Va
 	return out, nil
 }
 
+func (c *userServiceClient) User_GetProfile(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_GetProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
 type UserServiceServer interface {
 	User_Register(context.Context, *RegisterRequest) (*ApiResponse, error)
 	User_Login(context.Context, *LoginRequest) (*ApiResponse, error)
-	User_GetProfile(context.Context, *GetUserRequest) (*ApiResponse, error)
-	// New
 	RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponse, error)
 	ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponse, error)
+	// protected routes
+	User_GetProfile(context.Context, *GetUserRequest) (*ApiResponse, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -122,14 +135,17 @@ func (UnimplementedUserServiceServer) User_Register(context.Context, *RegisterRe
 func (UnimplementedUserServiceServer) User_Login(context.Context, *LoginRequest) (*ApiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_Login not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetUserRequest) (*ApiResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method User_GetProfile not implemented")
-}
 func (UnimplementedUserServiceServer) RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestVerificationCode not implemented")
 }
 func (UnimplementedUserServiceServer) ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateVerificationCode not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetUserRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetProfile not implemented")
+}
+func (UnimplementedUserServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -188,24 +204,6 @@ func _UserService_User_Login_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_User_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).User_GetProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_User_GetProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).User_GetProfile(ctx, req.(*GetUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_RequestVerificationCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerificationRequest)
 	if err := dec(in); err != nil {
@@ -242,6 +240,42 @@ func _UserService_ValidateVerificationCode_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetProfile(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -258,16 +292,20 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_User_Login_Handler,
 		},
 		{
-			MethodName: "User_GetProfile",
-			Handler:    _UserService_User_GetProfile_Handler,
-		},
-		{
 			MethodName: "RequestVerificationCode",
 			Handler:    _UserService_RequestVerificationCode_Handler,
 		},
 		{
 			MethodName: "ValidateVerificationCode",
 			Handler:    _UserService_ValidateVerificationCode_Handler,
+		},
+		{
+			MethodName: "User_GetProfile",
+			Handler:    _UserService_User_GetProfile_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _UserService_ChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

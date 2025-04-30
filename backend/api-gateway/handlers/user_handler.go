@@ -190,3 +190,19 @@ func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 		return client.ValidateVerificationCode(ctx, in)
 	})
 }
+
+func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode change password request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	forwardRequest[pb.ChangePasswordRequest, pb.String](w, &req, func(ctx context.Context, in *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+		return client.ChangePassword(ctx, in)
+	})
+}

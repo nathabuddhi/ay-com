@@ -586,6 +586,66 @@ func (x *ValidateCodeRequest) GetCode() string {
 	return ""
 }
 
+type ChangePasswordRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	OldPassword   string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
+	NewPassword   string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChangePasswordRequest) Reset() {
+	*x = ChangePasswordRequest{}
+	mi := &file_user_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangePasswordRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangePasswordRequest) ProtoMessage() {}
+
+func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
+func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ChangePasswordRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetOldPassword() string {
+	if x != nil {
+		return x.OldPassword
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
@@ -632,14 +692,19 @@ const file_user_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"?\n" +
 	"\x13ValidateCodeRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x12\n" +
-	"\x04code\x18\x02 \x01(\tR\x04code2\xcc\x02\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\"s\n" +
+	"\x15ChangePasswordRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12!\n" +
+	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword2\x8e\x03\n" +
 	"\vUserService\x129\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x11.user.ApiResponse\x123\n" +
 	"\n" +
-	"User_Login\x12\x12.user.LoginRequest\x1a\x11.user.ApiResponse\x12:\n" +
-	"\x0fUser_GetProfile\x12\x14.user.GetUserRequest\x1a\x11.user.ApiResponse\x12G\n" +
+	"User_Login\x12\x12.user.LoginRequest\x1a\x11.user.ApiResponse\x12G\n" +
 	"\x17RequestVerificationCode\x12\x19.user.VerificationRequest\x1a\x11.user.ApiResponse\x12H\n" +
-	"\x18ValidateVerificationCode\x12\x19.user.ValidateCodeRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
+	"\x18ValidateVerificationCode\x12\x19.user.ValidateCodeRequest\x1a\x11.user.ApiResponse\x12:\n" +
+	"\x0fUser_GetProfile\x12\x14.user.GetUserRequest\x1a\x11.user.ApiResponse\x12@\n" +
+	"\x0eChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -653,36 +718,39 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_user_proto_goTypes = []any{
-	(*ApiResponse)(nil),         // 0: user.ApiResponse
-	(*String)(nil),              // 1: user.String
-	(*Bool)(nil),                // 2: user.Bool
-	(*UserProfile)(nil),         // 3: user.UserProfile
-	(*GetUserRequest)(nil),      // 4: user.GetUserRequest
-	(*RegisterRequest)(nil),     // 5: user.RegisterRequest
-	(*LoginRequest)(nil),        // 6: user.LoginRequest
-	(*VerificationRequest)(nil), // 7: user.VerificationRequest
-	(*ValidateCodeRequest)(nil), // 8: user.ValidateCodeRequest
-	(*anypb.Any)(nil),           // 9: google.protobuf.Any
+	(*ApiResponse)(nil),           // 0: user.ApiResponse
+	(*String)(nil),                // 1: user.String
+	(*Bool)(nil),                  // 2: user.Bool
+	(*UserProfile)(nil),           // 3: user.UserProfile
+	(*GetUserRequest)(nil),        // 4: user.GetUserRequest
+	(*RegisterRequest)(nil),       // 5: user.RegisterRequest
+	(*LoginRequest)(nil),          // 6: user.LoginRequest
+	(*VerificationRequest)(nil),   // 7: user.VerificationRequest
+	(*ValidateCodeRequest)(nil),   // 8: user.ValidateCodeRequest
+	(*ChangePasswordRequest)(nil), // 9: user.ChangePasswordRequest
+	(*anypb.Any)(nil),             // 10: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
-	9, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
-	5, // 1: user.UserService.User_Register:input_type -> user.RegisterRequest
-	6, // 2: user.UserService.User_Login:input_type -> user.LoginRequest
-	4, // 3: user.UserService.User_GetProfile:input_type -> user.GetUserRequest
-	7, // 4: user.UserService.RequestVerificationCode:input_type -> user.VerificationRequest
-	8, // 5: user.UserService.ValidateVerificationCode:input_type -> user.ValidateCodeRequest
-	0, // 6: user.UserService.User_Register:output_type -> user.ApiResponse
-	0, // 7: user.UserService.User_Login:output_type -> user.ApiResponse
-	0, // 8: user.UserService.User_GetProfile:output_type -> user.ApiResponse
-	0, // 9: user.UserService.RequestVerificationCode:output_type -> user.ApiResponse
-	0, // 10: user.UserService.ValidateVerificationCode:output_type -> user.ApiResponse
-	6, // [6:11] is the sub-list for method output_type
-	1, // [1:6] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	10, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
+	5,  // 1: user.UserService.User_Register:input_type -> user.RegisterRequest
+	6,  // 2: user.UserService.User_Login:input_type -> user.LoginRequest
+	7,  // 3: user.UserService.RequestVerificationCode:input_type -> user.VerificationRequest
+	8,  // 4: user.UserService.ValidateVerificationCode:input_type -> user.ValidateCodeRequest
+	4,  // 5: user.UserService.User_GetProfile:input_type -> user.GetUserRequest
+	9,  // 6: user.UserService.ChangePassword:input_type -> user.ChangePasswordRequest
+	0,  // 7: user.UserService.User_Register:output_type -> user.ApiResponse
+	0,  // 8: user.UserService.User_Login:output_type -> user.ApiResponse
+	0,  // 9: user.UserService.RequestVerificationCode:output_type -> user.ApiResponse
+	0,  // 10: user.UserService.ValidateVerificationCode:output_type -> user.ApiResponse
+	0,  // 11: user.UserService.User_GetProfile:output_type -> user.ApiResponse
+	0,  // 12: user.UserService.ChangePassword:output_type -> user.ApiResponse
+	7,  // [7:13] is the sub-list for method output_type
+	1,  // [1:7] is the sub-list for method input_type
+	1,  // [1:1] is the sub-list for extension type_name
+	1,  // [1:1] is the sub-list for extension extendee
+	0,  // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }
@@ -696,7 +764,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -179,3 +179,40 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 	anyGeneratedId, _ := anypb.New(&pb.String{Value: generatedId})
 	return &pb.ApiResponse{Success: true, Message: "User registered successfully. Please verify your email.", Data: anyGeneratedId}, nil
 }
+
+func (h *Handlers) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" {
+		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
+	}
+
+	if len(req.NewPassword) < 8 ||
+		!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
+		return &pb.ApiResponse{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
+	}
+
+	var user models.User
+	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword)); err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Old password is incorrect."}, nil
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Error hashing new password."}, err
+	}
+
+	if err := h.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Failed to update password."}, err
+	}
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Password changed successfully.",
+	}, nil
+}

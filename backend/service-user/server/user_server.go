@@ -38,3 +38,7 @@ func (s *UserServer) RequestVerificationCode(ctx context.Context, req *pb.Verifi
 func (s *UserServer) ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.ValidateVerificationCode(ctx, req)
 }
+
+func (s *UserServer) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.ChangePassword(ctx, req)
+}

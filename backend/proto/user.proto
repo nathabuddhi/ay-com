@@ -9,11 +9,12 @@ option go_package = "user/";
 service UserService {
   rpc User_Register (RegisterRequest) returns (ApiResponse);
   rpc User_Login (LoginRequest) returns (ApiResponse);
-  rpc User_GetProfile (GetUserRequest) returns (ApiResponse);
-
-  // New
   rpc RequestVerificationCode (VerificationRequest) returns (ApiResponse);
   rpc ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
+
+  // protected routes
+  rpc User_GetProfile (GetUserRequest) returns (ApiResponse);
+  rpc ChangePassword (ChangePasswordRequest) returns (ApiResponse);
 }
 
 message ApiResponse {
@@ -71,4 +72,10 @@ message VerificationRequest {
 message ValidateCodeRequest {
   string email = 1;
   string code = 2;
+}
+
+message ChangePasswordRequest {
+    string email = 1;
+    string old_password = 2;
+    string new_password = 3;
 }

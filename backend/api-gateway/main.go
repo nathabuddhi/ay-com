@@ -67,6 +67,7 @@ func main() {
 	secured := r.PathPrefix("/").Subrouter()
 	secured.Use(middleware.JwtAuthMiddleware)
 	secured.HandleFunc("/user/getprofile/{id}", handlers.User_GetProfile).Methods("GET")
+	secured.HandleFunc("/user/changepassword", handlers.User_ChangePassword).Methods("POST")
 
 	httpHandler := allowCors(r)
 
