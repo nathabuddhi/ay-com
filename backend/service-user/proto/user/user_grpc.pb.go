@@ -28,6 +28,10 @@ const (
 	UserService_User_ResetPassword_FullMethodName            = "/user.UserService/User_ResetPassword"
 	UserService_User_GetProfile_FullMethodName               = "/user.UserService/User_GetProfile"
 	UserService_User_ChangePassword_FullMethodName           = "/user.UserService/User_ChangePassword"
+	UserService_User_FollowUser_FullMethodName               = "/user.UserService/User_FollowUser"
+	UserService_User_BlockUser_FullMethodName                = "/user.UserService/User_BlockUser"
+	UserService_User_UnFollowUser_FullMethodName             = "/user.UserService/User_UnFollowUser"
+	UserService_User_UnBlockUser_FullMethodName              = "/user.UserService/User_UnBlockUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -44,6 +48,10 @@ type UserServiceClient interface {
 	// protected routes
 	User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 	User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 }
 
 type userServiceClient struct {
@@ -144,6 +152,46 @@ func (c *userServiceClient) User_ChangePassword(ctx context.Context, in *ChangeP
 	return out, nil
 }
 
+func (c *userServiceClient) User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_FollowUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_BlockUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_UnFollowUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_UnBlockUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -158,6 +206,10 @@ type UserServiceServer interface {
 	// protected routes
 	User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponse, error)
 	User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error)
+	User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponse, error)
+	User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponse, error)
+	User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponse, error)
+	User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -194,6 +246,18 @@ func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetProfi
 }
 func (UnimplementedUserServiceServer) User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ChangePassword not implemented")
+}
+func (UnimplementedUserServiceServer) User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_FollowUser not implemented")
+}
+func (UnimplementedUserServiceServer) User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_BlockUser not implemented")
+}
+func (UnimplementedUserServiceServer) User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_UnFollowUser not implemented")
+}
+func (UnimplementedUserServiceServer) User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_UnBlockUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -378,6 +442,78 @@ func _UserService_User_ChangePassword_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_FollowUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_FollowUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_FollowUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_FollowUser(ctx, req.(*FollowUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_BlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_BlockUser(ctx, req.(*BlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_UnFollowUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnFollowUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_UnFollowUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_UnFollowUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_UnFollowUser(ctx, req.(*UnFollowUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_UnBlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnBlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_UnBlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_UnBlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_UnBlockUser(ctx, req.(*UnBlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -420,6 +556,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_ChangePassword",
 			Handler:    _UserService_User_ChangePassword_Handler,
+		},
+		{
+			MethodName: "User_FollowUser",
+			Handler:    _UserService_User_FollowUser_Handler,
+		},
+		{
+			MethodName: "User_BlockUser",
+			Handler:    _UserService_User_BlockUser_Handler,
+		},
+		{
+			MethodName: "User_UnFollowUser",
+			Handler:    _UserService_User_UnFollowUser_Handler,
+		},
+		{
+			MethodName: "User_UnBlockUser",
+			Handler:    _UserService_User_UnBlockUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
