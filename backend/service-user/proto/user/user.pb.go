@@ -171,18 +171,16 @@ func (x *Bool) GetValue() bool {
 }
 
 type UserProfile struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Username       string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-	Name           string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Bio            string                 `protobuf:"bytes,4,opt,name=bio,proto3" json:"bio,omitempty"`
-	IsVerified     bool                   `protobuf:"varint,5,opt,name=is_verified,json=isVerified,proto3" json:"is_verified,omitempty"`
-	ProfilePicture string                 `protobuf:"bytes,6,opt,name=profile_picture,json=profilePicture,proto3" json:"profile_picture,omitempty"`
-	Banner         string                 `protobuf:"bytes,7,opt,name=banner,proto3" json:"banner,omitempty"`
-	Followers      int32                  `protobuf:"varint,8,opt,name=followers,proto3" json:"followers,omitempty"`
-	Following      int32                  `protobuf:"varint,9,opt,name=following,proto3" json:"following,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Bio           string                 `protobuf:"bytes,4,opt,name=bio,proto3" json:"bio,omitempty"`
+	IsVerified    bool                   `protobuf:"varint,5,opt,name=is_verified,json=isVerified,proto3" json:"is_verified,omitempty"`
+	Followers     int32                  `protobuf:"varint,6,opt,name=followers,proto3" json:"followers,omitempty"`
+	Following     int32                  `protobuf:"varint,7,opt,name=following,proto3" json:"following,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserProfile) Reset() {
@@ -248,20 +246,6 @@ func (x *UserProfile) GetIsVerified() bool {
 		return x.IsVerified
 	}
 	return false
-}
-
-func (x *UserProfile) GetProfilePicture() string {
-	if x != nil {
-		return x.ProfilePicture
-	}
-	return ""
-}
-
-func (x *UserProfile) GetBanner() string {
-	if x != nil {
-		return x.Banner
-	}
-	return ""
 }
 
 func (x *UserProfile) GetFollowers() int32 {
@@ -615,18 +599,16 @@ const file_user_proto_rawDesc = "" +
 	"\x06String\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x1c\n" +
 	"\x04Bool\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\bR\x05value\"\x86\x02\n" +
+	"\x05value\x18\x01 \x01(\bR\x05value\"\xc5\x01\n" +
 	"\vUserProfile\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x10\n" +
 	"\x03bio\x18\x04 \x01(\tR\x03bio\x12\x1f\n" +
 	"\vis_verified\x18\x05 \x01(\bR\n" +
-	"isVerified\x12'\n" +
-	"\x0fprofile_picture\x18\x06 \x01(\tR\x0eprofilePicture\x12\x16\n" +
-	"\x06banner\x18\a \x01(\tR\x06banner\x12\x1c\n" +
-	"\tfollowers\x18\b \x01(\x05R\tfollowers\x12\x1c\n" +
-	"\tfollowing\x18\t \x01(\x05R\tfollowing\")\n" +
+	"isVerified\x12\x1c\n" +
+	"\tfollowers\x18\x06 \x01(\x05R\tfollowers\x12\x1c\n" +
+	"\tfollowing\x18\a \x01(\x05R\tfollowing\")\n" +
 	"\x0eGetUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x97\x03\n" +
 	"\x0fRegisterRequest\x12\x14\n" +

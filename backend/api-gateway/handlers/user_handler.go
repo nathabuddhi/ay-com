@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 
+	"github.com/gorilla/mux"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
-	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -37,7 +36,15 @@ func getUserServiceConn() *grpc.ClientConn {
 func User_Login(w http.ResponseWriter, r *http.Request) {
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
-	forwardRequest[pb.LoginRequest, pb.String](w, r, func(ctx context.Context, in *pb.LoginRequest) (*pb.ApiResponse, error) {
+
+	var req pb.LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode login request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	forwardRequest[pb.LoginRequest, pb.String](w, &req, func(ctx context.Context, in *pb.LoginRequest) (*pb.ApiResponse, error) {
 		return client.User_Login(ctx, in)
 	})
 }
@@ -89,60 +96,81 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	req.SecurityQuestion = r.FormValue("security_question")
 	req.SecurityAnswer = r.FormValue("security_answer")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-
-	resp, err := client.User_Register(ctx, &req)
-	if err != nil {
-		returnErrorResponse(w, "Error during registration")
-		return
-	}
-
-	if resp.Success {
-		var userIdString pb.String
-		if err := anypb.UnmarshalTo(resp.Data, &userIdString, proto.UnmarshalOptions{}); err != nil {
-			zap.L().Error("Failed to unmarshal response data", zap.Error(err))
-			returnErrorResponse(w, "Failed to process response data")
-			return
+	forwardRequest[pb.RegisterRequest, pb.String](w, &req, func(ctx context.Context, in *pb.RegisterRequest) (*pb.ApiResponse, error) {
+		resp, err := client.User_Register(ctx, in)
+		if err != nil {
+			return &pb.ApiResponse{
+				Success: false,
+				Message: "Error during registration: " + err.Error(),
+				Data:    nil,
+			}, nil
 		}
-		go func() {
-			if err := supabase.UploadAvatarAndBanner(userIdString.Value, avatarFile, bannerFile); err != nil {
-				zap.L().Error("Error uploading avatar and banner to Supabase", zap.Error(err))
+
+		if resp.Success {
+			var userIdString pb.String
+			if err := anypb.UnmarshalTo(resp.Data, &userIdString, proto.UnmarshalOptions{}); err != nil {
+				zap.L().Error("Failed to unmarshal response data", zap.Error(err))
+				return &pb.ApiResponse{
+					Success: false,
+					Message: "Failed to process response data",
+					Data:    nil,
+				}, nil
 			}
-		}()
 
-		response := types.ApiResponse{
-			Success: resp.Success,
-			Message: resp.Message,
-			Payload: userIdString.Value,
+			go func() {
+				if err := supabase.UploadAvatarAndBanner(userIdString.Value, avatarFile, bannerFile); err != nil {
+					zap.L().Error("Error uploading avatar and banner to Supabase", zap.Error(err))
+				}
+			}()
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
-		return
-	}
 
-	response := types.ApiResponse{
-		Success: resp.Success,
-		Message: resp.Message,
-		Payload: nil,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+		return resp, nil
+	})
 }
 
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
-	forwardRequest[pb.GetUserRequest, pb.UserProfile](w, r, func(ctx context.Context, in *pb.GetUserRequest) (*pb.ApiResponse, error) {
-		return client.User_GetProfile(ctx, in)
+	vars := mux.Vars(r)
+	userID := vars["id"]
+
+	if userID == "" {
+		zap.L().Error("User ID parameter missing")
+		returnErrorResponse(w, "User ID is required")
+		return
+	}
+
+	zap.L().Info("Fetching profile for user ID: " + userID)
+
+	var req pb.GetUserRequest
+	req.UserId = userID
+
+	forwardRequest[pb.GetUserRequest, pb.UserProfile](w, &req, func(ctx context.Context, in *pb.GetUserRequest) (*pb.ApiResponse, error) {
+		resp, err := client.User_GetProfile(ctx, in)
+		if err != nil {
+			return &pb.ApiResponse{
+				Success: false,
+				Message: "An error occurred: " + err.Error(),
+				Data:    nil,
+			}, nil
+		}
+		return resp, nil
 	})
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
-	forwardRequest[pb.VerificationRequest, pb.String](w, r, func(ctx context.Context, in *pb.VerificationRequest) (*pb.ApiResponse, error) {
+
+	var req pb.VerificationRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode verification request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	forwardRequest[pb.VerificationRequest, pb.String](w, &req, func(ctx context.Context, in *pb.VerificationRequest) (*pb.ApiResponse, error) {
 		return client.RequestVerificationCode(ctx, in)
 	})
 }
@@ -150,7 +178,15 @@ func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
-	forwardRequest[pb.ValidateCodeRequest, pb.String](w, r, func(ctx context.Context, in *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+
+	var req pb.ValidateCodeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode validate code request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	forwardRequest[pb.ValidateCodeRequest, pb.String](w, &req, func(ctx context.Context, in *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
 		return client.ValidateVerificationCode(ctx, in)
 	})
 }

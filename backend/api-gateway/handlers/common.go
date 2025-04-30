@@ -42,52 +42,46 @@ func returnErrorResponse(w http.ResponseWriter, message string) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func forwardRequest[TReq any, TRes any](w http.ResponseWriter, r *http.Request, grpcCall func(context.Context, *TReq) (*pb.ApiResponse, error)) {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
+func forwardRequest[TReq any, TRes any](w http.ResponseWriter, req *TReq, grpcCall func(context.Context, *TReq) (*pb.ApiResponse, error)) {
+    ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+    defer cancel()
 
-	var req TReq
+    res, err := grpcCall(ctx, req)
+    if err != nil {
+        zap.L().Error("Error forwarding request", zap.Error(err))
+        returnErrorResponse(w, "Error forwarding request: "+err.Error())
+        return
+    }
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		returnErrorResponse(w, "Invalid request payload: "+err.Error())
-		return
-	}
+    var payload any
+    if res.Data != nil {
+        newResponse := new(TRes)
+        if pm, ok := any(newResponse).(proto.Message); ok {
+            err := res.Data.UnmarshalTo(pm)
+            if err != nil {
+                zap.L().Error("Failed to unmarshal response data", zap.Error(err))
+                returnErrorResponse(w, "Failed to process response data")
+                return
+            }
+            switch v := any(newResponse).(type) {
+            case **pb.String:
+                payload = (*v).Value
+            case **pb.UserProfile:
+                payload = *v 
+            default:
+                payload = newResponse
+            }
+        } else {
+            payload = nil
+        }
+    }
 
-	res, err := grpcCall(ctx, &req)
-	if err != nil {
-		returnErrorResponse(w, "Error forwarding request: "+err.Error())
-		return
-	}
+    response := types.ApiResponse{
+        Success: res.Success,
+        Message: res.Message,
+        Payload: payload,
+    }
 
-	var payload any
-
-	if res.Data != nil {
-		newResponse := new(TRes)
-
-		if pm, ok := any(newResponse).(proto.Message); ok {
-			err := res.Data.UnmarshalTo(pm)
-			if err != nil {
-				zap.L().Error("Failed to unmarshal response: " + err.Error())
-				payload = nil
-			} else {
-				switch v := any(newResponse).(type) {
-				case **pb.String:
-					payload = (*v).Value
-				default:
-					payload = newResponse
-				}
-			}
-		} else {
-			payload = nil
-		}
-	}
-
-	response := types.ApiResponse{
-		Success: res.Success,
-		Message: res.Message,
-		Payload: payload,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
 }

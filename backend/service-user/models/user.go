@@ -10,10 +10,8 @@ type User struct {
 	Username         string `gorm:"uniqueIndex"`
 	Email            string `gorm:"uniqueIndex"`
 	Password         string
-	Gender           string
+	Gender           string 
 	DateOfBirth      time.Time
-	ProfilePicture   *string
-	Banner           *string
 	IsVerified       bool
 	IsBanned         bool
 	IsDeactivated    bool
