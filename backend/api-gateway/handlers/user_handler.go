@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
@@ -57,9 +58,8 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if resp.Data == nil {
-		zap.L().Error("No data found in response")
-		returnErrorResponse(w, "No profile data found")
+	if !resp.Success {
+		returnErrorResponse(w, "Invalid Credentials.")
 		return
 	}
 
@@ -302,6 +302,8 @@ func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := r.Context().Value(middleware.UserIdKey).(string)
+	req.UserId = userID
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 

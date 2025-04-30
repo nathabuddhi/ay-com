@@ -183,7 +183,7 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 }
 
 func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
-	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" {
+	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" || req.UserId == "" {
 		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
 	}
 
@@ -196,7 +196,7 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 	}
 
 	var user models.User
-	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+	if err := h.DB.Where("email = ? AND user_id = ?", req.Email, req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
 	}
 

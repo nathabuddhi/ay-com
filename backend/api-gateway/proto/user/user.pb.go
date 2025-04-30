@@ -591,6 +591,7 @@ type ChangePasswordRequest struct {
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	OldPassword   string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
 	NewPassword   string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	UserId        string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -642,6 +643,13 @@ func (x *ChangePasswordRequest) GetOldPassword() string {
 func (x *ChangePasswordRequest) GetNewPassword() string {
 	if x != nil {
 		return x.NewPassword
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
 	}
 	return ""
 }
@@ -856,11 +864,12 @@ const file_user_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"?\n" +
 	"\x13ValidateCodeRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x12\n" +
-	"\x04code\x18\x02 \x01(\tR\x04code\"s\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\"\x8c\x01\n" +
 	"\x15ChangePasswordRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12!\n" +
 	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
-	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"2\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\"2\n" +
 	"\x1aGetSecurityQuestionRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"c\n" +
 	"\x14ResetPasswordRequest\x12\x14\n" +

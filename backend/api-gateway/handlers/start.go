@@ -9,9 +9,15 @@ func InitRoutes() (r *mux.Router) {
 	r = mux.NewRouter()
 
 	InitUserRoutes(r)
-	InitSecuredRoutes(r)
 
+	InitSecuredRoutes(r)
 	return r
+}
+
+func InitSecuredRoutes(r *mux.Router) {
+	secured := r.PathPrefix("/").Subrouter()
+	secured.Use(middleware.JwtAuthMiddleware)
+	InitSecuredUserRoutes(secured)
 }
 
 func InitUserRoutes(r *mux.Router) {
@@ -22,11 +28,10 @@ func InitUserRoutes(r *mux.Router) {
 	r.HandleFunc("/user/getsecurityquestion", User_GetSecurityQuestion).Methods("POST")
 	r.HandleFunc("/user/validatesecurityanswer", User_ValidateSecurityAnswer).Methods("POST")
 	r.HandleFunc("/user/resetpassword", User_ResetPassword).Methods("POST")
+
 }
 
-func InitSecuredRoutes(r *mux.Router) {
-	secured := r.PathPrefix("/").Subrouter()
-	secured.Use(middleware.JwtAuthMiddleware)
+func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{id}", User_GetProfile).Methods("GET")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("POST")
 }

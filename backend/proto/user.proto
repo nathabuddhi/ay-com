@@ -81,6 +81,7 @@ message ChangePasswordRequest {
     string email = 1;
     string old_password = 2;
     string new_password = 3;
+    string user_id = 4;
 }
 
 message GetSecurityQuestionRequest {

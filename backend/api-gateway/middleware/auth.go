@@ -6,11 +6,17 @@ import (
 	"os"
 	"strings"
 
+	"context"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 )
 
+var UserIdKey = &contextKey{"user_id"}
 
+type contextKey struct {
+	name string
+}
 
 func JwtAuthMiddleware(next http.Handler) http.Handler {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
@@ -45,6 +51,24 @@ func JwtAuthMiddleware(next http.Handler) http.Handler {
 			json.NewEncoder(w).Encode(response)
 			return
 		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			response := types.ApiResponse{
+				Success: false,
+				Message: "Invalid Token Claims.",
+				Payload: nil,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		userID := claims["user_id"].(string)
+
+		ctx := context.WithValue(r.Context(), UserIdKey, userID)
+		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
 	})
