@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"os"
 	"regexp"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
+	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -50,7 +53,6 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user.UserId,
-		"email":   user.Email,
 		"exp":     time.Now().Add(time.Hour * 2).Unix(),
 	})
 
@@ -211,6 +213,11 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 		return &pb.ApiResponse{Success: false, Message: "Failed to update password."}, err
 	}
 
+	rabbitmq.PublishEmail(req.Email,
+		"AY.com Password Change.",
+		"Your Password was just changed at "+time.Now().String()+".<br>If this wasn't you, contact support immediately.",
+	)
+
 	return &pb.ApiResponse{
 		Success: true,
 		Message: "Password changed successfully.",
@@ -240,5 +247,100 @@ func (h *Handlers) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecu
 		Success: true,
 		Message: "Security question retrieved successfully.",
 		Data:    anyQuestion,
+	}, nil
+}
+
+func (h *Handlers) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponse, error) {
+	var user models.User
+	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	if user.SecurityAnswer != req.Answer {
+		return &pb.ApiResponse{Success: false, Message: "Invalid Credentials."}, nil
+	}
+
+	code := fmt.Sprintf("%10d", rand.Intn(10000000000))
+
+	err := h.DB.WithContext(ctx).Exec(`
+		INSERT INTO reset_password_codes (email, code, expiry) 
+		VALUES (?, ?, ?) 
+		ON CONFLICT(email) DO UPDATE SET code = excluded.code, expiry = excluded.expiry
+	`, req.Email, code, time.Now().Add(time.Minute*5)).Error
+
+	if err != nil {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "An error occured. Please try again or contact support.\n" + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	link := "http://localhost:5173/reset-password"
+	rabbitmq.PublishEmail(req.Email,
+		"AY.com Password Reset.",
+		"Please go to <a href='"+link+"' target='_blank'>reset-password-page</a> to reset your password and insert the following code: <b>"+code+"</b>.<br> <i>This code is valid for 10 minutes.</i>",
+	)
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Security answer verified. Check your email for further instructions.",
+		Data:    nil,
+	}, nil
+}
+
+func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponse, error) {
+	if req.Email == "" || req.Code == "" || req.NewPassword == "" {
+		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
+	}
+
+	if len(req.NewPassword) < 8 ||
+		!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
+		return &pb.ApiResponse{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
+	}
+
+	var user models.User
+	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	var count int
+
+	err := h.DB.WithContext(ctx).Raw(`
+		SELECT COUNT(*) AS count
+		FROM reset_password_codes
+		WHERE email = ? AND code = ? AND expiry > ? 
+	`, req.Email, req.Code, time.Now().Format("2006-01-02 15:04:05")).Scan(&count).Error
+
+	if err != nil || count != 1 {
+		return &pb.ApiResponse{Success: false, Message: "Invalid or expired code."}, nil
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Error hashing new password."}, err
+	}
+
+	if err := h.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Failed to update password."}, err
+	}
+
+	h.DB.WithContext(ctx).Exec(`
+		DELETE FROM reset_password_codes
+		WHERE email = ? AND code = ?
+	`, req.Email, req.Code)
+
+	rabbitmq.PublishEmail(req.Email,
+		"AY.com Password Change.",
+		"Your Password was just changed at "+time.Now().String()+".<br>If this wasn't you, contact support immediately.",
+	)
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Password reset successfully.",
+		Data:    nil,
 	}, nil
 }

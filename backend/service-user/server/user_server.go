@@ -47,6 +47,10 @@ func (s *UserServer) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSe
 	return s.Handlers.User_GetSecurityQuestion(ctx, req)
 }
 
-func (s *UserServer) User_(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
-	return s.Handlers.User_GetSecurityQuestion(ctx, req)
+func (s *UserServer) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_ValidateSecurityAnswer(ctx, req)
+}
+
+func (s *UserServer) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_ResetPassword(ctx, req)
 }

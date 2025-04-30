@@ -20,6 +20,8 @@ func InitUserRoutes(r *mux.Router) {
 	r.HandleFunc("/user/requestverificationcode", User_RequestVerificationCode).Methods("POST")
 	r.HandleFunc("/user/validateverificationcode", User_ValidateVerificationCode).Methods("POST")
 	r.HandleFunc("/user/getsecurityquestion", User_GetSecurityQuestion).Methods("POST")
+	r.HandleFunc("/user/validatesecurityanswer", User_ValidateSecurityAnswer).Methods("POST")
+	r.HandleFunc("/user/resetpassword", User_ResetPassword).Methods("POST")
 }
 
 func InitSecuredRoutes(r *mux.Router) {
