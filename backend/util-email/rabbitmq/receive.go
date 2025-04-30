@@ -67,7 +67,7 @@ func StartConsuming() {
 		}
 	}()
 
-	zap.L().Info(" [*] Waiting for messages...")
+	zap.L().Info("Email Service Running. Listening for RabbitMQ messages.")
 	<-forever
 }
 

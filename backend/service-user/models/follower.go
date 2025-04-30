@@ -4,9 +4,14 @@ import (
 	"time"
 )
 
-type UserFollower struct {
-	id          string `gorm:"primaryKey"`
-	uesr_id     string
-	follower_id string
-	created_at  time.Time `gorm:"autoCreateTime"`
+type UserFollowing struct {
+	UserId     string    `gorm:"primaryKey"`
+	FollowedId string    `gorm:"primaryKey"`
+	CreatedAt  time.Time `gorm:"autoCreateTime"`
+}
+
+type BlockedUsers struct {
+	UserId    string    `gorm:"primaryKey"`
+	BlockedId string    `gorm:"primaryKey"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
 }

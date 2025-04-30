@@ -54,3 +54,23 @@ func (s *UserServer) User_ValidateSecurityAnswer(ctx context.Context, req *pb.Va
 func (s *UserServer) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.User_ResetPassword(ctx, req)
 }
+
+func (s *UserServer) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_FollowUser(ctx, req)
+}
+
+func (s *UserServer) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_BlockUser(ctx, req)
+}
+
+func (s *UserServer) User_UnFollowUser(ctx context.Context, req *pb.UnFollowUserRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_UnFollowUser(ctx, req)
+}
+
+func (s *UserServer) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_UnBlockUser(ctx, req)
+}
+
+// func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponse, error) {
+// 	return s.Handlers.User_(ctx, req)
+// }

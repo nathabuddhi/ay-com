@@ -130,6 +130,4 @@ func StartConsumingDelete() {
 			}
 		}
 	}()
-
-	zap.L().Info(" [*] Waiting for messages...")
 }

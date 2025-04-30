@@ -424,3 +424,131 @@ func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+func User_FollowUser(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.FollowUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_FollowUser(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.UnFollowUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_UnFollowUser(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_BlockUser(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.BlockUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_BlockUser(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.UnBlockUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_UnBlockUser(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}

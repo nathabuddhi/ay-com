@@ -34,4 +34,9 @@ func InitUserRoutes(r *mux.Router) {
 func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{id}", User_GetProfile).Methods("GET")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("POST")
+
+	secured.HandleFunc("/user/followuser", User_FollowUser).Methods("POST")
+	secured.HandleFunc("/user/unfollowuser", User_UnFollowUser).Methods("POST")
+	secured.HandleFunc("/user/blockuser", User_BlockUser).Methods("POST")
+	secured.HandleFunc("/user/unblockuser", User_UnBlockUser).Methods("POST")
 }

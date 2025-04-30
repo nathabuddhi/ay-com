@@ -7,17 +7,21 @@ import "google/protobuf/any.proto";
 option go_package = "user/";
 
 service UserService {
-  rpc User_Register (RegisterRequest) returns (ApiResponse);
-  rpc User_Login (LoginRequest) returns (ApiResponse);
-  rpc User_RequestVerificationCode (VerificationRequest) returns (ApiResponse);
-  rpc User_ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
-  rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponse);
-  rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponse);
-  rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponse);
+    rpc User_Register (RegisterRequest) returns (ApiResponse);
+    rpc User_Login (LoginRequest) returns (ApiResponse);
+    rpc User_RequestVerificationCode (VerificationRequest) returns (ApiResponse);
+    rpc User_ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
+    rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponse);
+    rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponse);
+    rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponse);
 
-  // protected routes
-  rpc User_GetProfile (GetProfileRequest) returns (ApiResponse);
-  rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponse);
+    // protected routes
+    rpc User_GetProfile (GetProfileRequest) returns (ApiResponse);
+    rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponse);
+    rpc User_FollowUser (FollowUserRequest) returns (ApiResponse);
+    rpc User_BlockUser (BlockUserRequest) returns (ApiResponse);
+    rpc User_UnFollowUser (UnFollowUserRequest) returns (ApiResponse);
+    rpc User_UnBlockUser (UnBlockUserRequest) returns (ApiResponse);
 }
 
 message ApiResponse {
@@ -98,4 +102,24 @@ message ValidateSecurityAnswerRequest {
     string email = 1;
     string answer = 2;
     string question = 3;
+}
+
+message FollowUserRequest {
+    string user_id = 1;
+    string to_follow_id = 2;
+}
+
+message BlockUserRequest {
+    string user_id = 1;
+    string to_block_id = 2;
+}
+
+message UnFollowUserRequest {
+    string user_id = 1;
+    string to_unfollow_id = 2;
+}
+
+message UnBlockUserRequest {
+    string user_id = 1;
+    string to_unblock_id = 2;
 }
