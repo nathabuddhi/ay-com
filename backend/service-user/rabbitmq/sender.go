@@ -1,6 +1,8 @@
 package rabbitmq
 
 import (
+	"os"
+
 	"github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 )
@@ -79,7 +81,7 @@ func InitDeleteRedisChannel(conn *amqp091.Connection) {
 }
 
 func InitRabbitMQ() {
-	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp091.Dial(os.Getenv("RABBITMQ_URL"))
 	if err != nil {
 		zap.L().Fatal("Failed to connect to RabbitMQ: " + err.Error())
 	} else {

@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"os"
 	"strings"
 
 	"github.com/nathabuddhi/ay-com/backend/util-email/email"
@@ -9,7 +10,7 @@ import (
 )
 
 func StartConsuming() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(os.Getenv("RABBITMQ_URL"))
 	if err != nil {
 		zap.L().Fatal("Failed to connect to RabbitMQ: " + err.Error())
 	}
