@@ -15,7 +15,7 @@ func safeString(s *string) string {
 	return *s
 }
 
-func (h *Handlers) GetProfile(ctx context.Context, req *pb.GetUserRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponse, error) {
 	var user models.User
 	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponse{

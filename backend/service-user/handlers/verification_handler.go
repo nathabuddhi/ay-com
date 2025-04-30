@@ -43,9 +43,21 @@ func (h *Handlers) RequestVerificationCode(ctx context.Context, req *pb.Verifica
 }
 
 func (h *Handlers) ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
-	var verificationCode models.VerificationCode
 
+	var user models.User
 	err := h.DB.WithContext(ctx).
+		Where("email = ?", req.Email).
+		First(&user).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Email isn't registered."}, nil
+	}
+
+	if !user.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "Email is already active."}, nil
+	}
+
+	var verificationCode models.VerificationCode
+	err = h.DB.WithContext(ctx).
 		Where("email = ?", req.Email).
 		First(&verificationCode).Error
 	if err != nil {

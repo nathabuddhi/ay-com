@@ -27,18 +27,18 @@ func (s *UserServer) User_Register(ctx context.Context, req *pb.RegisterRequest)
 	return s.Handlers.Register(ctx, req)
 }
 
-func (s *UserServer) User_GetProfile(ctx context.Context, req *pb.GetUserRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.GetProfile(ctx, req)
 }
 
-func (s *UserServer) RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.RequestVerificationCode(ctx, req)
 }
 
-func (s *UserServer) ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.ValidateVerificationCode(ctx, req)
 }
 
-func (s *UserServer) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
 	return s.Handlers.ChangePassword(ctx, req)
 }

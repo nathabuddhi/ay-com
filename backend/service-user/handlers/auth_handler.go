@@ -216,3 +216,29 @@ func (h *Handlers) ChangePassword(ctx context.Context, req *pb.ChangePasswordReq
 		Message: "Password changed successfully.",
 	}, nil
 }
+
+func (h *Handlers) GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
+	var user models.User
+	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	if user.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "Account is not active. Please verify your email or contact support."}, nil
+	}
+
+	if user.IsBanned {
+		return &pb.ApiResponse{Success: false, Message: "Your account is banned. Contact support if you think this is a mistake."}, nil
+	}
+
+	anyQuestion, err := anypb.New(&pb.String{Value: user.SecurityQuestion})
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Failed to get security question."}, err
+	}
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Security question retrieved successfully.",
+		Data:    anyQuestion,
+	}, nil
+}

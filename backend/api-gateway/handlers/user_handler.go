@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -44,9 +46,38 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forwardRequest[pb.LoginRequest, pb.String](w, &req, func(ctx context.Context, in *pb.LoginRequest) (*pb.ApiResponse, error) {
-		return client.User_Login(ctx, in)
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_Login(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	if resp.Data == nil {
+		zap.L().Error("No data found in response")
+		returnErrorResponse(w, "No profile data found")
+		return
+	}
+
+	binaryData := resp.Data.GetValue()
+
+	jwtToken := &pb.String{}
+	if err := proto.Unmarshal(binaryData, jwtToken); err != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+		returnErrorResponse(w, "Failed to process user jwt token.")
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: jwtToken,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func User_Register(w http.ResponseWriter, r *http.Request) {
@@ -96,36 +127,38 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	req.SecurityQuestion = r.FormValue("security_question")
 	req.SecurityAnswer = r.FormValue("security_answer")
 
-	forwardRequest[pb.RegisterRequest, pb.String](w, &req, func(ctx context.Context, in *pb.RegisterRequest) (*pb.ApiResponse, error) {
-		resp, err := client.User_Register(ctx, in)
-		if err != nil {
-			return &pb.ApiResponse{
-				Success: false,
-				Message: "Error during registration: " + err.Error(),
-				Data:    nil,
-			}, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_Register(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	if resp.Success {
+		var userIdString pb.String
+		if err := anypb.UnmarshalTo(resp.Data, &userIdString, proto.UnmarshalOptions{}); err != nil {
+			zap.L().Error("Failed to unmarshal response data", zap.Error(err))
+			returnErrorResponse(w, "Failed to process response data")
+			return
 		}
 
-		if resp.Success {
-			var userIdString pb.String
-			if err := anypb.UnmarshalTo(resp.Data, &userIdString, proto.UnmarshalOptions{}); err != nil {
-				zap.L().Error("Failed to unmarshal response data", zap.Error(err))
-				return &pb.ApiResponse{
-					Success: false,
-					Message: "Failed to process response data",
-					Data:    nil,
-				}, nil
+		go func() {
+			if err := supabase.UploadAvatarAndBanner(userIdString.Value, avatarFile, bannerFile); err != nil {
+				zap.L().Error("Error uploading avatar and banner to Supabase", zap.Error(err))
 			}
+		}()
+	}
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
+	}
 
-			go func() {
-				if err := supabase.UploadAvatarAndBanner(userIdString.Value, avatarFile, bannerFile); err != nil {
-					zap.L().Error("Error uploading avatar and banner to Supabase", zap.Error(err))
-				}
-			}()
-		}
-
-		return resp, nil
-	})
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -143,20 +176,41 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	zap.L().Info("Fetching profile for user ID: " + userID)
 
-	var req pb.GetUserRequest
+	var req pb.GetProfileRequest
 	req.UserId = userID
 
-	forwardRequest[pb.GetUserRequest, pb.UserProfile](w, &req, func(ctx context.Context, in *pb.GetUserRequest) (*pb.ApiResponse, error) {
-		resp, err := client.User_GetProfile(ctx, in)
-		if err != nil {
-			return &pb.ApiResponse{
-				Success: false,
-				Message: "An error occurred: " + err.Error(),
-				Data:    nil,
-			}, nil
-		}
-		return resp, nil
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_GetProfile(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	if resp.Data == nil {
+		zap.L().Error("No data found in response")
+		returnErrorResponse(w, "No profile data found")
+		return
+	}
+
+	binaryData := resp.Data.GetValue()
+
+	userProfile := &pb.UserProfile{}
+	if err := proto.Unmarshal(binaryData, userProfile); err != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+		returnErrorResponse(w, "Failed to process user profile data")
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: userProfile,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
@@ -170,9 +224,24 @@ func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forwardRequest[pb.VerificationRequest, pb.String](w, &req, func(ctx context.Context, in *pb.VerificationRequest) (*pb.ApiResponse, error) {
-		return client.RequestVerificationCode(ctx, in)
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_RequestVerificationCode(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
@@ -186,9 +255,24 @@ func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forwardRequest[pb.ValidateCodeRequest, pb.String](w, &req, func(ctx context.Context, in *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
-		return client.ValidateVerificationCode(ctx, in)
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_ValidateVerificationCode(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
@@ -202,7 +286,53 @@ func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forwardRequest[pb.ChangePasswordRequest, pb.String](w, &req, func(ctx context.Context, in *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
-		return client.ChangePassword(ctx, in)
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_ChangePassword(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.GetSecurityQuestionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode change password request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_GetSecurityQuestion(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: resp.Data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
