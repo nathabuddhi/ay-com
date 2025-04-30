@@ -12,6 +12,7 @@ service UserService {
   rpc User_RequestVerificationCode (VerificationRequest) returns (ApiResponse);
   rpc User_ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
   rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponse);
+  rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponse);
   rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponse);
 
   // protected routes
@@ -87,6 +88,13 @@ message GetSecurityQuestionRequest {
 }
 
 message ResetPasswordRequest {
-    string code = 1;
-    string new_password = 2;
+    string email = 1;
+    string code = 2;
+    string new_password = 3;
+}
+
+message ValidateSecurityAnswerRequest {
+    string email = 1;
+    string answer = 2;
+    string question = 3;
 }

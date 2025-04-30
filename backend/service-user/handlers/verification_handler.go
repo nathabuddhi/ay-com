@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (h *Handlers) RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
 	var user models.User
 	err := h.DB.WithContext(ctx).
 		Where("email = ?", req.Email).
@@ -42,7 +42,7 @@ func (h *Handlers) RequestVerificationCode(ctx context.Context, req *pb.Verifica
 	return &pb.ApiResponse{Success: true, Message: "Verification code sent successfully."}, nil
 }
 
-func (h *Handlers) ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
 
 	var user models.User
 	err := h.DB.WithContext(ctx).

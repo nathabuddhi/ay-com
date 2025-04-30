@@ -64,10 +64,11 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 
 	binaryData := resp.Data.GetValue()
 
-	jwtToken := &pb.String{}
-	if err := proto.Unmarshal(binaryData, jwtToken); err != nil {
-		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
-		returnErrorResponse(w, "Failed to process user jwt token.")
+	jwtToken, err := decodeResponse[pb.UserProfile](binaryData)
+	if err != nil {
+		zap.L().Error("Failed to decode JWT Token.", zap.Error(err))
+		returnErrorResponse(w, "Failed to process JWT token.")
+		return
 	}
 
 	response := types.ApiResponse{
@@ -196,11 +197,11 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	binaryData := resp.Data.GetValue()
-
-	userProfile := &pb.UserProfile{}
-	if err := proto.Unmarshal(binaryData, userProfile); err != nil {
-		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
-		returnErrorResponse(w, "Failed to process user profile data")
+	userProfile, err := decodeResponse[pb.UserProfile](binaryData)
+	if err != nil {
+		zap.L().Error("Failed to decode user profile", zap.Error(err))
+		returnErrorResponse(w, "Failed to process user profile data.")
+		return
 	}
 
 	response := types.ApiResponse{
@@ -237,7 +238,7 @@ func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 	response := types.ApiResponse{
 		Success: resp.Success,
 		Message: resp.Message,
-		Payload: resp.Data,
+		Payload: nil,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -268,7 +269,7 @@ func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 	response := types.ApiResponse{
 		Success: resp.Success,
 		Message: resp.Message,
-		Payload: resp.Data,
+		Payload: nil,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -327,10 +328,49 @@ func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	binaryData := resp.Data.GetValue()
+	securityQuestion, err := decodeResponse[pb.String](binaryData)
+	if err != nil {
+		zap.L().Error("Failed to decode security question", zap.Error(err))
+		returnErrorResponse(w, "Failed to process security question data.")
+		return
+	}
+
 	response := types.ApiResponse{
 		Success: resp.Success,
 		Message: resp.Message,
-		Payload: resp.Data,
+		Payload: securityQuestion,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.ValidateSecurityAnswerRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode change password request", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_ValidateSecurityAnswer(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

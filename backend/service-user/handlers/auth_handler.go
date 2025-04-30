@@ -15,7 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func (h *Handlers) Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponse, error) {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 	var user models.User
@@ -80,7 +80,7 @@ func (h *Handlers) Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResp
 	}, nil
 }
 
-func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponse, error) {
 	if req.Email == "" || req.Username == "" || req.Password == "" || req.Name == "" || req.SecurityQuestion == "" || req.SecurityAnswer == "" || req.Gender == "" || req.DateOfBirth == "" {
 		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
 	}
@@ -172,7 +172,7 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 		return &pb.ApiResponse{Success: false, Message: "Failed to register user: " + err.Error()}, nil
 	}
 
-	h.RequestVerificationCode(ctx, &pb.VerificationRequest{
+	h.User_RequestVerificationCode(ctx, &pb.VerificationRequest{
 		Email: req.Email,
 	})
 
@@ -180,7 +180,7 @@ func (h *Handlers) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.A
 	return &pb.ApiResponse{Success: true, Message: "User registered successfully. Please verify your email.", Data: anyGeneratedId}, nil
 }
 
-func (h *Handlers) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
 	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" {
 		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
 	}
@@ -217,7 +217,7 @@ func (h *Handlers) ChangePassword(ctx context.Context, req *pb.ChangePasswordReq
 	}, nil
 }
 
-func (h *Handlers) GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
 	var user models.User
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
 		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil

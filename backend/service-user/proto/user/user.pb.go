@@ -692,8 +692,9 @@ func (x *GetSecurityQuestionRequest) GetEmail() string {
 
 type ResetPasswordRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	NewPassword   string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	NewPassword   string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -728,6 +729,13 @@ func (*ResetPasswordRequest) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{11}
 }
 
+func (x *ResetPasswordRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
 func (x *ResetPasswordRequest) GetCode() string {
 	if x != nil {
 		return x.Code
@@ -738,6 +746,66 @@ func (x *ResetPasswordRequest) GetCode() string {
 func (x *ResetPasswordRequest) GetNewPassword() string {
 	if x != nil {
 		return x.NewPassword
+	}
+	return ""
+}
+
+type ValidateSecurityAnswerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Answer        string                 `protobuf:"bytes,2,opt,name=answer,proto3" json:"answer,omitempty"`
+	Question      string                 `protobuf:"bytes,3,opt,name=question,proto3" json:"question,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateSecurityAnswerRequest) Reset() {
+	*x = ValidateSecurityAnswerRequest{}
+	mi := &file_user_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateSecurityAnswerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateSecurityAnswerRequest) ProtoMessage() {}
+
+func (x *ValidateSecurityAnswerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateSecurityAnswerRequest.ProtoReflect.Descriptor instead.
+func (*ValidateSecurityAnswerRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ValidateSecurityAnswerRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *ValidateSecurityAnswerRequest) GetAnswer() string {
+	if x != nil {
+		return x.Answer
+	}
+	return ""
+}
+
+func (x *ValidateSecurityAnswerRequest) GetQuestion() string {
+	if x != nil {
+		return x.Question
 	}
 	return ""
 }
@@ -794,17 +862,23 @@ const file_user_proto_rawDesc = "" +
 	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
 	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"2\n" +
 	"\x1aGetSecurityQuestionRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"M\n" +
-	"\x14ResetPasswordRequest\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\tR\x04code\x12!\n" +
-	"\fnew_password\x18\x02 \x01(\tR\vnewPassword2\xb6\x04\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"c\n" +
+	"\x14ResetPasswordRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"i\n" +
+	"\x1dValidateSecurityAnswerRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x16\n" +
+	"\x06answer\x18\x02 \x01(\tR\x06answer\x12\x1a\n" +
+	"\bquestion\x18\x03 \x01(\tR\bquestion2\x8d\x05\n" +
 	"\vUserService\x129\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x11.user.ApiResponse\x123\n" +
 	"\n" +
 	"User_Login\x12\x12.user.LoginRequest\x1a\x11.user.ApiResponse\x12L\n" +
 	"\x1cUser_RequestVerificationCode\x12\x19.user.VerificationRequest\x1a\x11.user.ApiResponse\x12M\n" +
 	"\x1dUser_ValidateVerificationCode\x12\x19.user.ValidateCodeRequest\x1a\x11.user.ApiResponse\x12O\n" +
-	"\x18User_GetSecurityQuestion\x12 .user.GetSecurityQuestionRequest\x1a\x11.user.ApiResponse\x12C\n" +
+	"\x18User_GetSecurityQuestion\x12 .user.GetSecurityQuestionRequest\x1a\x11.user.ApiResponse\x12U\n" +
+	"\x1bUser_ValidateSecurityAnswer\x12#.user.ValidateSecurityAnswerRequest\x1a\x11.user.ApiResponse\x12C\n" +
 	"\x12User_ResetPassword\x12\x1a.user.ResetPasswordRequest\x1a\x11.user.ApiResponse\x12=\n" +
 	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x11.user.ApiResponse\x12E\n" +
 	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
@@ -821,42 +895,45 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_user_proto_goTypes = []any{
-	(*ApiResponse)(nil),                // 0: user.ApiResponse
-	(*String)(nil),                     // 1: user.String
-	(*Bool)(nil),                       // 2: user.Bool
-	(*UserProfile)(nil),                // 3: user.UserProfile
-	(*GetProfileRequest)(nil),          // 4: user.GetProfileRequest
-	(*RegisterRequest)(nil),            // 5: user.RegisterRequest
-	(*LoginRequest)(nil),               // 6: user.LoginRequest
-	(*VerificationRequest)(nil),        // 7: user.VerificationRequest
-	(*ValidateCodeRequest)(nil),        // 8: user.ValidateCodeRequest
-	(*ChangePasswordRequest)(nil),      // 9: user.ChangePasswordRequest
-	(*GetSecurityQuestionRequest)(nil), // 10: user.GetSecurityQuestionRequest
-	(*ResetPasswordRequest)(nil),       // 11: user.ResetPasswordRequest
-	(*anypb.Any)(nil),                  // 12: google.protobuf.Any
+	(*ApiResponse)(nil),                   // 0: user.ApiResponse
+	(*String)(nil),                        // 1: user.String
+	(*Bool)(nil),                          // 2: user.Bool
+	(*UserProfile)(nil),                   // 3: user.UserProfile
+	(*GetProfileRequest)(nil),             // 4: user.GetProfileRequest
+	(*RegisterRequest)(nil),               // 5: user.RegisterRequest
+	(*LoginRequest)(nil),                  // 6: user.LoginRequest
+	(*VerificationRequest)(nil),           // 7: user.VerificationRequest
+	(*ValidateCodeRequest)(nil),           // 8: user.ValidateCodeRequest
+	(*ChangePasswordRequest)(nil),         // 9: user.ChangePasswordRequest
+	(*GetSecurityQuestionRequest)(nil),    // 10: user.GetSecurityQuestionRequest
+	(*ResetPasswordRequest)(nil),          // 11: user.ResetPasswordRequest
+	(*ValidateSecurityAnswerRequest)(nil), // 12: user.ValidateSecurityAnswerRequest
+	(*anypb.Any)(nil),                     // 13: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
-	12, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
+	13, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
 	5,  // 1: user.UserService.User_Register:input_type -> user.RegisterRequest
 	6,  // 2: user.UserService.User_Login:input_type -> user.LoginRequest
 	7,  // 3: user.UserService.User_RequestVerificationCode:input_type -> user.VerificationRequest
 	8,  // 4: user.UserService.User_ValidateVerificationCode:input_type -> user.ValidateCodeRequest
 	10, // 5: user.UserService.User_GetSecurityQuestion:input_type -> user.GetSecurityQuestionRequest
-	11, // 6: user.UserService.User_ResetPassword:input_type -> user.ResetPasswordRequest
-	4,  // 7: user.UserService.User_GetProfile:input_type -> user.GetProfileRequest
-	9,  // 8: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
-	0,  // 9: user.UserService.User_Register:output_type -> user.ApiResponse
-	0,  // 10: user.UserService.User_Login:output_type -> user.ApiResponse
-	0,  // 11: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponse
-	0,  // 12: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponse
-	0,  // 13: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponse
-	0,  // 14: user.UserService.User_ResetPassword:output_type -> user.ApiResponse
-	0,  // 15: user.UserService.User_GetProfile:output_type -> user.ApiResponse
-	0,  // 16: user.UserService.User_ChangePassword:output_type -> user.ApiResponse
-	9,  // [9:17] is the sub-list for method output_type
-	1,  // [1:9] is the sub-list for method input_type
+	12, // 6: user.UserService.User_ValidateSecurityAnswer:input_type -> user.ValidateSecurityAnswerRequest
+	11, // 7: user.UserService.User_ResetPassword:input_type -> user.ResetPasswordRequest
+	4,  // 8: user.UserService.User_GetProfile:input_type -> user.GetProfileRequest
+	9,  // 9: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
+	0,  // 10: user.UserService.User_Register:output_type -> user.ApiResponse
+	0,  // 11: user.UserService.User_Login:output_type -> user.ApiResponse
+	0,  // 12: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponse
+	0,  // 13: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponse
+	0,  // 14: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponse
+	0,  // 15: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponse
+	0,  // 16: user.UserService.User_ResetPassword:output_type -> user.ApiResponse
+	0,  // 17: user.UserService.User_GetProfile:output_type -> user.ApiResponse
+	0,  // 18: user.UserService.User_ChangePassword:output_type -> user.ApiResponse
+	10, // [10:19] is the sub-list for method output_type
+	1,  // [1:10] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -873,7 +950,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
