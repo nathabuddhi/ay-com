@@ -1026,6 +1026,162 @@ func (x *UnBlockUserRequest) GetToUnblockId() string {
 	return ""
 }
 
+type GetSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSettingsRequest) Reset() {
+	*x = GetSettingsRequest{}
+	mi := &file_user_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSettingsRequest) ProtoMessage() {}
+
+func (x *GetSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSettingsRequest.ProtoReflect.Descriptor instead.
+func (*GetSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetSettingsRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type UpdateSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	FontSize      string                 `protobuf:"bytes,2,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor     string                 `protobuf:"bytes,3,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateSettingsRequest) Reset() {
+	*x = UpdateSettingsRequest{}
+	mi := &file_user_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSettingsRequest) ProtoMessage() {}
+
+func (x *UpdateSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSettingsRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *UpdateSettingsRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateSettingsRequest) GetFontSize() string {
+	if x != nil {
+		return x.FontSize
+	}
+	return ""
+}
+
+func (x *UpdateSettingsRequest) GetFontColor() string {
+	if x != nil {
+		return x.FontColor
+	}
+	return ""
+}
+
+type UserSettings struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FontSize      string                 `protobuf:"bytes,1,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor     string                 `protobuf:"bytes,2,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserSettings) Reset() {
+	*x = UserSettings{}
+	mi := &file_user_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserSettings) ProtoMessage() {}
+
+func (x *UserSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserSettings.ProtoReflect.Descriptor instead.
+func (*UserSettings) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *UserSettings) GetFontSize() string {
+	if x != nil {
+		return x.FontSize
+	}
+	return ""
+}
+
+func (x *UserSettings) GetFontColor() string {
+	if x != nil {
+		return x.FontColor
+	}
+	return ""
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
@@ -1100,7 +1256,18 @@ const file_user_proto_rawDesc = "" +
 	"\x0eto_unfollow_id\x18\x02 \x01(\tR\ftoUnfollowId\"Q\n" +
 	"\x12UnBlockUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\"\n" +
-	"\rto_unblock_id\x18\x02 \x01(\tR\vtoUnblockId2\x8d\a\n" +
+	"\rto_unblock_id\x18\x02 \x01(\tR\vtoUnblockId\"-\n" +
+	"\x12GetSettingsRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"l\n" +
+	"\x15UpdateSettingsRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\tfont_size\x18\x02 \x01(\tR\bfontSize\x12\x1d\n" +
+	"\n" +
+	"font_color\x18\x03 \x01(\tR\tfontColor\"J\n" +
+	"\fUserSettings\x12\x1b\n" +
+	"\tfont_size\x18\x01 \x01(\tR\bfontSize\x12\x1d\n" +
+	"\n" +
+	"font_color\x18\x02 \x01(\tR\tfontColor2\x95\b\n" +
 	"\vUserService\x129\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x11.user.ApiResponse\x123\n" +
 	"\n" +
@@ -1115,7 +1282,9 @@ const file_user_proto_rawDesc = "" +
 	"\x0fUser_FollowUser\x12\x17.user.FollowUserRequest\x1a\x11.user.ApiResponse\x12;\n" +
 	"\x0eUser_BlockUser\x12\x16.user.BlockUserRequest\x1a\x11.user.ApiResponse\x12A\n" +
 	"\x11User_UnFollowUser\x12\x19.user.UnFollowUserRequest\x1a\x11.user.ApiResponse\x12?\n" +
-	"\x10User_UnBlockUser\x12\x18.user.UnBlockUserRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
+	"\x10User_UnBlockUser\x12\x18.user.UnBlockUserRequest\x1a\x11.user.ApiResponse\x12?\n" +
+	"\x10User_GetSettings\x12\x18.user.GetSettingsRequest\x1a\x11.user.ApiResponse\x12E\n" +
+	"\x13User_UpdateSettings\x12\x1b.user.UpdateSettingsRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -1129,7 +1298,7 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_user_proto_goTypes = []any{
 	(*ApiResponse)(nil),                   // 0: user.ApiResponse
 	(*String)(nil),                        // 1: user.String
@@ -1148,10 +1317,13 @@ var file_user_proto_goTypes = []any{
 	(*BlockUserRequest)(nil),              // 14: user.BlockUserRequest
 	(*UnFollowUserRequest)(nil),           // 15: user.UnFollowUserRequest
 	(*UnBlockUserRequest)(nil),            // 16: user.UnBlockUserRequest
-	(*anypb.Any)(nil),                     // 17: google.protobuf.Any
+	(*GetSettingsRequest)(nil),            // 17: user.GetSettingsRequest
+	(*UpdateSettingsRequest)(nil),         // 18: user.UpdateSettingsRequest
+	(*UserSettings)(nil),                  // 19: user.UserSettings
+	(*anypb.Any)(nil),                     // 20: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
-	17, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
+	20, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
 	5,  // 1: user.UserService.User_Register:input_type -> user.RegisterRequest
 	6,  // 2: user.UserService.User_Login:input_type -> user.LoginRequest
 	7,  // 3: user.UserService.User_RequestVerificationCode:input_type -> user.VerificationRequest
@@ -1165,21 +1337,25 @@ var file_user_proto_depIdxs = []int32{
 	14, // 11: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
 	15, // 12: user.UserService.User_UnFollowUser:input_type -> user.UnFollowUserRequest
 	16, // 13: user.UserService.User_UnBlockUser:input_type -> user.UnBlockUserRequest
-	0,  // 14: user.UserService.User_Register:output_type -> user.ApiResponse
-	0,  // 15: user.UserService.User_Login:output_type -> user.ApiResponse
-	0,  // 16: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponse
-	0,  // 17: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponse
-	0,  // 18: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponse
-	0,  // 19: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponse
-	0,  // 20: user.UserService.User_ResetPassword:output_type -> user.ApiResponse
-	0,  // 21: user.UserService.User_GetProfile:output_type -> user.ApiResponse
-	0,  // 22: user.UserService.User_ChangePassword:output_type -> user.ApiResponse
-	0,  // 23: user.UserService.User_FollowUser:output_type -> user.ApiResponse
-	0,  // 24: user.UserService.User_BlockUser:output_type -> user.ApiResponse
-	0,  // 25: user.UserService.User_UnFollowUser:output_type -> user.ApiResponse
-	0,  // 26: user.UserService.User_UnBlockUser:output_type -> user.ApiResponse
-	14, // [14:27] is the sub-list for method output_type
-	1,  // [1:14] is the sub-list for method input_type
+	17, // 14: user.UserService.User_GetSettings:input_type -> user.GetSettingsRequest
+	18, // 15: user.UserService.User_UpdateSettings:input_type -> user.UpdateSettingsRequest
+	0,  // 16: user.UserService.User_Register:output_type -> user.ApiResponse
+	0,  // 17: user.UserService.User_Login:output_type -> user.ApiResponse
+	0,  // 18: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponse
+	0,  // 19: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponse
+	0,  // 20: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponse
+	0,  // 21: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponse
+	0,  // 22: user.UserService.User_ResetPassword:output_type -> user.ApiResponse
+	0,  // 23: user.UserService.User_GetProfile:output_type -> user.ApiResponse
+	0,  // 24: user.UserService.User_ChangePassword:output_type -> user.ApiResponse
+	0,  // 25: user.UserService.User_FollowUser:output_type -> user.ApiResponse
+	0,  // 26: user.UserService.User_BlockUser:output_type -> user.ApiResponse
+	0,  // 27: user.UserService.User_UnFollowUser:output_type -> user.ApiResponse
+	0,  // 28: user.UserService.User_UnBlockUser:output_type -> user.ApiResponse
+	0,  // 29: user.UserService.User_GetSettings:output_type -> user.ApiResponse
+	0,  // 30: user.UserService.User_UpdateSettings:output_type -> user.ApiResponse
+	16, // [16:31] is the sub-list for method output_type
+	1,  // [1:16] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -1196,7 +1372,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

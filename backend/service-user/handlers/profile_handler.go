@@ -54,7 +54,7 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		Following:  int32(following),
 	}
 
-	anyUser, err := anypb.New(userData)
+	returnData, err := anypb.New(userData)
 	if err != nil {
 		return &pb.ApiResponse{
 			Success: false,
@@ -63,20 +63,14 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		}, nil
 	}
 
-	data, err := json.Marshal(userData)
-	if err != nil {
-		return &pb.ApiResponse{
-			Success: false,
-			Message: "Failed to encode user data: " + err.Error(),
-			Data:    nil,
-		}, nil
+	redisData, err := json.Marshal(userData)
+	if err == nil {
+		rabbitmq.PublishSetRedis("getprofile/"+user.UserId, string(redisData))
 	}
-
-	rabbitmq.PublishSetRedis("getprofile/"+user.UserId, string(data))
 
 	return &pb.ApiResponse{
 		Success: true,
 		Message: "Get User Profile successful.",
-		Data:    anyUser,
+		Data:    returnData,
 	}, nil
 }

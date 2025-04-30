@@ -39,4 +39,6 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/unfollowuser", User_UnFollowUser).Methods("POST")
 	secured.HandleFunc("/user/blockuser", User_BlockUser).Methods("POST")
 	secured.HandleFunc("/user/unblockuser", User_UnBlockUser).Methods("POST")
+	secured.HandleFunc("/user/getsettings", User_GetSettings).Methods("GET")
+	secured.HandleFunc("/user/updatesettings", User_UpdateSettings).Methods("POST")
 }

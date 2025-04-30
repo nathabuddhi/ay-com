@@ -71,6 +71,14 @@ func (s *UserServer) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRe
 	return s.Handlers.User_UnBlockUser(ctx, req)
 }
 
+func (s *UserServer) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_GetSettings(ctx, req)
+}
+
+func (s *UserServer) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettingsRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_UpdateSettings(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponse, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

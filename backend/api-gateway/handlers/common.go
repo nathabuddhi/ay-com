@@ -48,7 +48,6 @@ func decodeResponse[T any](binaryData []byte) (*T, error) {
 		return nil, fmt.Errorf("type %T does not implement proto.Message", decodedObject)
 	}
 
-	// Unmarshal the binary data into decodedObject
 	if err := proto.Unmarshal(binaryData, any(decodedObject).(proto.Message)); err != nil {
 		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
 		return nil, err

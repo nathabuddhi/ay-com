@@ -22,6 +22,8 @@ service UserService {
     rpc User_BlockUser (BlockUserRequest) returns (ApiResponse);
     rpc User_UnFollowUser (UnFollowUserRequest) returns (ApiResponse);
     rpc User_UnBlockUser (UnBlockUserRequest) returns (ApiResponse);
+    rpc User_GetSettings (GetSettingsRequest) returns (ApiResponse);
+    rpc User_UpdateSettings (UpdateSettingsRequest) returns (ApiResponse);
 }
 
 message ApiResponse {
@@ -122,4 +124,19 @@ message UnFollowUserRequest {
 message UnBlockUserRequest {
     string user_id = 1;
     string to_unblock_id = 2;
+}
+
+message GetSettingsRequest {
+    string user_id = 1;
+}
+
+message UpdateSettingsRequest {
+    string user_id = 1;
+    string font_size = 2;
+    string font_color = 3;
+}
+
+message UserSettings {
+    string font_size = 1;
+    string font_color = 2;
 }
