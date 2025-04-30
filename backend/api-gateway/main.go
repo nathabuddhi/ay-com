@@ -4,10 +4,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/handlers"
-	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
 	"go.uber.org/zap"
@@ -57,18 +55,8 @@ func main() {
 	redis_client.InitRedis()
 	supabase.InitSupabase()
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/user/login", handlers.User_Login).Methods("POST")
-	r.HandleFunc("/user/register", handlers.User_Register).Methods("POST")
-	r.HandleFunc("/user/requestverificationcode", handlers.User_RequestVerificationCode).Methods("POST")
-	r.HandleFunc("/user/validateverificationcode", handlers.User_ValidateVerificationCode).Methods("POST")
-
-	secured := r.PathPrefix("/").Subrouter()
-	secured.Use(middleware.JwtAuthMiddleware)
-	secured.HandleFunc("/user/getprofile/{id}", handlers.User_GetProfile).Methods("GET")
-	secured.HandleFunc("/user/changepassword", handlers.User_ChangePassword).Methods("POST")
-
+	r := handlers.InitRoutes()
+	
 	httpHandler := allowCors(r)
 
 	zap.L().Info("API Gateway Running. Listening on port 5000.")
