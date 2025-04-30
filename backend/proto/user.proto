@@ -36,10 +36,8 @@ message UserProfile {
   string name = 3;
   string bio = 4;
   bool is_verified = 5;
-  string profile_picture = 6;
-  string banner = 7;
-  int32 followers = 8;
-  int32 following = 9;
+  int32 followers = 6;
+  int32 following = 7;
 }
 
 message GetUserRequest {

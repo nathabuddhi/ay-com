@@ -24,16 +24,32 @@ func (h *Handlers) GetProfile(ctx context.Context, req *pb.GetUserRequest) (*pb.
 		}, nil
 	}
 
+	if user.IsDeactivated || user.IsBanned {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "User is inactive or currently banned.",
+		}, nil
+	}
+
+	followers, err := h.GetFollowers(user.UserId)
+	following, err2 := h.GetFollowing(user.UserId)
+
+	if err != nil {
+		followers = 0
+	} else if err2 != nil {
+		following = 0
+	}
+
+	bio := safeString(user.Bio)
+
 	userData := &pb.UserProfile{
-		UserId:         user.UserId,
-		Username:       user.Username,
-		IsVerified:     user.IsVerified,
-		Name:           user.Name,
-		Banner:         safeString(user.Banner),
-		ProfilePicture: safeString(user.ProfilePicture),
-		Bio:            safeString(user.Bio),
-		Followers:      0,
-		Following:      0,
+		UserId:     user.UserId,
+		Username:   user.Username,
+		IsVerified: user.IsVerified,
+		Name:       user.Name,
+		Bio:        bio,
+		Followers:  int32(followers),
+		Following:  int32(following),
 	}
 
 	anyUser, err := anypb.New(userData)
