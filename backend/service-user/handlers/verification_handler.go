@@ -116,7 +116,7 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 	}
 
 	if user.IsVerified {
-		return &pb.ApiResponse{Success: false, Message: "Email is already verified."}, nil
+		return &pb.ApiResponse{Success: false, Message: "You are already verified."}, nil
 	}
 
 	if user.IsDeactivated {
