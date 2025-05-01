@@ -144,11 +144,23 @@ message UpdateSettingsRequest {
     string user_id = 1;
     string font_size = 2;
     string font_color = 3;
+    bool private = 4;
+    bool notif_like = 5;
+    bool notif_repost = 6;
+    bool notif_follow = 7;
+    bool notif_mentions = 8;
+    bool notif_community = 9;
 }
 
 message UserSettings {
     string font_size = 1;
     string font_color = 2;
+    bool private = 3;
+    bool notif_like = 4;
+    bool notif_repost = 5;
+    bool notif_follow = 6;
+    bool notif_mentions = 7;
+    bool notif_community = 8;
 }
 
 message DeactivateAccountRequest {

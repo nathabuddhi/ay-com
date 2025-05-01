@@ -62,17 +62,20 @@ func processResponseWithoutPayload(resp *pb.ApiResponse, err error, w http.Respo
 }
 
 func processResponseWithPayload[T any](resp *pb.ApiResponse, err error, w http.ResponseWriter) {
-	binaryData := resp.Data.GetValue()
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
 
 	decodedObject := new(T)
-
 	if _, ok := any(decodedObject).(proto.Message); !ok {
 		zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
 		returnErrorResponse(w, "Failed to decode response data.")
 		return
 	}
 
-	if err := proto.Unmarshal(binaryData, any(decodedObject).(proto.Message)); err != nil {
+	if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
 		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
 		returnErrorResponse(w, "Failed to decode response data.")
 		return
