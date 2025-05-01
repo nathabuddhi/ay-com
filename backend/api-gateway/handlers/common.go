@@ -121,9 +121,8 @@ func checkRedisData(key string, w http.ResponseWriter) bool {
 	return false
 }
 
-func createContext() context.Context {
+func createContext() (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
 
-	return ctx
+	return ctx, cancel
 }

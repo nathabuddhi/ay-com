@@ -1079,12 +1079,19 @@ func (x *GetSettingsRequest) GetUserId() string {
 }
 
 type UpdateSettingsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	FontSize      string                 `protobuf:"bytes,2,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
-	FontColor     string                 `protobuf:"bytes,3,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UserId          string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	FontSize        string                 `protobuf:"bytes,2,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor       string                 `protobuf:"bytes,3,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	Private         bool                   `protobuf:"varint,4,opt,name=private,proto3" json:"private,omitempty"`
+	NotifLike       bool                   `protobuf:"varint,5,opt,name=notif_like,json=notifLike,proto3" json:"notif_like,omitempty"`
+	NotifRepost     bool                   `protobuf:"varint,6,opt,name=notif_repost,json=notifRepost,proto3" json:"notif_repost,omitempty"`
+	NotifFollow     bool                   `protobuf:"varint,7,opt,name=notif_follow,json=notifFollow,proto3" json:"notif_follow,omitempty"`
+	NotifMention    bool                   `protobuf:"varint,8,opt,name=notif_mention,json=notifMention,proto3" json:"notif_mention,omitempty"`
+	NotifCommunity  bool                   `protobuf:"varint,9,opt,name=notif_community,json=notifCommunity,proto3" json:"notif_community,omitempty"`
+	NotifNewsletter bool                   `protobuf:"varint,10,opt,name=notif_newsletter,json=notifNewsletter,proto3" json:"notif_newsletter,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateSettingsRequest) Reset() {
@@ -1138,12 +1145,68 @@ func (x *UpdateSettingsRequest) GetFontColor() string {
 	return ""
 }
 
+func (x *UpdateSettingsRequest) GetPrivate() bool {
+	if x != nil {
+		return x.Private
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifLike() bool {
+	if x != nil {
+		return x.NotifLike
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifRepost() bool {
+	if x != nil {
+		return x.NotifRepost
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifFollow() bool {
+	if x != nil {
+		return x.NotifFollow
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifMention() bool {
+	if x != nil {
+		return x.NotifMention
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifCommunity() bool {
+	if x != nil {
+		return x.NotifCommunity
+	}
+	return false
+}
+
+func (x *UpdateSettingsRequest) GetNotifNewsletter() bool {
+	if x != nil {
+		return x.NotifNewsletter
+	}
+	return false
+}
+
 type UserSettings struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	FontSize      string                 `protobuf:"bytes,1,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
-	FontColor     string                 `protobuf:"bytes,2,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	FontSize        string                 `protobuf:"bytes,1,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor       string                 `protobuf:"bytes,2,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	Private         bool                   `protobuf:"varint,3,opt,name=private,proto3" json:"private,omitempty"`
+	NotifLike       bool                   `protobuf:"varint,4,opt,name=notif_like,json=notifLike,proto3" json:"notif_like,omitempty"`
+	NotifRepost     bool                   `protobuf:"varint,5,opt,name=notif_repost,json=notifRepost,proto3" json:"notif_repost,omitempty"`
+	NotifFollow     bool                   `protobuf:"varint,6,opt,name=notif_follow,json=notifFollow,proto3" json:"notif_follow,omitempty"`
+	NotifMention    bool                   `protobuf:"varint,7,opt,name=notif_mention,json=notifMention,proto3" json:"notif_mention,omitempty"`
+	NotifCommunity  bool                   `protobuf:"varint,8,opt,name=notif_community,json=notifCommunity,proto3" json:"notif_community,omitempty"`
+	NotifNewsletter bool                   `protobuf:"varint,9,opt,name=notif_newsletter,json=notifNewsletter,proto3" json:"notif_newsletter,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UserSettings) Reset() {
@@ -1188,6 +1251,55 @@ func (x *UserSettings) GetFontColor() string {
 		return x.FontColor
 	}
 	return ""
+}
+
+func (x *UserSettings) GetPrivate() bool {
+	if x != nil {
+		return x.Private
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifLike() bool {
+	if x != nil {
+		return x.NotifLike
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifRepost() bool {
+	if x != nil {
+		return x.NotifRepost
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifFollow() bool {
+	if x != nil {
+		return x.NotifFollow
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifMention() bool {
+	if x != nil {
+		return x.NotifMention
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifCommunity() bool {
+	if x != nil {
+		return x.NotifCommunity
+	}
+	return false
+}
+
+func (x *UserSettings) GetNotifNewsletter() bool {
+	if x != nil {
+		return x.NotifNewsletter
+	}
+	return false
 }
 
 type DeactivateAccountRequest struct {
@@ -1751,16 +1863,33 @@ const file_user_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\"\n" +
 	"\rto_unblock_id\x18\x02 \x01(\tR\vtoUnblockId\"-\n" +
 	"\x12GetSettingsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"l\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xe4\x02\n" +
 	"\x15UpdateSettingsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tfont_size\x18\x02 \x01(\tR\bfontSize\x12\x1d\n" +
 	"\n" +
-	"font_color\x18\x03 \x01(\tR\tfontColor\"J\n" +
+	"font_color\x18\x03 \x01(\tR\tfontColor\x12\x18\n" +
+	"\aprivate\x18\x04 \x01(\bR\aprivate\x12\x1d\n" +
+	"\n" +
+	"notif_like\x18\x05 \x01(\bR\tnotifLike\x12!\n" +
+	"\fnotif_repost\x18\x06 \x01(\bR\vnotifRepost\x12!\n" +
+	"\fnotif_follow\x18\a \x01(\bR\vnotifFollow\x12#\n" +
+	"\rnotif_mention\x18\b \x01(\bR\fnotifMention\x12'\n" +
+	"\x0fnotif_community\x18\t \x01(\bR\x0enotifCommunity\x12)\n" +
+	"\x10notif_newsletter\x18\n" +
+	" \x01(\bR\x0fnotifNewsletter\"\xc2\x02\n" +
 	"\fUserSettings\x12\x1b\n" +
 	"\tfont_size\x18\x01 \x01(\tR\bfontSize\x12\x1d\n" +
 	"\n" +
-	"font_color\x18\x02 \x01(\tR\tfontColor\"O\n" +
+	"font_color\x18\x02 \x01(\tR\tfontColor\x12\x18\n" +
+	"\aprivate\x18\x03 \x01(\bR\aprivate\x12\x1d\n" +
+	"\n" +
+	"notif_like\x18\x04 \x01(\bR\tnotifLike\x12!\n" +
+	"\fnotif_repost\x18\x05 \x01(\bR\vnotifRepost\x12!\n" +
+	"\fnotif_follow\x18\x06 \x01(\bR\vnotifFollow\x12#\n" +
+	"\rnotif_mention\x18\a \x01(\bR\fnotifMention\x12'\n" +
+	"\x0fnotif_community\x18\b \x01(\bR\x0enotifCommunity\x12)\n" +
+	"\x10notif_newsletter\x18\t \x01(\bR\x0fnotifNewsletter\"O\n" +
 	"\x18DeactivateAccountRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xa7\x01\n" +

@@ -16,9 +16,15 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&userSettings).Error
 	if err != nil && err.Error() == "record not found" {
 		userSettings = models.UserSetting{
-			UserId:    req.UserId,
-			FontSize:  "medium",
-			FontColor: "black",
+			UserId:          req.UserId,
+			FontSize:        "medium",
+			FontColor:       "black",
+			NotifLike:       true,
+			NotifRepost:     true,
+			NotifFollow:     true,
+			NotifMention:    true,
+			NotifCommunity:  true,
+			NotifNewsletter: true,
 		}
 
 		err = h.DB.WithContext(ctx).Create(&userSettings).Error
@@ -31,8 +37,14 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 		}
 
 		userSettingsReturn := &pb.UserSettings{
-			FontSize:  "medium",
-			FontColor: "black",
+			FontSize:        "medium",
+			FontColor:       "black",
+			NotifLike:       true,
+			NotifRepost:     true,
+			NotifFollow:     true,
+			NotifMention:    true,
+			NotifCommunity:  true,
+			NotifNewsletter: true,
 		}
 
 		returnData, err := anypb.New(userSettingsReturn)
@@ -52,8 +64,14 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 	}
 
 	userSettingsReturn := &pb.UserSettings{
-		FontSize:  userSettings.FontSize,
-		FontColor: userSettings.FontColor,
+		FontSize:        userSettings.FontSize,
+		FontColor:       userSettings.FontColor,
+		NotifLike:       userSettings.NotifLike,
+		NotifRepost:     userSettings.NotifRepost,
+		NotifFollow:     userSettings.NotifFollow,
+		NotifMention:    userSettings.NotifMention,
+		NotifCommunity:  userSettings.NotifCommunity,
+		NotifNewsletter: userSettings.NotifNewsletter,
 	}
 
 	returnData, err := anypb.New(userSettingsReturn)
@@ -79,9 +97,15 @@ func (h *Handlers) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettin
 	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&userSettings).Error
 	if err != nil && err.Error() == "record not found" {
 		userSettings = models.UserSetting{
-			UserId:    req.UserId,
-			FontSize:  "medium",
-			FontColor: "black",
+			UserId:          req.UserId,
+			FontSize:        "medium",
+			FontColor:       "black",
+			NotifLike:       true,
+			NotifRepost:     true,
+			NotifFollow:     true,
+			NotifMention:    true,
+			NotifCommunity:  true,
+			NotifNewsletter: true,
 		}
 
 		err = h.DB.WithContext(ctx).Create(&userSettings).Error
@@ -95,6 +119,12 @@ func (h *Handlers) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettin
 	} else {
 		userSettings.FontSize = req.FontSize
 		userSettings.FontColor = req.FontColor
+		userSettings.NotifLike = req.NotifLike
+		userSettings.NotifRepost = req.NotifRepost
+		userSettings.NotifFollow = req.NotifFollow
+		userSettings.NotifMention = req.NotifMention
+		userSettings.NotifCommunity = req.NotifCommunity
+		userSettings.NotifNewsletter = req.NotifNewsletter
 
 		err = h.DB.WithContext(ctx).Save(&userSettings).Error
 		if err != nil {

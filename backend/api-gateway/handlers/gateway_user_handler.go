@@ -32,18 +32,6 @@ func getUserServiceConn() *grpc.ClientConn {
 	return userServiceConn
 }
 
-func User_Login(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("User Login is called.")
-
-	req, client := processRequest[pb.LoginRequest](r, w)
-
-	ctx := createContext()
-
-	resp, err := client.User_Login(ctx, req)
-
-	processResponseWithPayload[pb.String](resp, err, w)
-}
-
 func User_Register(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Register is called.")
 
@@ -93,7 +81,8 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	req.SecurityQuestion = r.FormValue("security_question")
 	req.SecurityAnswer = r.FormValue("security_answer")
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_Register(ctx, &req)
 	if err != nil {
@@ -132,9 +121,11 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	if !checkRedisData("getprofile/"+userID, w) {
 		req, client := processRequest[pb.GetProfileRequest](r, w)
+		req.UserId = userID
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 
-		ctx := createContext()
+		ctx, cancel := createContext()
+		defer cancel()
 
 		resp, err := client.User_GetProfile(ctx, req)
 
@@ -142,12 +133,26 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func User_Login(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Login is called.")
+
+	req, client := processRequest[pb.LoginRequest](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_Login(ctx, req)
+
+	processResponseWithPayload[pb.String](resp, err, w)
+}
+
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Request Verification Code is called.")
 
 	req, client := processRequest[pb.VerificationRequest](r, w)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_RequestVerificationCode(ctx, req)
 
@@ -159,7 +164,8 @@ func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 
 	req, client := processRequest[pb.ValidateCodeRequest](r, w)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_ValidateVerificationCode(ctx, req)
 
@@ -172,7 +178,8 @@ func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.ChangePasswordRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_ChangePassword(ctx, req)
 
@@ -184,7 +191,8 @@ func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
 
 	req, client := processRequest[pb.GetSecurityQuestionRequest](r, w)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_GetSecurityQuestion(ctx, req)
 
@@ -196,7 +204,8 @@ func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
 
 	req, client := processRequest[pb.ValidateSecurityAnswerRequest](r, w)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_ValidateSecurityAnswer(ctx, req)
 
@@ -208,7 +217,8 @@ func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	req, client := processRequest[pb.ResetPasswordRequest](r, w)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_ResetPassword(ctx, req)
 
@@ -221,7 +231,8 @@ func User_FollowUser(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.FollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_FollowUser(ctx, req)
 
@@ -234,7 +245,8 @@ func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.UnFollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_UnFollowUser(ctx, req)
 
@@ -247,7 +259,8 @@ func User_BlockUser(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.BlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_BlockUser(ctx, req)
 
@@ -260,7 +273,8 @@ func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.UnBlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_UnBlockUser(ctx, req)
 
@@ -273,7 +287,8 @@ func User_GetSettings(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.GetSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_GetSettings(ctx, req)
 	if err != nil {
@@ -291,7 +306,8 @@ func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.UpdateSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_UpdateSettings(ctx, req)
 	if err != nil {
@@ -312,8 +328,10 @@ func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
 	if !checkRedisData("getallfollowers/"+userID, w) {
 		req, client := processRequest[pb.GetAllFollowersRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+		req.UserId = userID
 
-		ctx := createContext()
+		ctx, cancel := createContext()
+		defer cancel()
 
 		resp, err := client.User_GetAllFollowers(ctx, req)
 
@@ -330,8 +348,10 @@ func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
 	if !checkRedisData("getallfollowing/"+userID, w) {
 		req, client := processRequest[pb.GetAllFollowingRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+		req.UserId = userID
 
-		ctx := createContext()
+		ctx, cancel := createContext()
+		defer cancel()
 
 		resp, err := client.User_GetAllFollowing(ctx, req)
 
@@ -345,7 +365,8 @@ func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.SubmitVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_SubmitVerifyAccountRequest(ctx, req)
 
@@ -358,7 +379,8 @@ func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	req, client := processRequest[pb.GetAllVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
-	ctx := createContext()
+	ctx, cancel := createContext()
+	defer cancel()
 
 	resp, err := client.User_GetAllVerifyAccountRequest(ctx, req)
 

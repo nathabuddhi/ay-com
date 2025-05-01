@@ -148,8 +148,9 @@ message UpdateSettingsRequest {
     bool notif_like = 5;
     bool notif_repost = 6;
     bool notif_follow = 7;
-    bool notif_mentions = 8;
+    bool notif_mention = 8;
     bool notif_community = 9;
+    bool notif_newsletter = 10;
 }
 
 message UserSettings {
@@ -159,8 +160,9 @@ message UserSettings {
     bool notif_like = 4;
     bool notif_repost = 5;
     bool notif_follow = 6;
-    bool notif_mentions = 7;
+    bool notif_mention = 7;
     bool notif_community = 8;
+    bool notif_newsletter = 9;
 }
 
 message DeactivateAccountRequest {
