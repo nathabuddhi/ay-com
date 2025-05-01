@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func (h *Handlers) GetFollowing(user_id string) (int, error) {
@@ -122,4 +124,144 @@ func (h *Handlers) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequ
 	}
 
 	return &pb.ApiResponse{Success: true, Message: "Unblocked user successfully."}, nil
+}
+
+func (h *Handlers) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponse, error) {
+	zap.L().Info("User " + req.RequesterId + " is getting all followers of user " + req.UserId)
+
+	var user models.User
+	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	var requester models.User
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.RequesterId).First(&requester).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Requester not found."}, nil
+	}
+
+	if requester.IsBanned || requester.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "Your account is not active or is banned."}, nil
+	}
+
+	if user.IsBanned || user.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "This user account is not active or is banned."}, nil
+	}
+
+	if user.IsPrivate && req.UserId != req.RequesterId {
+		var userFollowing models.UserFollowing
+		err = h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.RequesterId, req.UserId).First(&userFollowing).Error
+		if err != nil {
+			return &pb.ApiResponse{Success: false, Message: "This user account is private."}, nil
+		}
+	}
+
+	var followers []models.UserFollowing
+	err = h.DB.WithContext(ctx).Where("followed_id = ?", req.UserId).Find(&followers).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+	}
+
+	allFollowersResponse := &pb.AllFollowersResponse{
+		Followers: make([]*pb.String, len(followers)),
+	}
+
+	for i, request := range followers {
+		allFollowersResponse.Followers[i] = &pb.String{
+			Value: request.UserId,
+		}
+	}
+
+	if !user.IsPrivate {
+		redisData, err := json.Marshal(allFollowersResponse)
+		if err == nil {
+			rabbitmq.PublishSetRedis("getallfollowers/"+user.UserId, string(redisData))
+		}
+	}
+
+	returnData, err := anypb.New(allFollowersResponse)
+	if err != nil {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Get All Followers successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handlers) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponse, error) {
+	zap.L().Info("User " + req.RequesterId + " is getting all followings of user " + req.UserId)
+
+	var user models.User
+	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+	}
+
+	var requester models.User
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.RequesterId).First(&requester).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "Requester not found."}, nil
+	}
+
+	if requester.IsBanned || requester.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "Your account is not active or is banned."}, nil
+	}
+
+	if user.IsBanned || user.IsDeactivated {
+		return &pb.ApiResponse{Success: false, Message: "This user account is not active or is banned."}, nil
+	}
+
+	if user.IsPrivate && req.UserId != req.RequesterId {
+		var userFollowing models.UserFollowing
+		err = h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.RequesterId, req.UserId).First(&userFollowing).Error
+		if err != nil {
+			return &pb.ApiResponse{Success: false, Message: "This user account is private."}, nil
+		}
+	}
+
+	var followers []models.UserFollowing
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).Find(&followers).Error
+	if err != nil {
+		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+	}
+
+	allFollowingResponse := &pb.AllFollowingResponse{
+		Following: make([]*pb.String, len(followers)),
+	}
+
+	for i, request := range followers {
+		allFollowingResponse.Following[i] = &pb.String{
+			Value: request.FollowedId,
+		}
+	}
+
+	if !user.IsPrivate {
+		redisData, err := json.Marshal(allFollowingResponse)
+		if err == nil {
+			rabbitmq.PublishSetRedis("getallfollowing/"+user.UserId, string(redisData))
+		}
+	}
+
+	returnData, err := anypb.New(allFollowingResponse)
+	if err != nil {
+		return &pb.ApiResponse{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponse{
+		Success: true,
+		Message: "Get All Followings successful.",
+		Data:    returnData,
+	}, nil
 }

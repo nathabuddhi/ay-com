@@ -3,12 +3,14 @@ package handlers
 import (
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
+	"go.uber.org/zap"
 )
 
 func InitRoutes() (r *mux.Router) {
 	r = mux.NewRouter()
 
 	InitUserRoutes(r)
+	zap.L().Info("Public Routes Initialized.")
 
 	InitSecuredRoutes(r)
 	return r
@@ -18,6 +20,8 @@ func InitSecuredRoutes(r *mux.Router) {
 	secured := r.PathPrefix("/").Subrouter()
 	secured.Use(middleware.JwtAuthMiddleware)
 	InitSecuredUserRoutes(secured)
+
+	zap.L().Info("Secured Routes Initialized.")
 }
 
 func InitUserRoutes(r *mux.Router) {
@@ -41,4 +45,10 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/unblockuser", User_UnBlockUser).Methods("POST")
 	secured.HandleFunc("/user/getsettings", User_GetSettings).Methods("GET")
 	secured.HandleFunc("/user/updatesettings", User_UpdateSettings).Methods("PATCH")
+
+	secured.HandleFunc("/user/submitverifyaccountrequest", User_SubmitVerifyAccountRequest).Methods("POST")
+	secured.HandleFunc("/user/getallverifyaccountrequest", User_GetAllVerifyAccountRequest).Methods("POST")
+
+	secured.HandleFunc("/user/getallfollowers/{id}", User_GetAllFollowers).Methods("GET")
+	secured.HandleFunc("/user/getallfollowing/{id}", User_GetAllFollowing).Methods("GET")
 }

@@ -38,6 +38,8 @@ func getUserServiceConn() *grpc.ClientConn {
 }
 
 func User_Login(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Login is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -83,6 +85,8 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_Register(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Register is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -164,6 +168,7 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get Profile is called.")
 
 	vars := mux.Vars(r)
 	userID := vars["id"]
@@ -193,6 +198,7 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 
 		var req pb.GetProfileRequest
 		req.UserId = userID
+		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
@@ -204,9 +210,8 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if resp.Data == nil {
-			zap.L().Error("No data found in response")
-			returnErrorResponse(w, "No profile data found")
+		if !resp.Success {
+			returnErrorResponse(w, resp.Message)
 			return
 		}
 
@@ -230,6 +235,8 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Request Verification Code is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -261,6 +268,8 @@ func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Validate Verification Code is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -292,6 +301,8 @@ func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Change Password is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -325,6 +336,8 @@ func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get Security Question is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -364,6 +377,8 @@ func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Validate Security Answer is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -395,6 +410,8 @@ func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Reset Password is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -426,6 +443,8 @@ func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_FollowUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Follow User is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -458,6 +477,8 @@ func User_FollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Unfollow User is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -490,6 +511,8 @@ func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_BlockUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Block User is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -522,6 +545,8 @@ func User_BlockUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Unblock is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -554,6 +579,8 @@ func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_GetSettings(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get Settings is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -594,6 +621,8 @@ func User_GetSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Update Settings is called.")
+
 	conn := getUserServiceConn()
 	client := pb.NewUserServiceClient(conn)
 
@@ -619,6 +648,218 @@ func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
 		Success: resp.Success,
 		Message: resp.Message,
 		Payload: nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get All Followers is called.")
+
+	vars := mux.Vars(r)
+	userID := vars["id"]
+
+	redisFollowers := redis_client.GetCache("getallfollowers/" + userID)
+
+	if redisFollowers != nil {
+		response := types.ApiResponse{
+			Success: true,
+			Message: "Get All Followers successful.",
+			Payload: redisFollowers,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	} else {
+		conn := getUserServiceConn()
+		client := pb.NewUserServiceClient(conn)
+
+		if userID == "" {
+			zap.L().Error("User ID parameter missing")
+			returnErrorResponse(w, "User ID is required")
+			return
+		}
+
+		zap.L().Info("Fetching followers for user ID: " + userID)
+
+		var req pb.GetAllFollowersRequest
+		req.UserId = userID
+		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+
+		resp, err := client.User_GetAllFollowers(ctx, &req)
+		if err != nil {
+			zap.L().Error("Error forwarding request", zap.Error(err))
+			returnErrorResponse(w, "Error forwarding request: "+err.Error())
+			return
+		}
+
+		if !resp.Success {
+			zap.L().Error("No data found in response")
+			returnErrorResponse(w, resp.Message)
+			return
+		}
+
+		binaryData := resp.Data.GetValue()
+		allFollowers, err := decodeResponse[pb.AllFollowersResponse](binaryData)
+		if err != nil {
+			zap.L().Error("Failed to decode response from service.", zap.Error(err))
+			returnErrorResponse(w, "Failed to process service response.")
+			return
+		}
+
+		response := types.ApiResponse{
+			Success: resp.Success,
+			Message: resp.Message,
+			Payload: allFollowers,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get All Following is called.")
+
+	vars := mux.Vars(r)
+	userID := vars["id"]
+
+	redisFollowing := redis_client.GetCache("getallfollowing/" + userID)
+
+	if redisFollowing != nil {
+		response := types.ApiResponse{
+			Success: true,
+			Message: "Get All Following successful.",
+			Payload: redisFollowing,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	} else {
+		conn := getUserServiceConn()
+		client := pb.NewUserServiceClient(conn)
+
+		if userID == "" {
+			zap.L().Error("User ID parameter missing")
+			returnErrorResponse(w, "User ID is required")
+			return
+		}
+
+		zap.L().Info("Fetching following for user ID: " + userID)
+
+		var req pb.GetAllFollowingRequest
+		req.UserId = userID
+		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+
+		resp, err := client.User_GetAllFollowing(ctx, &req)
+		if err != nil {
+			zap.L().Error("Error forwarding request", zap.Error(err))
+			returnErrorResponse(w, "Error forwarding request: "+err.Error())
+			return
+		}
+
+		if !resp.Success {
+			zap.L().Error("No data found in response")
+			returnErrorResponse(w, resp.Message)
+			return
+		}
+
+		binaryData := resp.Data.GetValue()
+		allFollowing, err := decodeResponse[pb.AllFollowingResponse](binaryData)
+		if err != nil {
+			zap.L().Error("Failed to decode response from service.", zap.Error(err))
+			returnErrorResponse(w, "Failed to process service response.")
+			return
+		}
+
+		response := types.ApiResponse{
+			Success: resp.Success,
+			Message: resp.Message,
+			Payload: allFollowing,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
+}
+
+func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Submit Verify Account Request is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.SubmitVerifyAccountRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_SubmitVerifyAccountRequest(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get All Verify Account Request is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.GetAllVerifyAccountRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to decode request body", zap.Error(err))
+		returnErrorResponse(w, "Invalid request payload: "+err.Error())
+		return
+	}
+
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	resp, err := client.User_GetAllVerifyAccountRequest(ctx, &req)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	binaryData := resp.Data.GetValue()
+	allAccountVerificationRequests, err := decodeResponse[pb.GetAllVerifyAccountResponse](binaryData)
+	if err != nil {
+		zap.L().Error("Failed to decode response from service.", zap.Error(err))
+		returnErrorResponse(w, "Failed to process service response.")
+		return
+	}
+
+	response := types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: allAccountVerificationRequests,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -79,6 +79,26 @@ func (s *UserServer) User_UpdateSettings(ctx context.Context, req *pb.UpdateSett
 	return s.Handlers.User_UpdateSettings(ctx, req)
 }
 
+func (s *UserServer) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_GetAllFollowers(ctx, req)
+}
+
+func (s *UserServer) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_GetAllFollowing(ctx, req)
+}
+
+func (s *UserServer) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_GetAllVerifyAccountRequest(ctx, req)
+}
+
+func (s *UserServer) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.SubmitVerifyAccountRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_SubmitVerifyAccountRequest(ctx, req)
+}
+
+func (s *UserServer) User_DeactivateAccount(ctx context.Context, req *pb.DeactivateAccountRequest) (*pb.ApiResponse, error) {
+	return s.Handlers.User_DeactivateAccount(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponse, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

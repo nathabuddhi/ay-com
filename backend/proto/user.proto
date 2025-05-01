@@ -18,69 +18,79 @@ service UserService {
     // protected routes
     rpc User_GetProfile (GetProfileRequest) returns (ApiResponse);
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponse);
+
     rpc User_FollowUser (FollowUserRequest) returns (ApiResponse);
     rpc User_BlockUser (BlockUserRequest) returns (ApiResponse);
     rpc User_UnFollowUser (UnFollowUserRequest) returns (ApiResponse);
     rpc User_UnBlockUser (UnBlockUserRequest) returns (ApiResponse);
+
     rpc User_GetSettings (GetSettingsRequest) returns (ApiResponse);
     rpc User_UpdateSettings (UpdateSettingsRequest) returns (ApiResponse);
+    rpc User_DeactivateAccount (DeactivateAccountRequest) returns (ApiResponse);
+
+    rpc User_GetAllFollowers (GetAllFollowersRequest) returns (ApiResponse);
+    rpc User_GetAllFollowing (GetAllFollowingRequest) returns (ApiResponse);
+
+    rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponse);
+    rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponse);
 }
 
 message ApiResponse {
-  bool success = 1;
-  string message = 2;
-  google.protobuf.Any data = 3;
+    bool success = 1;
+    string message = 2;
+    google.protobuf.Any data = 3;
 }
 
 message String {
-  string value = 1;
+    string value = 1;
 }
 
 message Bool {
-  bool value = 1;
+    bool value = 1;
 }
 
 message UserProfile {
-  string user_id = 1;
-  string username = 2;
-  string name = 3;
-  string bio = 4;
-  bool is_verified = 5;
-  int32 followers = 6;
-  int32 following = 7;
+    string user_id = 1;
+    string username = 2;
+    string name = 3;
+    string bio = 4;
+    bool is_verified = 5;
+    int32 followers = 6;
+    int32 following = 7;
 }
 
 message GetProfileRequest {
-  string user_id = 1;
+    string user_id = 1;
+    string requester_id = 2;
 }
 
 message RegisterRequest {
-  string email = 1;
-  string password = 2;
-  string google_auth_id = 3;
-  string username = 4;
-  string name = 5;
-  string security_question = 6;
-  string security_answer = 7;
-  string date_of_birth = 8;
-  bytes profile_picture = 9;
-  bytes banner = 10;
-  bool wants_newsletter = 11;
-  string gender = 12;
+    string email = 1;
+    string password = 2;
+    string google_auth_id = 3;
+    string username = 4;
+    string name = 5;
+    string security_question = 6;
+    string security_answer = 7;
+    string date_of_birth = 8;
+    bytes profile_picture = 9;
+    bytes banner = 10;
+    bool wants_newsletter = 11;
+    string gender = 12;
 }
 
 message LoginRequest {
-  string email = 1;
-  string password = 2;
+    string email = 1;
+    string password = 2;
 }
 
 message VerificationRequest {
-  string email = 1;
+    string email = 1;
 }
 
 message ValidateCodeRequest {
-  string email = 1;
-  string code = 2;
+    string email = 1;
+    string code = 2;
 }
 
 message ChangePasswordRequest {
@@ -139,4 +149,51 @@ message UpdateSettingsRequest {
 message UserSettings {
     string font_size = 1;
     string font_color = 2;
+}
+
+message DeactivateAccountRequest {
+    string user_id = 1;
+    string password = 2;
+}
+
+message SubmitVerifyAccountRequest {
+    string user_id = 1;
+    string identity_card_number = 2;
+    string selfie_url = 3;
+    string reason_text = 4;
+}
+
+message VerifyAccountRequest {
+    string user_id = 1;
+    string id = 2;
+    string reason_text = 3;
+    string status = 4;
+    string submitted_at = 5;
+}
+
+message GetAllVerifyAccountRequest {
+    string user_id = 1;
+    string password = 2;
+}
+
+message GetAllVerifyAccountResponse {
+    repeated VerifyAccountRequest requests = 1;
+}
+
+message GetAllFollowersRequest {
+    string user_id = 1;
+    string requester_id = 2;
+}
+
+message GetAllFollowingRequest {
+    string user_id = 1;
+    string requester_id = 2;
+}
+
+message AllFollowersResponse {
+    repeated String followers = 1;
+}
+
+message AllFollowingResponse {
+    repeated String following = 1;
 }

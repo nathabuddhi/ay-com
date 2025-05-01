@@ -19,21 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_User_Register_FullMethodName                 = "/user.UserService/User_Register"
-	UserService_User_Login_FullMethodName                    = "/user.UserService/User_Login"
-	UserService_User_RequestVerificationCode_FullMethodName  = "/user.UserService/User_RequestVerificationCode"
-	UserService_User_ValidateVerificationCode_FullMethodName = "/user.UserService/User_ValidateVerificationCode"
-	UserService_User_GetSecurityQuestion_FullMethodName      = "/user.UserService/User_GetSecurityQuestion"
-	UserService_User_ValidateSecurityAnswer_FullMethodName   = "/user.UserService/User_ValidateSecurityAnswer"
-	UserService_User_ResetPassword_FullMethodName            = "/user.UserService/User_ResetPassword"
-	UserService_User_GetProfile_FullMethodName               = "/user.UserService/User_GetProfile"
-	UserService_User_ChangePassword_FullMethodName           = "/user.UserService/User_ChangePassword"
-	UserService_User_FollowUser_FullMethodName               = "/user.UserService/User_FollowUser"
-	UserService_User_BlockUser_FullMethodName                = "/user.UserService/User_BlockUser"
-	UserService_User_UnFollowUser_FullMethodName             = "/user.UserService/User_UnFollowUser"
-	UserService_User_UnBlockUser_FullMethodName              = "/user.UserService/User_UnBlockUser"
-	UserService_User_GetSettings_FullMethodName              = "/user.UserService/User_GetSettings"
-	UserService_User_UpdateSettings_FullMethodName           = "/user.UserService/User_UpdateSettings"
+	UserService_User_Register_FullMethodName                   = "/user.UserService/User_Register"
+	UserService_User_Login_FullMethodName                      = "/user.UserService/User_Login"
+	UserService_User_RequestVerificationCode_FullMethodName    = "/user.UserService/User_RequestVerificationCode"
+	UserService_User_ValidateVerificationCode_FullMethodName   = "/user.UserService/User_ValidateVerificationCode"
+	UserService_User_GetSecurityQuestion_FullMethodName        = "/user.UserService/User_GetSecurityQuestion"
+	UserService_User_ValidateSecurityAnswer_FullMethodName     = "/user.UserService/User_ValidateSecurityAnswer"
+	UserService_User_ResetPassword_FullMethodName              = "/user.UserService/User_ResetPassword"
+	UserService_User_GetProfile_FullMethodName                 = "/user.UserService/User_GetProfile"
+	UserService_User_ChangePassword_FullMethodName             = "/user.UserService/User_ChangePassword"
+	UserService_User_FollowUser_FullMethodName                 = "/user.UserService/User_FollowUser"
+	UserService_User_BlockUser_FullMethodName                  = "/user.UserService/User_BlockUser"
+	UserService_User_UnFollowUser_FullMethodName               = "/user.UserService/User_UnFollowUser"
+	UserService_User_UnBlockUser_FullMethodName                = "/user.UserService/User_UnBlockUser"
+	UserService_User_GetSettings_FullMethodName                = "/user.UserService/User_GetSettings"
+	UserService_User_UpdateSettings_FullMethodName             = "/user.UserService/User_UpdateSettings"
+	UserService_User_DeactivateAccount_FullMethodName          = "/user.UserService/User_DeactivateAccount"
+	UserService_User_GetAllFollowers_FullMethodName            = "/user.UserService/User_GetAllFollowers"
+	UserService_User_GetAllFollowing_FullMethodName            = "/user.UserService/User_GetAllFollowing"
+	UserService_User_SubmitVerifyAccountRequest_FullMethodName = "/user.UserService/User_SubmitVerifyAccountRequest"
+	UserService_User_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/User_GetAllVerifyAccountRequest"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -56,6 +61,11 @@ type UserServiceClient interface {
 	User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 	User_GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 	User_UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
 }
 
 type userServiceClient struct {
@@ -216,6 +226,56 @@ func (c *userServiceClient) User_UpdateSettings(ctx context.Context, in *UpdateS
 	return out, nil
 }
 
+func (c *userServiceClient) User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_DeactivateAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_GetAllFollowers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_GetAllFollowing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_SubmitVerifyAccountRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponse)
+	err := c.cc.Invoke(ctx, UserService_User_GetAllVerifyAccountRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -236,6 +296,11 @@ type UserServiceServer interface {
 	User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponse, error)
 	User_GetSettings(context.Context, *GetSettingsRequest) (*ApiResponse, error)
 	User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponse, error)
+	User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponse, error)
+	User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponse, error)
+	User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponse, error)
+	User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponse, error)
+	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -290,6 +355,21 @@ func (UnimplementedUserServiceServer) User_GetSettings(context.Context, *GetSett
 }
 func (UnimplementedUserServiceServer) User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UpdateSettings not implemented")
+}
+func (UnimplementedUserServiceServer) User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_DeactivateAccount not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllFollowers not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllFollowing not implemented")
+}
+func (UnimplementedUserServiceServer) User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_SubmitVerifyAccountRequest not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllVerifyAccountRequest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -582,6 +662,96 @@ func _UserService_User_UpdateSettings_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_DeactivateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeactivateAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_DeactivateAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_DeactivateAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_DeactivateAccount(ctx, req.(*DeactivateAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_GetAllFollowers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllFollowersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetAllFollowers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetAllFollowers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetAllFollowers(ctx, req.(*GetAllFollowersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_GetAllFollowing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllFollowingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetAllFollowing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetAllFollowing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetAllFollowing(ctx, req.(*GetAllFollowingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_SubmitVerifyAccountRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitVerifyAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_SubmitVerifyAccountRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_SubmitVerifyAccountRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_SubmitVerifyAccountRequest(ctx, req.(*SubmitVerifyAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_GetAllVerifyAccountRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllVerifyAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetAllVerifyAccountRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetAllVerifyAccountRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetAllVerifyAccountRequest(ctx, req.(*GetAllVerifyAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -648,6 +818,26 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_UpdateSettings",
 			Handler:    _UserService_User_UpdateSettings_Handler,
+		},
+		{
+			MethodName: "User_DeactivateAccount",
+			Handler:    _UserService_User_DeactivateAccount_Handler,
+		},
+		{
+			MethodName: "User_GetAllFollowers",
+			Handler:    _UserService_User_GetAllFollowers_Handler,
+		},
+		{
+			MethodName: "User_GetAllFollowing",
+			Handler:    _UserService_User_GetAllFollowing_Handler,
+		},
+		{
+			MethodName: "User_SubmitVerifyAccountRequest",
+			Handler:    _UserService_User_SubmitVerifyAccountRequest_Handler,
+		},
+		{
+			MethodName: "User_GetAllVerifyAccountRequest",
+			Handler:    _UserService_User_GetAllVerifyAccountRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
