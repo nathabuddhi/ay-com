@@ -19,7 +19,6 @@ type User struct {
 	Bio              *string
 	SecurityQuestion string
 	SecurityAnswer   string
-	WantsNewsletter  bool
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	JoinedAt         time.Time

@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package user;
+
+import "google/protobuf/any.proto";
+
+option go_package = "notification/";
+
+service NotificationService {
+    // Protected Routes
+    rpc Notification_GetAllNotifications (GetAllNotificationsRequest) returns (ApiResponseNotification);
+    rpc Notification_MarkNotificationAsRead (MarkNotificationAsReadRequest) returns (ApiResponseNotification);
+    rpc Notification_DeleteNotification (DeleteNotificationRequest) returns (ApiResponseNotification);
+    rpc Notification_ClearNotifications (ClearNotificationsRequest) returns (ApiResponseNotification);
+    rpc Notification_GetSettings (GetNotificationSettingsRequest) returns (ApiResponseNotification);
+    rpc Notification_UpdateSettings (UpdateNotificationSettingsRequest) returns (ApiResponseNotification);
+}
+
+message ApiResponseNotification {
+    bool success = 1;
+    string message = 2;
+    google.protobuf.Any data = 3;
+}
+
+message Notification {
+    string notification_id = 1;
+    string title = 2;
+    string content = 3;
+    string from = 4;
+    bool read = 5;
+    string timestamp = 6;
+}
+
+message GetAllNotificationsRequest {
+    string user_id = 1;
+}
+
+message GetAllNotificationResponse {
+    repeated Notification notifications = 1;
+}
+
+message MarkNotificationAsReadRequest {
+    string user_id = 1;
+    string notification_id = 2;
+}
+
+message DeleteNotificationRequest {
+    string user_id = 1;
+    string notification_id = 2;
+}
+
+message ClearNotificationsRequest {
+    string user_id = 1;
+}
+
+message NotificationSettings {
+    bool notif_like = 1;
+    bool notif_repost = 2;
+    bool notif_follow = 3;
+    bool notif_mention = 4;
+    bool notif_community = 5;
+    bool notif_newsletter = 6;
+}
+
+message GetNotificationSettingsRequest {
+    string user_id = 1;
+}
+
+message UpdateNotificationSettingsRequest {
+    string user_id = 1;
+    bool notif_like = 2;
+    bool notif_repost = 3;
+    bool notif_follow = 4;
+    bool notif_mention = 5;
+    bool notif_community = 6;
+    bool notif_newsletter = 7;
+}

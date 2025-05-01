@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type ApiResponse struct {
+type ApiResponseUser struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -31,20 +31,20 @@ type ApiResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ApiResponse) Reset() {
-	*x = ApiResponse{}
+func (x *ApiResponseUser) Reset() {
+	*x = ApiResponseUser{}
 	mi := &file_user_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ApiResponse) String() string {
+func (x *ApiResponseUser) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ApiResponse) ProtoMessage() {}
+func (*ApiResponseUser) ProtoMessage() {}
 
-func (x *ApiResponse) ProtoReflect() protoreflect.Message {
+func (x *ApiResponseUser) ProtoReflect() protoreflect.Message {
 	mi := &file_user_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,53 +56,53 @@ func (x *ApiResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ApiResponse.ProtoReflect.Descriptor instead.
-func (*ApiResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ApiResponseUser.ProtoReflect.Descriptor instead.
+func (*ApiResponseUser) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ApiResponse) GetSuccess() bool {
+func (x *ApiResponseUser) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-func (x *ApiResponse) GetMessage() string {
+func (x *ApiResponseUser) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
 }
 
-func (x *ApiResponse) GetData() *anypb.Any {
+func (x *ApiResponseUser) GetData() *anypb.Any {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-type String struct {
+type StringUser struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *String) Reset() {
-	*x = String{}
+func (x *StringUser) Reset() {
+	*x = StringUser{}
 	mi := &file_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *String) String() string {
+func (x *StringUser) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*String) ProtoMessage() {}
+func (*StringUser) ProtoMessage() {}
 
-func (x *String) ProtoReflect() protoreflect.Message {
+func (x *StringUser) ProtoReflect() protoreflect.Message {
 	mi := &file_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -114,39 +114,39 @@ func (x *String) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use String.ProtoReflect.Descriptor instead.
-func (*String) Descriptor() ([]byte, []int) {
+// Deprecated: Use StringUser.ProtoReflect.Descriptor instead.
+func (*StringUser) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *String) GetValue() string {
+func (x *StringUser) GetValue() string {
 	if x != nil {
 		return x.Value
 	}
 	return ""
 }
 
-type Bool struct {
+type BoolUser struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Value         bool                   `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Bool) Reset() {
-	*x = Bool{}
+func (x *BoolUser) Reset() {
+	*x = BoolUser{}
 	mi := &file_user_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Bool) String() string {
+func (x *BoolUser) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Bool) ProtoMessage() {}
+func (*BoolUser) ProtoMessage() {}
 
-func (x *Bool) ProtoReflect() protoreflect.Message {
+func (x *BoolUser) ProtoReflect() protoreflect.Message {
 	mi := &file_user_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -158,12 +158,12 @@ func (x *Bool) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Bool.ProtoReflect.Descriptor instead.
-func (*Bool) Descriptor() ([]byte, []int) {
+// Deprecated: Use BoolUser.ProtoReflect.Descriptor instead.
+func (*BoolUser) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Bool) GetValue() bool {
+func (x *BoolUser) GetValue() bool {
 	if x != nil {
 		return x.Value
 	}
@@ -1079,19 +1079,13 @@ func (x *GetSettingsRequest) GetUserId() string {
 }
 
 type UpdateSettingsRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	UserId          string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	FontSize        string                 `protobuf:"bytes,2,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
-	FontColor       string                 `protobuf:"bytes,3,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
-	Private         bool                   `protobuf:"varint,4,opt,name=private,proto3" json:"private,omitempty"`
-	NotifLike       bool                   `protobuf:"varint,5,opt,name=notif_like,json=notifLike,proto3" json:"notif_like,omitempty"`
-	NotifRepost     bool                   `protobuf:"varint,6,opt,name=notif_repost,json=notifRepost,proto3" json:"notif_repost,omitempty"`
-	NotifFollow     bool                   `protobuf:"varint,7,opt,name=notif_follow,json=notifFollow,proto3" json:"notif_follow,omitempty"`
-	NotifMention    bool                   `protobuf:"varint,8,opt,name=notif_mention,json=notifMention,proto3" json:"notif_mention,omitempty"`
-	NotifCommunity  bool                   `protobuf:"varint,9,opt,name=notif_community,json=notifCommunity,proto3" json:"notif_community,omitempty"`
-	NotifNewsletter bool                   `protobuf:"varint,10,opt,name=notif_newsletter,json=notifNewsletter,proto3" json:"notif_newsletter,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	FontSize      string                 `protobuf:"bytes,2,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor     string                 `protobuf:"bytes,3,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	Private       bool                   `protobuf:"varint,4,opt,name=private,proto3" json:"private,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateSettingsRequest) Reset() {
@@ -1152,61 +1146,13 @@ func (x *UpdateSettingsRequest) GetPrivate() bool {
 	return false
 }
 
-func (x *UpdateSettingsRequest) GetNotifLike() bool {
-	if x != nil {
-		return x.NotifLike
-	}
-	return false
-}
-
-func (x *UpdateSettingsRequest) GetNotifRepost() bool {
-	if x != nil {
-		return x.NotifRepost
-	}
-	return false
-}
-
-func (x *UpdateSettingsRequest) GetNotifFollow() bool {
-	if x != nil {
-		return x.NotifFollow
-	}
-	return false
-}
-
-func (x *UpdateSettingsRequest) GetNotifMention() bool {
-	if x != nil {
-		return x.NotifMention
-	}
-	return false
-}
-
-func (x *UpdateSettingsRequest) GetNotifCommunity() bool {
-	if x != nil {
-		return x.NotifCommunity
-	}
-	return false
-}
-
-func (x *UpdateSettingsRequest) GetNotifNewsletter() bool {
-	if x != nil {
-		return x.NotifNewsletter
-	}
-	return false
-}
-
 type UserSettings struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	FontSize        string                 `protobuf:"bytes,1,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
-	FontColor       string                 `protobuf:"bytes,2,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
-	Private         bool                   `protobuf:"varint,3,opt,name=private,proto3" json:"private,omitempty"`
-	NotifLike       bool                   `protobuf:"varint,4,opt,name=notif_like,json=notifLike,proto3" json:"notif_like,omitempty"`
-	NotifRepost     bool                   `protobuf:"varint,5,opt,name=notif_repost,json=notifRepost,proto3" json:"notif_repost,omitempty"`
-	NotifFollow     bool                   `protobuf:"varint,6,opt,name=notif_follow,json=notifFollow,proto3" json:"notif_follow,omitempty"`
-	NotifMention    bool                   `protobuf:"varint,7,opt,name=notif_mention,json=notifMention,proto3" json:"notif_mention,omitempty"`
-	NotifCommunity  bool                   `protobuf:"varint,8,opt,name=notif_community,json=notifCommunity,proto3" json:"notif_community,omitempty"`
-	NotifNewsletter bool                   `protobuf:"varint,9,opt,name=notif_newsletter,json=notifNewsletter,proto3" json:"notif_newsletter,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FontSize      string                 `protobuf:"bytes,1,opt,name=font_size,json=fontSize,proto3" json:"font_size,omitempty"`
+	FontColor     string                 `protobuf:"bytes,2,opt,name=font_color,json=fontColor,proto3" json:"font_color,omitempty"`
+	Private       bool                   `protobuf:"varint,3,opt,name=private,proto3" json:"private,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UserSettings) Reset() {
@@ -1256,48 +1202,6 @@ func (x *UserSettings) GetFontColor() string {
 func (x *UserSettings) GetPrivate() bool {
 	if x != nil {
 		return x.Private
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifLike() bool {
-	if x != nil {
-		return x.NotifLike
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifRepost() bool {
-	if x != nil {
-		return x.NotifRepost
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifFollow() bool {
-	if x != nil {
-		return x.NotifFollow
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifMention() bool {
-	if x != nil {
-		return x.NotifMention
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifCommunity() bool {
-	if x != nil {
-		return x.NotifCommunity
-	}
-	return false
-}
-
-func (x *UserSettings) GetNotifNewsletter() bool {
-	if x != nil {
-		return x.NotifNewsletter
 	}
 	return false
 }
@@ -1700,7 +1604,7 @@ func (x *GetAllFollowingRequest) GetRequesterId() string {
 
 type AllFollowersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Followers     []*String              `protobuf:"bytes,1,rep,name=followers,proto3" json:"followers,omitempty"`
+	Followers     []*StringUser          `protobuf:"bytes,1,rep,name=followers,proto3" json:"followers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1735,7 +1639,7 @@ func (*AllFollowersResponse) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{27}
 }
 
-func (x *AllFollowersResponse) GetFollowers() []*String {
+func (x *AllFollowersResponse) GetFollowers() []*StringUser {
 	if x != nil {
 		return x.Followers
 	}
@@ -1744,7 +1648,7 @@ func (x *AllFollowersResponse) GetFollowers() []*String {
 
 type AllFollowingResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Following     []*String              `protobuf:"bytes,1,rep,name=following,proto3" json:"following,omitempty"`
+	Following     []*StringUser          `protobuf:"bytes,1,rep,name=following,proto3" json:"following,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1779,7 +1683,7 @@ func (*AllFollowingResponse) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *AllFollowingResponse) GetFollowing() []*String {
+func (x *AllFollowingResponse) GetFollowing() []*StringUser {
 	if x != nil {
 		return x.Following
 	}
@@ -1791,14 +1695,15 @@ var File_user_proto protoreflect.FileDescriptor
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\x04user\x1a\x19google/protobuf/any.proto\"k\n" +
-	"\vApiResponse\x12\x18\n" +
+	"user.proto\x12\x04user\x1a\x19google/protobuf/any.proto\"o\n" +
+	"\x0fApiResponseUser\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12(\n" +
-	"\x04data\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\x04data\"\x1e\n" +
-	"\x06String\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\"\x1c\n" +
-	"\x04Bool\x12\x14\n" +
+	"\x04data\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\x04data\"\"\n" +
+	"\n" +
+	"StringUser\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\" \n" +
+	"\bBoolUser\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\bR\x05value\"\xc5\x01\n" +
 	"\vUserProfile\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
@@ -1863,33 +1768,18 @@ const file_user_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\"\n" +
 	"\rto_unblock_id\x18\x02 \x01(\tR\vtoUnblockId\"-\n" +
 	"\x12GetSettingsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xe4\x02\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x86\x01\n" +
 	"\x15UpdateSettingsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tfont_size\x18\x02 \x01(\tR\bfontSize\x12\x1d\n" +
 	"\n" +
 	"font_color\x18\x03 \x01(\tR\tfontColor\x12\x18\n" +
-	"\aprivate\x18\x04 \x01(\bR\aprivate\x12\x1d\n" +
-	"\n" +
-	"notif_like\x18\x05 \x01(\bR\tnotifLike\x12!\n" +
-	"\fnotif_repost\x18\x06 \x01(\bR\vnotifRepost\x12!\n" +
-	"\fnotif_follow\x18\a \x01(\bR\vnotifFollow\x12#\n" +
-	"\rnotif_mention\x18\b \x01(\bR\fnotifMention\x12'\n" +
-	"\x0fnotif_community\x18\t \x01(\bR\x0enotifCommunity\x12)\n" +
-	"\x10notif_newsletter\x18\n" +
-	" \x01(\bR\x0fnotifNewsletter\"\xc2\x02\n" +
+	"\aprivate\x18\x04 \x01(\bR\aprivate\"d\n" +
 	"\fUserSettings\x12\x1b\n" +
 	"\tfont_size\x18\x01 \x01(\tR\bfontSize\x12\x1d\n" +
 	"\n" +
 	"font_color\x18\x02 \x01(\tR\tfontColor\x12\x18\n" +
-	"\aprivate\x18\x03 \x01(\bR\aprivate\x12\x1d\n" +
-	"\n" +
-	"notif_like\x18\x04 \x01(\bR\tnotifLike\x12!\n" +
-	"\fnotif_repost\x18\x05 \x01(\bR\vnotifRepost\x12!\n" +
-	"\fnotif_follow\x18\x06 \x01(\bR\vnotifFollow\x12#\n" +
-	"\rnotif_mention\x18\a \x01(\bR\fnotifMention\x12'\n" +
-	"\x0fnotif_community\x18\b \x01(\bR\x0enotifCommunity\x12)\n" +
-	"\x10notif_newsletter\x18\t \x01(\bR\x0fnotifNewsletter\"O\n" +
+	"\aprivate\x18\x03 \x01(\bR\aprivate\"O\n" +
 	"\x18DeactivateAccountRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xa7\x01\n" +
@@ -1917,33 +1807,33 @@ const file_user_proto_rawDesc = "" +
 	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"T\n" +
 	"\x16GetAllFollowingRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
-	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"B\n" +
-	"\x14AllFollowersResponse\x12*\n" +
-	"\tfollowers\x18\x01 \x03(\v2\f.user.StringR\tfollowers\"B\n" +
-	"\x14AllFollowingResponse\x12*\n" +
-	"\tfollowing\x18\x01 \x03(\v2\f.user.StringR\tfollowing2\xa4\v\n" +
-	"\vUserService\x129\n" +
-	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x11.user.ApiResponse\x123\n" +
+	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"F\n" +
+	"\x14AllFollowersResponse\x12.\n" +
+	"\tfollowers\x18\x01 \x03(\v2\x10.user.StringUserR\tfollowers\"F\n" +
+	"\x14AllFollowingResponse\x12.\n" +
+	"\tfollowing\x18\x01 \x03(\v2\x10.user.StringUserR\tfollowing2\xf4\v\n" +
+	"\vUserService\x12=\n" +
+	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x15.user.ApiResponseUser\x127\n" +
 	"\n" +
-	"User_Login\x12\x12.user.LoginRequest\x1a\x11.user.ApiResponse\x12L\n" +
-	"\x1cUser_RequestVerificationCode\x12\x19.user.VerificationRequest\x1a\x11.user.ApiResponse\x12M\n" +
-	"\x1dUser_ValidateVerificationCode\x12\x19.user.ValidateCodeRequest\x1a\x11.user.ApiResponse\x12O\n" +
-	"\x18User_GetSecurityQuestion\x12 .user.GetSecurityQuestionRequest\x1a\x11.user.ApiResponse\x12U\n" +
-	"\x1bUser_ValidateSecurityAnswer\x12#.user.ValidateSecurityAnswerRequest\x1a\x11.user.ApiResponse\x12C\n" +
-	"\x12User_ResetPassword\x12\x1a.user.ResetPasswordRequest\x1a\x11.user.ApiResponse\x12=\n" +
-	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x11.user.ApiResponse\x12E\n" +
-	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x11.user.ApiResponse\x12=\n" +
-	"\x0fUser_FollowUser\x12\x17.user.FollowUserRequest\x1a\x11.user.ApiResponse\x12;\n" +
-	"\x0eUser_BlockUser\x12\x16.user.BlockUserRequest\x1a\x11.user.ApiResponse\x12A\n" +
-	"\x11User_UnFollowUser\x12\x19.user.UnFollowUserRequest\x1a\x11.user.ApiResponse\x12?\n" +
-	"\x10User_UnBlockUser\x12\x18.user.UnBlockUserRequest\x1a\x11.user.ApiResponse\x12?\n" +
-	"\x10User_GetSettings\x12\x18.user.GetSettingsRequest\x1a\x11.user.ApiResponse\x12E\n" +
-	"\x13User_UpdateSettings\x12\x1b.user.UpdateSettingsRequest\x1a\x11.user.ApiResponse\x12K\n" +
-	"\x16User_DeactivateAccount\x12\x1e.user.DeactivateAccountRequest\x1a\x11.user.ApiResponse\x12G\n" +
-	"\x14User_GetAllFollowers\x12\x1c.user.GetAllFollowersRequest\x1a\x11.user.ApiResponse\x12G\n" +
-	"\x14User_GetAllFollowing\x12\x1c.user.GetAllFollowingRequest\x1a\x11.user.ApiResponse\x12V\n" +
-	"\x1fUser_SubmitVerifyAccountRequest\x12 .user.SubmitVerifyAccountRequest\x1a\x11.user.ApiResponse\x12V\n" +
-	"\x1fUser_GetAllVerifyAccountRequest\x12 .user.GetAllVerifyAccountRequest\x1a\x11.user.ApiResponseB\aZ\x05user/b\x06proto3"
+	"User_Login\x12\x12.user.LoginRequest\x1a\x15.user.ApiResponseUser\x12P\n" +
+	"\x1cUser_RequestVerificationCode\x12\x19.user.VerificationRequest\x1a\x15.user.ApiResponseUser\x12Q\n" +
+	"\x1dUser_ValidateVerificationCode\x12\x19.user.ValidateCodeRequest\x1a\x15.user.ApiResponseUser\x12S\n" +
+	"\x18User_GetSecurityQuestion\x12 .user.GetSecurityQuestionRequest\x1a\x15.user.ApiResponseUser\x12Y\n" +
+	"\x1bUser_ValidateSecurityAnswer\x12#.user.ValidateSecurityAnswerRequest\x1a\x15.user.ApiResponseUser\x12G\n" +
+	"\x12User_ResetPassword\x12\x1a.user.ResetPasswordRequest\x1a\x15.user.ApiResponseUser\x12A\n" +
+	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12I\n" +
+	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x15.user.ApiResponseUser\x12A\n" +
+	"\x0fUser_FollowUser\x12\x17.user.FollowUserRequest\x1a\x15.user.ApiResponseUser\x12?\n" +
+	"\x0eUser_BlockUser\x12\x16.user.BlockUserRequest\x1a\x15.user.ApiResponseUser\x12E\n" +
+	"\x11User_UnFollowUser\x12\x19.user.UnFollowUserRequest\x1a\x15.user.ApiResponseUser\x12C\n" +
+	"\x10User_UnBlockUser\x12\x18.user.UnBlockUserRequest\x1a\x15.user.ApiResponseUser\x12C\n" +
+	"\x10User_GetSettings\x12\x18.user.GetSettingsRequest\x1a\x15.user.ApiResponseUser\x12I\n" +
+	"\x13User_UpdateSettings\x12\x1b.user.UpdateSettingsRequest\x1a\x15.user.ApiResponseUser\x12O\n" +
+	"\x16User_DeactivateAccount\x12\x1e.user.DeactivateAccountRequest\x1a\x15.user.ApiResponseUser\x12K\n" +
+	"\x14User_GetAllFollowers\x12\x1c.user.GetAllFollowersRequest\x1a\x15.user.ApiResponseUser\x12K\n" +
+	"\x14User_GetAllFollowing\x12\x1c.user.GetAllFollowingRequest\x1a\x15.user.ApiResponseUser\x12Z\n" +
+	"\x1fUser_SubmitVerifyAccountRequest\x12 .user.SubmitVerifyAccountRequest\x1a\x15.user.ApiResponseUser\x12Z\n" +
+	"\x1fUser_GetAllVerifyAccountRequest\x12 .user.GetAllVerifyAccountRequest\x1a\x15.user.ApiResponseUserB\aZ\x05user/b\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -1959,9 +1849,9 @@ func file_user_proto_rawDescGZIP() []byte {
 
 var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_user_proto_goTypes = []any{
-	(*ApiResponse)(nil),                   // 0: user.ApiResponse
-	(*String)(nil),                        // 1: user.String
-	(*Bool)(nil),                          // 2: user.Bool
+	(*ApiResponseUser)(nil),               // 0: user.ApiResponseUser
+	(*StringUser)(nil),                    // 1: user.StringUser
+	(*BoolUser)(nil),                      // 2: user.BoolUser
 	(*UserProfile)(nil),                   // 3: user.UserProfile
 	(*GetProfileRequest)(nil),             // 4: user.GetProfileRequest
 	(*RegisterRequest)(nil),               // 5: user.RegisterRequest
@@ -1991,10 +1881,10 @@ var file_user_proto_goTypes = []any{
 	(*anypb.Any)(nil),                     // 29: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
-	29, // 0: user.ApiResponse.data:type_name -> google.protobuf.Any
+	29, // 0: user.ApiResponseUser.data:type_name -> google.protobuf.Any
 	22, // 1: user.GetAllVerifyAccountResponse.requests:type_name -> user.VerifyAccountRequest
-	1,  // 2: user.AllFollowersResponse.followers:type_name -> user.String
-	1,  // 3: user.AllFollowingResponse.following:type_name -> user.String
+	1,  // 2: user.AllFollowersResponse.followers:type_name -> user.StringUser
+	1,  // 3: user.AllFollowingResponse.following:type_name -> user.StringUser
 	5,  // 4: user.UserService.User_Register:input_type -> user.RegisterRequest
 	6,  // 5: user.UserService.User_Login:input_type -> user.LoginRequest
 	7,  // 6: user.UserService.User_RequestVerificationCode:input_type -> user.VerificationRequest
@@ -2015,26 +1905,26 @@ var file_user_proto_depIdxs = []int32{
 	26, // 21: user.UserService.User_GetAllFollowing:input_type -> user.GetAllFollowingRequest
 	21, // 22: user.UserService.User_SubmitVerifyAccountRequest:input_type -> user.SubmitVerifyAccountRequest
 	23, // 23: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
-	0,  // 24: user.UserService.User_Register:output_type -> user.ApiResponse
-	0,  // 25: user.UserService.User_Login:output_type -> user.ApiResponse
-	0,  // 26: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponse
-	0,  // 27: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponse
-	0,  // 28: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponse
-	0,  // 29: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponse
-	0,  // 30: user.UserService.User_ResetPassword:output_type -> user.ApiResponse
-	0,  // 31: user.UserService.User_GetProfile:output_type -> user.ApiResponse
-	0,  // 32: user.UserService.User_ChangePassword:output_type -> user.ApiResponse
-	0,  // 33: user.UserService.User_FollowUser:output_type -> user.ApiResponse
-	0,  // 34: user.UserService.User_BlockUser:output_type -> user.ApiResponse
-	0,  // 35: user.UserService.User_UnFollowUser:output_type -> user.ApiResponse
-	0,  // 36: user.UserService.User_UnBlockUser:output_type -> user.ApiResponse
-	0,  // 37: user.UserService.User_GetSettings:output_type -> user.ApiResponse
-	0,  // 38: user.UserService.User_UpdateSettings:output_type -> user.ApiResponse
-	0,  // 39: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponse
-	0,  // 40: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponse
-	0,  // 41: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponse
-	0,  // 42: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponse
-	0,  // 43: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponse
+	0,  // 24: user.UserService.User_Register:output_type -> user.ApiResponseUser
+	0,  // 25: user.UserService.User_Login:output_type -> user.ApiResponseUser
+	0,  // 26: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 27: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 28: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
+	0,  // 29: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
+	0,  // 30: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
+	0,  // 31: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
+	0,  // 32: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
+	0,  // 33: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
+	0,  // 34: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
+	0,  // 35: user.UserService.User_UnFollowUser:output_type -> user.ApiResponseUser
+	0,  // 36: user.UserService.User_UnBlockUser:output_type -> user.ApiResponseUser
+	0,  // 37: user.UserService.User_GetSettings:output_type -> user.ApiResponseUser
+	0,  // 38: user.UserService.User_UpdateSettings:output_type -> user.ApiResponseUser
+	0,  // 39: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponseUser
+	0,  // 40: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponseUser
+	0,  // 41: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponseUser
+	0,  // 42: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponseUser
+	0,  // 43: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
 	24, // [24:44] is the sub-list for method output_type
 	4,  // [4:24] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name

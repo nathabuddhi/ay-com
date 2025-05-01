@@ -92,7 +92,7 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if resp.Success {
-		var userIdString pb.String
+		var userIdString pb.StringUser
 		if err := anypb.UnmarshalTo(resp.Data, &userIdString, proto.UnmarshalOptions{}); err != nil {
 			zap.L().Error("Failed to unmarshal response data", zap.Error(err))
 			returnErrorResponse(w, "Failed to process response data")
@@ -105,7 +105,7 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 	}
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -120,7 +120,7 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !checkRedisData("getprofile/"+userID, w) {
-		req, client := processRequest[pb.GetProfileRequest](r, w)
+		req, client := processUserRequest[pb.GetProfileRequest](r, w)
 		req.UserId = userID
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 
@@ -129,53 +129,53 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := client.User_GetProfile(ctx, req)
 
-		processResponseWithPayload[pb.UserProfile](resp, err, w)
+		processUserResponseWithPayload[pb.UserProfile](resp, err, w)
 	}
 }
 
 func User_Login(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Login is called.")
 
-	req, client := processRequest[pb.LoginRequest](r, w)
+	req, client := processUserRequest[pb.LoginRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_Login(ctx, req)
 
-	processResponseWithPayload[pb.String](resp, err, w)
+	processUserResponseWithPayload[pb.StringUser](resp, err, w)
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Request Verification Code is called.")
 
-	req, client := processRequest[pb.VerificationRequest](r, w)
+	req, client := processUserRequest[pb.VerificationRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_RequestVerificationCode(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Validate Verification Code is called.")
 
-	req, client := processRequest[pb.ValidateCodeRequest](r, w)
+	req, client := processUserRequest[pb.ValidateCodeRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_ValidateVerificationCode(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Change Password is called.")
 
-	req, client := processRequest[pb.ChangePasswordRequest](r, w)
+	req, client := processUserRequest[pb.ChangePasswordRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -183,52 +183,52 @@ func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_ChangePassword(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Security Question is called.")
 
-	req, client := processRequest[pb.GetSecurityQuestionRequest](r, w)
+	req, client := processUserRequest[pb.GetSecurityQuestionRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_GetSecurityQuestion(ctx, req)
 
-	processResponseWithPayload[pb.String](resp, err, w)
+	processUserResponseWithPayload[pb.StringUser](resp, err, w)
 }
 
 func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Validate Security Answer is called.")
 
-	req, client := processRequest[pb.ValidateSecurityAnswerRequest](r, w)
+	req, client := processUserRequest[pb.ValidateSecurityAnswerRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_ValidateSecurityAnswer(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Reset Password is called.")
 
-	req, client := processRequest[pb.ResetPasswordRequest](r, w)
+	req, client := processUserRequest[pb.ResetPasswordRequest](r, w)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.User_ResetPassword(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_FollowUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Follow User is called.")
 
-	req, client := processRequest[pb.FollowUserRequest](r, w)
+	req, client := processUserRequest[pb.FollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -236,13 +236,13 @@ func User_FollowUser(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_FollowUser(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Unfollow User is called.")
 
-	req, client := processRequest[pb.UnFollowUserRequest](r, w)
+	req, client := processUserRequest[pb.UnFollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -250,13 +250,13 @@ func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_UnFollowUser(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_BlockUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Block User is called.")
 
-	req, client := processRequest[pb.BlockUserRequest](r, w)
+	req, client := processUserRequest[pb.BlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -264,13 +264,13 @@ func User_BlockUser(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_BlockUser(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Unblock is called.")
 
-	req, client := processRequest[pb.UnBlockUserRequest](r, w)
+	req, client := processUserRequest[pb.UnBlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -278,13 +278,13 @@ func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_UnBlockUser(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_GetSettings(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Settings is called.")
 
-	req, client := processRequest[pb.GetSettingsRequest](r, w)
+	req, client := processUserRequest[pb.GetSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -297,13 +297,13 @@ func User_GetSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	processResponseWithPayload[pb.UserSettings](resp, err, w)
+	processUserResponseWithPayload[pb.UserSettings](resp, err, w)
 }
 
 func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Update Settings is called.")
 
-	req, client := processRequest[pb.UpdateSettingsRequest](r, w)
+	req, client := processUserRequest[pb.UpdateSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -316,7 +316,7 @@ func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
@@ -326,7 +326,7 @@ func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
 	userID := vars["id"]
 
 	if !checkRedisData("getallfollowers/"+userID, w) {
-		req, client := processRequest[pb.GetAllFollowersRequest](r, w)
+		req, client := processUserRequest[pb.GetAllFollowersRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 		req.UserId = userID
 
@@ -335,7 +335,7 @@ func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := client.User_GetAllFollowers(ctx, req)
 
-		processResponseWithPayload[pb.AllFollowersResponse](resp, err, w)
+		processUserResponseWithPayload[pb.AllFollowersResponse](resp, err, w)
 	}
 }
 
@@ -346,7 +346,7 @@ func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
 	userID := vars["id"]
 
 	if !checkRedisData("getallfollowing/"+userID, w) {
-		req, client := processRequest[pb.GetAllFollowingRequest](r, w)
+		req, client := processUserRequest[pb.GetAllFollowingRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 		req.UserId = userID
 
@@ -355,14 +355,14 @@ func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := client.User_GetAllFollowing(ctx, req)
 
-		processResponseWithPayload[pb.AllFollowingResponse](resp, err, w)
+		processUserResponseWithPayload[pb.AllFollowingResponse](resp, err, w)
 	}
 }
 
 func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
 
-	req, client := processRequest[pb.SubmitVerifyAccountRequest](r, w)
+	req, client := processUserRequest[pb.SubmitVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -370,13 +370,13 @@ func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_SubmitVerifyAccountRequest(ctx, req)
 
-	processResponseWithoutPayload(resp, err, w)
+	processUserResponseWithoutPayload(resp, err, w)
 }
 
 func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
 
-	req, client := processRequest[pb.GetAllVerifyAccountRequest](r, w)
+	req, client := processUserRequest[pb.GetAllVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -384,5 +384,5 @@ func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_GetAllVerifyAccountRequest(ctx, req)
 
-	processResponseWithPayload[pb.GetAllVerifyAccountResponse](resp, err, w)
+	processUserResponseWithPayload[pb.GetAllVerifyAccountResponse](resp, err, w)
 }

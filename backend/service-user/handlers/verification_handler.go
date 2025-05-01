@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User requesting verification code", zap.String("email", req.Email))
 
 	var user models.User
@@ -24,11 +24,11 @@ func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.Ver
 		Where("email = ?", req.Email).
 		First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Email isn't registered."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email isn't registered."}, nil
 	}
 
 	if !user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Email is already active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email is already active."}, nil
 	}
 
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
@@ -40,16 +40,16 @@ func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.Ver
 	`, req.Email, code).Error
 	if err != nil {
 		zap.L().Error("Failed to sign token: " + err.Error())
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
 	body := fmt.Sprintf("Your verification code is: <b>%s</b><br><br>This code is only valid for <b>5 minutes</b>.<br><i>You may request another code.<br>Ignore this email if this wasn't you.</i>", code)
 
 	rabbitmq.PublishEmail(req.Email, "AY.com Verification Code", body)
-	return &pb.ApiResponse{Success: true, Message: "Verification code sent successfully."}, nil
+	return &pb.ApiResponseUser{Success: true, Message: "Verification code sent successfully."}, nil
 }
 
-func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User validating verification code", zap.String("email", req.Email))
 
 	var user models.User
@@ -57,11 +57,11 @@ func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.Va
 		Where("email = ?", req.Email).
 		First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Email isn't registered."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email isn't registered."}, nil
 	}
 
 	if !user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Email is already active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email is already active."}, nil
 	}
 
 	var verificationCode models.VerificationCode
@@ -69,14 +69,14 @@ func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.Va
 		Where("email = ?", req.Email).
 		First(&verificationCode).Error
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Verification code not found or expired.",
 		}, nil
 	}
 
 	if verificationCode.Code != req.Code {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Invalid verification code",
 		}, nil
@@ -87,24 +87,24 @@ func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.Va
 		Where("email = ?", req.Email).
 		Update("is_deactivated", false).Error
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Failed to activate user account:" + err.Error(),
 		}, nil
 	}
 
-	rabbitmq.PublishEmail(req.Email,
+	rabbitmq.PublishSendNotification("system", user.UserId, req.Email,
 		"AY.com Account Activation",
 		"Congratulations! Your account has been verified and activated. You can now log in and start using our services.",
-	)
+		"System")
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Account verified successfully.",
 	}, nil
 }
 
-func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.SubmitVerifyAccountRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.SubmitVerifyAccountRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User submitting verification request", zap.String("user_id", req.UserId))
 
 	var user models.User
@@ -112,19 +112,19 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 		Where("user_id = ?", req.UserId).
 		First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Email isn't registered."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email isn't registered."}, nil
 	}
 
 	if user.IsVerified {
-		return &pb.ApiResponse{Success: false, Message: "You are already verified."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You are already verified."}, nil
 	}
 
 	if user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Account is not active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Account is not active."}, nil
 	}
 
 	if user.IsBanned {
-		return &pb.ApiResponse{Success: false, Message: "Account is not active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Account is not active."}, nil
 	}
 
 	var verifyRequest models.UserVerificationRequest
@@ -133,7 +133,7 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 		First(&verifyRequest).Error
 
 	if err == nil {
-		return &pb.ApiResponse{Success: false, Message: "You already have a pending verification request."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You already have a pending verification request."}, nil
 	}
 
 	var generatedId string
@@ -155,7 +155,7 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 	err = h.DB.WithContext(ctx).Create(&verifyRequest).Error
 	if err != nil {
 		zap.L().Error("Failed to create verification request", zap.Error(err))
-		return &pb.ApiResponse{Success: false, Message: "Failed to create verification request: " + err.Error()}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to create verification request: " + err.Error()}, nil
 	}
 
 	idCardLength := len(req.IdentityCardNumber)
@@ -165,14 +165,14 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 
 	rabbitmq.PublishEmail(user.Email, "AY.com Account Premium Verification Request", "Your verification request has been submitted successfully. We will review it and get back to you shortly. <br><br>Request Id: "+verifyRequest.Id+"<br>Identity Card Number: "+maskedIdCard+"<br>Submitted At: "+verifyRequest.SubmittedAt.String()+"<br><br>If this wasn't you contact support immediately.")
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Account Verification request submitted successfully.",
 		Data:    nil,
 	}, nil
 }
 
-func (h *Handlers) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User getting all verification requests", zap.String("user_id", req.UserId))
 
 	var user models.User
@@ -180,26 +180,26 @@ func (h *Handlers) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.
 		Where("user_id = ?", req.UserId).
 		First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Invalid Credentials."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid Credentials."}, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Invalid Credentials.",
 		}, nil
 	}
 
 	if user.IsVerified {
-		return &pb.ApiResponse{Success: false, Message: "Email is already verified."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email is already verified."}, nil
 	}
 
 	if user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Account is not active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Account is not active."}, nil
 	}
 
 	if user.IsBanned {
-		return &pb.ApiResponse{Success: false, Message: "Account is not active."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Account is not active."}, nil
 	}
 
 	var verifyRequests []models.UserVerificationRequest
@@ -208,11 +208,11 @@ func (h *Handlers) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.
 		Order("submitted_at desc").
 		Find(&verifyRequests).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to get verification requests."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get verification requests."}, nil
 	}
 
 	if len(verifyRequests) == 0 {
-		return &pb.ApiResponse{Success: false, Message: "No verification requests found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "No verification requests found."}, nil
 	}
 
 	getAllVerifyAccountResponse := &pb.GetAllVerifyAccountResponse{
@@ -231,14 +231,14 @@ func (h *Handlers) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.
 
 	returnData, err := anypb.New(getAllVerifyAccountResponse)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An error occured: " + err.Error(),
 			Data:    nil,
 		}, nil
 	}
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Get verification requests successful.",
 		Data:    returnData,

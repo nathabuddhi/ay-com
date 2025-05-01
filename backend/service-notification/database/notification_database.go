@@ -14,8 +14,8 @@ func InitDB() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	db.Logger.LogMode(logger.Info)
 	if err != nil {
-		zap.L().Panic("Failed to connect to USER SERBICE DATABASE: " + err.Error())
+		zap.L().Panic("Failed to connect to NOTIFICATION SERBICE DATABASE: " + err.Error())
 	}
-	zap.L().Info("Connected to USER SERVICE DATABASE")
+	zap.L().Info("Connected to NOTIFICATION SERVICE DATABASE")
 	return db
 }

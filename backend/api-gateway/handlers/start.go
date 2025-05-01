@@ -20,6 +20,7 @@ func InitSecuredRoutes(r *mux.Router) {
 	secured := r.PathPrefix("/").Subrouter()
 	secured.Use(middleware.JwtAuthMiddleware)
 	InitSecuredUserRoutes(secured)
+	InitSecuredNotificationRoutes(secured)
 
 	zap.L().Info("Secured Routes Initialized.")
 }
@@ -51,4 +52,14 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 
 	secured.HandleFunc("/user/getallfollowers/{id}", User_GetAllFollowers).Methods("GET")
 	secured.HandleFunc("/user/getallfollowing/{id}", User_GetAllFollowing).Methods("GET")
+}
+
+func InitSecuredNotificationRoutes(secured *mux.Router) {
+	secured.HandleFunc("/notification/getallnotifications", Notification_GetAllNotifications).Methods("GET")
+	secured.HandleFunc("/notification/clearnotifications", Notification_ClearNotifications).Methods("DELETE")
+	secured.HandleFunc("/notification/deletenotification", Notification_DeleteNotification).Methods("DELETE")
+	secured.HandleFunc("/notification/marknotificationasread", Notification_MarkNotificationAsRead).Methods("PATCH")
+
+	secured.HandleFunc("/notification/getsettings", Notification_GetSettings).Methods("GET")
+	secured.HandleFunc("/notification/updatesettings", Notification_UpdateSettings).Methods("PATCH")
 }

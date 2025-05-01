@@ -3,15 +3,39 @@ package rabbitmq
 import (
 	"os"
 
-	"github.com/rabbitmq/amqp091-go"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 )
 
-var EmailChannel *amqp091.Channel
-var SetRedisChannel *amqp091.Channel
-var DeleteRedisChannel *amqp091.Channel
+var EmailChannel *amqp.Channel
+var SetRedisChannel *amqp.Channel
+var DeleteRedisChannel *amqp.Channel
+var SendNotificationChannel *amqp.Channel
 
-func InitEmailChannel(conn *amqp091.Connection) {
+func InitNotificationChannel(conn *amqp.Connection) {
+	ch, err := conn.Channel()
+	if err != nil {
+		zap.L().Fatal("Failed to open a channel: " + err.Error())
+	}
+
+	_, err = ch.QueueDeclare(
+		"send_notification",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		zap.L().Fatal("Failed to declare send_notification queue: " + err.Error())
+	} else {
+		zap.L().Info("RabbitMQ send_notification queue declared successfully")
+	}
+
+	SendNotificationChannel = ch
+}
+
+func InitEmailChannel(conn *amqp.Connection) {
 	ch, err := conn.Channel()
 	if err != nil {
 		zap.L().Fatal("Failed to open a channel: " + err.Error())
@@ -34,7 +58,7 @@ func InitEmailChannel(conn *amqp091.Connection) {
 	EmailChannel = ch
 }
 
-func InitSetRedisChannel(conn *amqp091.Connection) {
+func InitSetRedisChannel(conn *amqp.Connection) {
 	ch, err := conn.Channel()
 	if err != nil {
 		zap.L().Fatal("Failed to open a channel: " + err.Error())
@@ -57,7 +81,7 @@ func InitSetRedisChannel(conn *amqp091.Connection) {
 	SetRedisChannel = ch
 }
 
-func InitDeleteRedisChannel(conn *amqp091.Connection) {
+func InitDeleteRedisChannel(conn *amqp.Connection) {
 	ch, err := conn.Channel()
 	if err != nil {
 		zap.L().Fatal("Failed to open a channel: " + err.Error())
@@ -81,7 +105,7 @@ func InitDeleteRedisChannel(conn *amqp091.Connection) {
 }
 
 func InitRabbitMQ() {
-	conn, err := amqp091.Dial(os.Getenv("RABBITMQ_URL"))
+	conn, err := amqp.Dial(os.Getenv("RABBITMQ_URL"))
 	if err != nil {
 		zap.L().Fatal("Failed to connect to RabbitMQ: " + err.Error())
 	} else {
@@ -90,6 +114,7 @@ func InitRabbitMQ() {
 	InitEmailChannel(conn)
 	InitSetRedisChannel(conn)
 	InitDeleteRedisChannel(conn)
+	InitNotificationChannel(conn)
 }
 
 func PublishEmail(email string, subject string, body string) error {
@@ -102,7 +127,7 @@ func PublishEmail(email string, subject string, body string) error {
 		"send_email",
 		false,
 		false,
-		amqp091.Publishing{
+		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(full_body),
 		},
@@ -120,7 +145,7 @@ func PublishSetRedis(key string, value string) error {
 		"set_redis",
 		false,
 		false,
-		amqp091.Publishing{
+		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(body),
 		},
@@ -138,7 +163,25 @@ func PublishDeleteRedis(key string) error {
 		"delete_redis",
 		false,
 		false,
-		amqp091.Publishing{
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
+		},
+	)
+	return err
+}
+
+func PublishSendNotification(notif_type string, user_id string, email string, title string, content string, from string) error {
+	body := notif_type + "|" + user_id + "|" + email + "|" + title + "|" + content + "|" + from
+
+	zap.L().Info("Publishing send_notification message to RabbitMQ: " + body)
+
+	err := SendNotificationChannel.Publish(
+		"",
+		"send_notification",
+		false,
+		false,
+		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(body),
 		},

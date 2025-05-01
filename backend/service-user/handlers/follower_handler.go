@@ -29,28 +29,28 @@ func (h *Handlers) GetFollowers(user_id string) (int, error) {
 	return int(count), nil
 }
 
-func (h *Handlers) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.UserId + " is following user " + req.ToFollowId)
 
 	if req.UserId == req.ToFollowId {
-		return &pb.ApiResponse{Success: false, Message: "You cannot follow yourself."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You cannot follow yourself."}, nil
 	}
 
 	var blockedUser models.BlockedUsers
 	err := h.DB.WithContext(ctx).Where("user_id = ? AND blocked_id = ?", req.UserId, req.ToFollowId).First(&blockedUser).Error
 	if err == nil {
-		return &pb.ApiResponse{Success: false, Message: "You are blocked by this user and cannot follow them."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You are blocked by this user and cannot follow them."}, nil
 	}
 
 	err = h.DB.WithContext(ctx).Where("user_id = ? AND blocked_id = ?", req.ToFollowId, req.UserId).First(&blockedUser).Error
 	if err == nil {
-		return &pb.ApiResponse{Success: false, Message: "This user has blocked you and you cannot follow them."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "This user has blocked you and you cannot follow them."}, nil
 	}
 
 	var userFollowing models.UserFollowing
 	err = h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.UserId, req.ToFollowId).First(&userFollowing).Error
 	if err == nil {
-		return &pb.ApiResponse{Success: false, Message: "Already following this user."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Already following this user."}, nil
 	}
 	userFollowing.UserId = req.UserId
 	userFollowing.FollowedId = req.ToFollowId
@@ -58,33 +58,41 @@ func (h *Handlers) User_FollowUser(ctx context.Context, req *pb.FollowUserReques
 	err = h.DB.WithContext(ctx).Create(&userFollowing).Error
 	if err != nil {
 		zap.L().Error("Failed to follow user: " + err.Error())
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
+
+	var user models.User
+	var follower models.User
+	h.DB.WithContext(ctx).Where("user_id = ?", req.ToFollowId).First(&user)
+	h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&follower)
+	rabbitmq.PublishSendNotification("follow", user.UserId, user.Email, "New Follower", follower.Username+" is now following you.", follower.Username)
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.ToFollowId)
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.UserId)
-	return &pb.ApiResponse{Success: true, Message: "Followed user successfully."}, nil
+	rabbitmq.PublishDeleteRedis("getallfollowers/" + req.ToFollowId)
+	rabbitmq.PublishDeleteRedis("getallfollowing/" + req.UserId)
+	return &pb.ApiResponseUser{Success: true, Message: "Followed user successfully."}, nil
 }
 
-func (h *Handlers) User_UnFollowUser(ctx context.Context, req *pb.UnFollowUserRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_UnFollowUser(ctx context.Context, req *pb.UnFollowUserRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.UserId + " is unfollowing user " + req.ToUnfollowId)
 
 	deletedCount := h.DB.WithContext(ctx).Exec(`DELETE FROM user_followings WHERE user_id = ? AND followed_id = ?`, req.UserId, req.ToUnfollowId).RowsAffected
 
 	if deletedCount == 0 {
 		zap.L().Error("Failed to unfollow user: 0 rows affected.")
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.ToUnfollowId)
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.UserId)
-	return &pb.ApiResponse{Success: true, Message: "Unfollowed user successfully."}, nil
+	return &pb.ApiResponseUser{Success: true, Message: "Unfollowed user successfully."}, nil
 }
 
-func (h *Handlers) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.UserId + " is blocking user " + req.ToBlockId)
 
 	if req.UserId == req.ToBlockId {
-		return &pb.ApiResponse{Success: false, Message: "You cannot block yourself."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You cannot block yourself."}, nil
 	}
 
 	var userFollower models.UserFollowing
@@ -94,12 +102,16 @@ func (h *Handlers) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest)
 	if unFollowedCount != 0 {
 		rabbitmq.PublishDeleteRedis("getprofile/" + req.ToBlockId)
 		rabbitmq.PublishDeleteRedis("getprofile/" + req.UserId)
+		rabbitmq.PublishDeleteRedis("getallfollowers/" + req.ToBlockId)
+		rabbitmq.PublishDeleteRedis("getallfollowers/" + req.UserId)
+		rabbitmq.PublishDeleteRedis("getallfollowing/" + req.ToBlockId)
+		rabbitmq.PublishDeleteRedis("getallfollowing/" + req.UserId)
 	}
 
 	var blockedUser models.BlockedUsers
 	err := h.DB.WithContext(ctx).Where("user_id = ? AND blocked_id = ?", req.UserId, req.ToBlockId).First(&blockedUser).Error
 	if err == nil {
-		return &pb.ApiResponse{Success: false, Message: "Already blocking this user."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Already blocking this user."}, nil
 	}
 	blockedUser.UserId = req.UserId
 	blockedUser.BlockedId = req.ToBlockId
@@ -107,12 +119,12 @@ func (h *Handlers) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest)
 	err = h.DB.WithContext(ctx).Create(&blockedUser).Error
 	if err != nil {
 		zap.L().Error("Failed to block user: " + err.Error())
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
-	return &pb.ApiResponse{Success: true, Message: "Blocked user successfully."}, nil
+	return &pb.ApiResponseUser{Success: true, Message: "Blocked user successfully."}, nil
 }
 
-func (h *Handlers) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.UserId + " is unblocking user " + req.ToUnblockId)
 
 	var userFollower models.BlockedUsers
@@ -120,55 +132,55 @@ func (h *Handlers) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequ
 
 	if deletedCount == 0 {
 		zap.L().Error("Failed to unblock user: 0 rows affected.")
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
-	return &pb.ApiResponse{Success: true, Message: "Unblocked user successfully."}, nil
+	return &pb.ApiResponseUser{Success: true, Message: "Unblocked user successfully."}, nil
 }
 
-func (h *Handlers) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.RequesterId + " is getting all followers of user " + req.UserId)
 
 	var user models.User
 	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	var requester models.User
 	err = h.DB.WithContext(ctx).Where("user_id = ?", req.RequesterId).First(&requester).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Requester not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Requester not found."}, nil
 	}
 
 	if requester.IsBanned || requester.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Your account is not active or is banned."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Your account is not active or is banned."}, nil
 	}
 
 	if user.IsBanned || user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "This user account is not active or is banned."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "This user account is not active or is banned."}, nil
 	}
 
 	if user.IsPrivate && req.UserId != req.RequesterId {
 		var userFollowing models.UserFollowing
 		err = h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.RequesterId, req.UserId).First(&userFollowing).Error
 		if err != nil {
-			return &pb.ApiResponse{Success: false, Message: "This user account is private."}, nil
+			return &pb.ApiResponseUser{Success: false, Message: "This user account is private."}, nil
 		}
 	}
 
 	var followers []models.UserFollowing
 	err = h.DB.WithContext(ctx).Where("followed_id = ?", req.UserId).Find(&followers).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
 	allFollowersResponse := &pb.AllFollowersResponse{
-		Followers: make([]*pb.String, len(followers)),
+		Followers: make([]*pb.StringUser, len(followers)),
 	}
 
 	for i, request := range followers {
-		allFollowersResponse.Followers[i] = &pb.String{
+		allFollowersResponse.Followers[i] = &pb.StringUser{
 			Value: request.UserId,
 		}
 	}
@@ -182,63 +194,63 @@ func (h *Handlers) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollo
 
 	returnData, err := anypb.New(allFollowersResponse)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An error occured: " + err.Error(),
 			Data:    nil,
 		}, nil
 	}
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Get All Followers successful.",
 		Data:    returnData,
 	}, nil
 }
 
-func (h *Handlers) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User " + req.RequesterId + " is getting all followings of user " + req.UserId)
 
 	var user models.User
 	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	var requester models.User
 	err = h.DB.WithContext(ctx).Where("user_id = ?", req.RequesterId).First(&requester).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Requester not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Requester not found."}, nil
 	}
 
 	if requester.IsBanned || requester.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Your account is not active or is banned."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Your account is not active or is banned."}, nil
 	}
 
 	if user.IsBanned || user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "This user account is not active or is banned."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "This user account is not active or is banned."}, nil
 	}
 
 	if user.IsPrivate && req.UserId != req.RequesterId {
 		var userFollowing models.UserFollowing
 		err = h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.RequesterId, req.UserId).First(&userFollowing).Error
 		if err != nil {
-			return &pb.ApiResponse{Success: false, Message: "This user account is private."}, nil
+			return &pb.ApiResponseUser{Success: false, Message: "This user account is private."}, nil
 		}
 	}
 
 	var followers []models.UserFollowing
 	err = h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).Find(&followers).Error
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "An unknown error occured. Please try again."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
 	allFollowingResponse := &pb.AllFollowingResponse{
-		Following: make([]*pb.String, len(followers)),
+		Following: make([]*pb.StringUser, len(followers)),
 	}
 
 	for i, request := range followers {
-		allFollowingResponse.Following[i] = &pb.String{
+		allFollowingResponse.Following[i] = &pb.StringUser{
 			Value: request.FollowedId,
 		}
 	}
@@ -252,14 +264,14 @@ func (h *Handlers) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollo
 
 	returnData, err := anypb.New(allFollowingResponse)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An error occured: " + err.Error(),
 			Data:    nil,
 		}, nil
 	}
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Get All Followings successful.",
 		Data:    returnData,

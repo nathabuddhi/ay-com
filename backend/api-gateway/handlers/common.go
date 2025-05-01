@@ -9,7 +9,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
+	notifpb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/notification"
+	userpb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
@@ -17,8 +18,9 @@ import (
 )
 
 var (
-	USER_SERVICE_PATH  string
-	FLASK_SERVICE_PATH string
+	USER_SERVICE_PATH         string
+	NOTIFICATION_SERVICE_PATH string
+	FLASK_SERVICE_PATH        string
 )
 
 func InitEnvironmentVariables() {
@@ -29,6 +31,7 @@ func InitEnvironmentVariables() {
 
 	USER_SERVICE_PATH = os.Getenv("USER_SERVICE_PATH")
 	FLASK_SERVICE_PATH = os.Getenv("FLASK_SERVICE_PATH")
+	NOTIFICATION_SERVICE_PATH = os.Getenv("NOTIFICATION_SERVICE_PATH")
 
 	zap.L().Info("Service Paths Loaded Successfully.")
 }
@@ -44,7 +47,7 @@ func returnErrorResponse(w http.ResponseWriter, message string) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func processResponseWithoutPayload(resp *pb.ApiResponse, err error, w http.ResponseWriter) {
+func processUserResponseWithoutPayload(resp *userpb.ApiResponseUser, err error, w http.ResponseWriter) {
 	if err != nil {
 		zap.L().Error("Error forwarding request", zap.Error(err))
 		returnErrorResponse(w, "Error forwarding request: "+err.Error())
@@ -61,7 +64,7 @@ func processResponseWithoutPayload(resp *pb.ApiResponse, err error, w http.Respo
 	json.NewEncoder(w).Encode(response)
 }
 
-func processResponseWithPayload[T any](resp *pb.ApiResponse, err error, w http.ResponseWriter) {
+func processUserResponseWithPayload[T any](resp *userpb.ApiResponseUser, err error, w http.ResponseWriter) {
 	if err != nil {
 		zap.L().Error("Error forwarding request", zap.Error(err))
 		returnErrorResponse(w, "Error forwarding request: "+err.Error())
@@ -91,9 +94,68 @@ func processResponseWithPayload[T any](resp *pb.ApiResponse, err error, w http.R
 	json.NewEncoder(w).Encode(response)
 }
 
-func processRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T, client pb.UserServiceClient) {
+func processUserRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T, client userpb.UserServiceClient) {
 	conn := getUserServiceConn()
-	client = pb.NewUserServiceClient(conn)
+	client = userpb.NewUserServiceClient(conn)
+
+	var req T
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to encode API request", zap.Error(err))
+		returnErrorResponse(w, "Failed to encode API request: "+err.Error())
+	}
+	return &req, client
+}
+
+func processNotificationResponseWithoutPayload(resp *notifpb.ApiResponseNotification, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processNotificationResponseWithPayload[T any](resp *notifpb.ApiResponseNotification, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	decodedObject := new(T)
+	if _, ok := any(decodedObject).(proto.Message); !ok {
+		zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: decodedObject,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processNotificationRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T, client notifpb.NotificationServiceClient) {
+	conn := getNotifServiceConn()
+	client = notifpb.NewNotificationServiceClient(conn)
 
 	var req T
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -109,7 +171,7 @@ func checkRedisData(key string, w http.ResponseWriter) bool {
 	if redisProfile != nil {
 		response := types.ApiResponse{
 			Success: true,
-			Message: "Get User Profile successful.",
+			Message: "Get Cached Data successful.",
 			Payload: redisProfile,
 		}
 

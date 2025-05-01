@@ -19,86 +19,86 @@ func NewUserServer(db *gorm.DB) *UserServer {
 	}
 }
 
-func (s *UserServer) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_Login(ctx, req)
 }
 
-func (s *UserServer) User_Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_Register(ctx, req)
 }
 
-func (s *UserServer) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetProfile(ctx, req)
 }
 
-func (s *UserServer) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_RequestVerificationCode(ctx, req)
 }
 
-func (s *UserServer) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ValidateVerificationCode(ctx context.Context, req *pb.ValidateCodeRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_ValidateVerificationCode(ctx, req)
 }
 
-func (s *UserServer) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_ChangePassword(ctx, req)
 }
 
-func (s *UserServer) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetSecurityQuestion(ctx, req)
 }
 
-func (s *UserServer) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_ValidateSecurityAnswer(ctx, req)
 }
 
-func (s *UserServer) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_ResetPassword(ctx, req)
 }
 
-func (s *UserServer) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_FollowUser(ctx, req)
 }
 
-func (s *UserServer) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_BlockUser(ctx, req)
 }
 
-func (s *UserServer) User_UnFollowUser(ctx context.Context, req *pb.UnFollowUserRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_UnFollowUser(ctx context.Context, req *pb.UnFollowUserRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_UnFollowUser(ctx, req)
 }
 
-func (s *UserServer) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_UnBlockUser(ctx, req)
 }
 
-func (s *UserServer) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetSettings(ctx, req)
 }
 
-func (s *UserServer) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettingsRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettingsRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_UpdateSettings(ctx, req)
 }
 
-func (s *UserServer) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetAllFollowers(ctx context.Context, req *pb.GetAllFollowersRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetAllFollowers(ctx, req)
 }
 
-func (s *UserServer) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollowingRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetAllFollowing(ctx, req)
 }
 
-func (s *UserServer) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetAllVerifyAccountRequest(ctx, req)
 }
 
-func (s *UserServer) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.SubmitVerifyAccountRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.SubmitVerifyAccountRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_SubmitVerifyAccountRequest(ctx, req)
 }
 
-func (s *UserServer) User_DeactivateAccount(ctx context.Context, req *pb.DeactivateAccountRequest) (*pb.ApiResponse, error) {
+func (s *UserServer) User_DeactivateAccount(ctx context.Context, req *pb.DeactivateAccountRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_DeactivateAccount(ctx, req)
 }
 
-// func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponse, error) {
+// func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

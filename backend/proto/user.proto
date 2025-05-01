@@ -7,45 +7,45 @@ import "google/protobuf/any.proto";
 option go_package = "user/";
 
 service UserService {
-    rpc User_Register (RegisterRequest) returns (ApiResponse);
-    rpc User_Login (LoginRequest) returns (ApiResponse);
-    rpc User_RequestVerificationCode (VerificationRequest) returns (ApiResponse);
-    rpc User_ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponse);
-    rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponse);
-    rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponse);
-    rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponse);
+    rpc User_Register (RegisterRequest) returns (ApiResponseUser);
+    rpc User_Login (LoginRequest) returns (ApiResponseUser);
+    rpc User_RequestVerificationCode (VerificationRequest) returns (ApiResponseUser);
+    rpc User_ValidateVerificationCode (ValidateCodeRequest) returns (ApiResponseUser);
+    rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponseUser);
+    rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponseUser);
+    rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponseUser);
 
     // protected routes
-    rpc User_GetProfile (GetProfileRequest) returns (ApiResponse);
-    rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponse);
+    rpc User_GetProfile (GetProfileRequest) returns (ApiResponseUser);
+    rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
 
-    rpc User_FollowUser (FollowUserRequest) returns (ApiResponse);
-    rpc User_BlockUser (BlockUserRequest) returns (ApiResponse);
-    rpc User_UnFollowUser (UnFollowUserRequest) returns (ApiResponse);
-    rpc User_UnBlockUser (UnBlockUserRequest) returns (ApiResponse);
+    rpc User_FollowUser (FollowUserRequest) returns (ApiResponseUser);
+    rpc User_BlockUser (BlockUserRequest) returns (ApiResponseUser);
+    rpc User_UnFollowUser (UnFollowUserRequest) returns (ApiResponseUser);
+    rpc User_UnBlockUser (UnBlockUserRequest) returns (ApiResponseUser);
 
-    rpc User_GetSettings (GetSettingsRequest) returns (ApiResponse);
-    rpc User_UpdateSettings (UpdateSettingsRequest) returns (ApiResponse);
-    rpc User_DeactivateAccount (DeactivateAccountRequest) returns (ApiResponse);
+    rpc User_GetSettings (GetSettingsRequest) returns (ApiResponseUser);
+    rpc User_UpdateSettings (UpdateSettingsRequest) returns (ApiResponseUser);
+    rpc User_DeactivateAccount (DeactivateAccountRequest) returns (ApiResponseUser);
 
-    rpc User_GetAllFollowers (GetAllFollowersRequest) returns (ApiResponse);
-    rpc User_GetAllFollowing (GetAllFollowingRequest) returns (ApiResponse);
+    rpc User_GetAllFollowers (GetAllFollowersRequest) returns (ApiResponseUser);
+    rpc User_GetAllFollowing (GetAllFollowingRequest) returns (ApiResponseUser);
 
-    rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponse);
-    rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponse);
+    rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponseUser);
+    rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponseUser);
 }
 
-message ApiResponse {
+message ApiResponseUser {
     bool success = 1;
     string message = 2;
     google.protobuf.Any data = 3;
 }
 
-message String {
+message StringUser {
     string value = 1;
 }
 
-message Bool {
+message BoolUser {
     bool value = 1;
 }
 
@@ -145,24 +145,12 @@ message UpdateSettingsRequest {
     string font_size = 2;
     string font_color = 3;
     bool private = 4;
-    bool notif_like = 5;
-    bool notif_repost = 6;
-    bool notif_follow = 7;
-    bool notif_mention = 8;
-    bool notif_community = 9;
-    bool notif_newsletter = 10;
 }
 
 message UserSettings {
     string font_size = 1;
     string font_color = 2;
     bool private = 3;
-    bool notif_like = 4;
-    bool notif_repost = 5;
-    bool notif_follow = 6;
-    bool notif_mention = 7;
-    bool notif_community = 8;
-    bool notif_newsletter = 9;
 }
 
 message DeactivateAccountRequest {
@@ -205,9 +193,9 @@ message GetAllFollowingRequest {
 }
 
 message AllFollowersResponse {
-    repeated String followers = 1;
+    repeated StringUser followers = 1;
 }
 
 message AllFollowingResponse {
-    repeated String following = 1;
+    repeated StringUser following = 1;
 }

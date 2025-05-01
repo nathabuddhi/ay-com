@@ -45,27 +45,27 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	User_Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_ValidateVerificationCode(ctx context.Context, in *ValidateCodeRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetSecurityQuestion(ctx context.Context, in *GetSecurityQuestionRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_ValidateSecurityAnswer(ctx context.Context, in *ValidateSecurityAnswerRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_ValidateVerificationCode(ctx context.Context, in *ValidateCodeRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetSecurityQuestion(ctx context.Context, in *GetSecurityQuestionRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_ValidateSecurityAnswer(ctx context.Context, in *ValidateSecurityAnswerRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	// protected routes
-	User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
-	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error)
+	User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 }
 
 type userServiceClient struct {
@@ -76,9 +76,9 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) User_Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -86,9 +86,9 @@ func (c *userServiceClient) User_Register(ctx context.Context, in *RegisterReque
 	return out, nil
 }
 
-func (c *userServiceClient) User_Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -96,9 +96,9 @@ func (c *userServiceClient) User_Login(ctx context.Context, in *LoginRequest, op
 	return out, nil
 }
 
-func (c *userServiceClient) User_RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_RequestVerificationCode(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_RequestVerificationCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -106,9 +106,9 @@ func (c *userServiceClient) User_RequestVerificationCode(ctx context.Context, in
 	return out, nil
 }
 
-func (c *userServiceClient) User_ValidateVerificationCode(ctx context.Context, in *ValidateCodeRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_ValidateVerificationCode(ctx context.Context, in *ValidateCodeRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_ValidateVerificationCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -116,9 +116,9 @@ func (c *userServiceClient) User_ValidateVerificationCode(ctx context.Context, i
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetSecurityQuestion(ctx context.Context, in *GetSecurityQuestionRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetSecurityQuestion(ctx context.Context, in *GetSecurityQuestionRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetSecurityQuestion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -126,9 +126,9 @@ func (c *userServiceClient) User_GetSecurityQuestion(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *userServiceClient) User_ValidateSecurityAnswer(ctx context.Context, in *ValidateSecurityAnswerRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_ValidateSecurityAnswer(ctx context.Context, in *ValidateSecurityAnswerRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_ValidateSecurityAnswer_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -136,9 +136,9 @@ func (c *userServiceClient) User_ValidateSecurityAnswer(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *userServiceClient) User_ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_ResetPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -146,9 +146,9 @@ func (c *userServiceClient) User_ResetPassword(ctx context.Context, in *ResetPas
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -156,9 +156,9 @@ func (c *userServiceClient) User_GetProfile(ctx context.Context, in *GetProfileR
 	return out, nil
 }
 
-func (c *userServiceClient) User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_ChangePassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -166,9 +166,9 @@ func (c *userServiceClient) User_ChangePassword(ctx context.Context, in *ChangeP
 	return out, nil
 }
 
-func (c *userServiceClient) User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_FollowUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -176,9 +176,9 @@ func (c *userServiceClient) User_FollowUser(ctx context.Context, in *FollowUserR
 	return out, nil
 }
 
-func (c *userServiceClient) User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_BlockUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -186,9 +186,9 @@ func (c *userServiceClient) User_BlockUser(ctx context.Context, in *BlockUserReq
 	return out, nil
 }
 
-func (c *userServiceClient) User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_UnFollowUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -196,9 +196,9 @@ func (c *userServiceClient) User_UnFollowUser(ctx context.Context, in *UnFollowU
 	return out, nil
 }
 
-func (c *userServiceClient) User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_UnBlockUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -206,9 +206,9 @@ func (c *userServiceClient) User_UnBlockUser(ctx context.Context, in *UnBlockUse
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -216,9 +216,9 @@ func (c *userServiceClient) User_GetSettings(ctx context.Context, in *GetSetting
 	return out, nil
 }
 
-func (c *userServiceClient) User_UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_UpdateSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -226,9 +226,9 @@ func (c *userServiceClient) User_UpdateSettings(ctx context.Context, in *UpdateS
 	return out, nil
 }
 
-func (c *userServiceClient) User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_DeactivateAccount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -236,9 +236,9 @@ func (c *userServiceClient) User_DeactivateAccount(ctx context.Context, in *Deac
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetAllFollowers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -246,9 +246,9 @@ func (c *userServiceClient) User_GetAllFollowers(ctx context.Context, in *GetAll
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetAllFollowing_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -256,9 +256,9 @@ func (c *userServiceClient) User_GetAllFollowing(ctx context.Context, in *GetAll
 	return out, nil
 }
 
-func (c *userServiceClient) User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_SubmitVerifyAccountRequest_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -266,9 +266,9 @@ func (c *userServiceClient) User_SubmitVerifyAccountRequest(ctx context.Context,
 	return out, nil
 }
 
-func (c *userServiceClient) User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponse, error) {
+func (c *userServiceClient) User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponse)
+	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_GetAllVerifyAccountRequest_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -280,27 +280,27 @@ func (c *userServiceClient) User_GetAllVerifyAccountRequest(ctx context.Context,
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
 type UserServiceServer interface {
-	User_Register(context.Context, *RegisterRequest) (*ApiResponse, error)
-	User_Login(context.Context, *LoginRequest) (*ApiResponse, error)
-	User_RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponse, error)
-	User_ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponse, error)
-	User_GetSecurityQuestion(context.Context, *GetSecurityQuestionRequest) (*ApiResponse, error)
-	User_ValidateSecurityAnswer(context.Context, *ValidateSecurityAnswerRequest) (*ApiResponse, error)
-	User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponse, error)
+	User_Register(context.Context, *RegisterRequest) (*ApiResponseUser, error)
+	User_Login(context.Context, *LoginRequest) (*ApiResponseUser, error)
+	User_RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponseUser, error)
+	User_ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponseUser, error)
+	User_GetSecurityQuestion(context.Context, *GetSecurityQuestionRequest) (*ApiResponseUser, error)
+	User_ValidateSecurityAnswer(context.Context, *ValidateSecurityAnswerRequest) (*ApiResponseUser, error)
+	User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponseUser, error)
 	// protected routes
-	User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponse, error)
-	User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error)
-	User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponse, error)
-	User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponse, error)
-	User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponse, error)
-	User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponse, error)
-	User_GetSettings(context.Context, *GetSettingsRequest) (*ApiResponse, error)
-	User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponse, error)
-	User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponse, error)
-	User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponse, error)
-	User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponse, error)
-	User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponse, error)
-	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponse, error)
+	User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponseUser, error)
+	User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponseUser, error)
+	User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponseUser, error)
+	User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponseUser, error)
+	User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponseUser, error)
+	User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponseUser, error)
+	User_GetSettings(context.Context, *GetSettingsRequest) (*ApiResponseUser, error)
+	User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponseUser, error)
+	User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponseUser, error)
+	User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponseUser, error)
+	User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponseUser, error)
+	User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponseUser, error)
+	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -311,64 +311,64 @@ type UserServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServiceServer struct{}
 
-func (UnimplementedUserServiceServer) User_Register(context.Context, *RegisterRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_Register(context.Context, *RegisterRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_Register not implemented")
 }
-func (UnimplementedUserServiceServer) User_Login(context.Context, *LoginRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_Login(context.Context, *LoginRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_Login not implemented")
 }
-func (UnimplementedUserServiceServer) User_RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_RequestVerificationCode(context.Context, *VerificationRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_RequestVerificationCode not implemented")
 }
-func (UnimplementedUserServiceServer) User_ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_ValidateVerificationCode(context.Context, *ValidateCodeRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ValidateVerificationCode not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetSecurityQuestion(context.Context, *GetSecurityQuestionRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetSecurityQuestion(context.Context, *GetSecurityQuestionRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetSecurityQuestion not implemented")
 }
-func (UnimplementedUserServiceServer) User_ValidateSecurityAnswer(context.Context, *ValidateSecurityAnswerRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_ValidateSecurityAnswer(context.Context, *ValidateSecurityAnswerRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ValidateSecurityAnswer not implemented")
 }
-func (UnimplementedUserServiceServer) User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ResetPassword not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetProfile not implemented")
 }
-func (UnimplementedUserServiceServer) User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ChangePassword not implemented")
 }
-func (UnimplementedUserServiceServer) User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_FollowUser not implemented")
 }
-func (UnimplementedUserServiceServer) User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_BlockUser not implemented")
 }
-func (UnimplementedUserServiceServer) User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UnFollowUser not implemented")
 }
-func (UnimplementedUserServiceServer) User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_UnBlockUser(context.Context, *UnBlockUserRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UnBlockUser not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetSettings(context.Context, *GetSettingsRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetSettings(context.Context, *GetSettingsRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetSettings not implemented")
 }
-func (UnimplementedUserServiceServer) User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_UpdateSettings(context.Context, *UpdateSettingsRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UpdateSettings not implemented")
 }
-func (UnimplementedUserServiceServer) User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_DeactivateAccount not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllFollowers not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllFollowing not implemented")
 }
-func (UnimplementedUserServiceServer) User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_SubmitVerifyAccountRequest not implemented")
 }
-func (UnimplementedUserServiceServer) User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponse, error) {
+func (UnimplementedUserServiceServer) User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllVerifyAccountRequest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}

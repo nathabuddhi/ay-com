@@ -18,34 +18,34 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponseUser, error) {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 	var user models.User
 
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Invalid Credentials.",
 		}, nil
 	}
 
 	if user.IsDeactivated {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Account is not active. Please verify your email or contact support.",
 		}, nil
 	}
 
 	if user.IsBanned {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Your account is banned. Contact support if you think this is a mistake.",
 		}, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Invalid Credentials.",
 		}, nil
@@ -58,16 +58,16 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An Error Occured: " + err.Error(),
 		}, nil
 	}
 
-	tokenMessage := &pb.String{Value: tokenString}
+	tokenMessage := &pb.StringUser{Value: tokenString}
 	anyToken, err := anypb.New(tokenMessage)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An Error Occured: " + err.Error(),
 		}, nil
@@ -75,33 +75,33 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 
 	zap.L().Info("User Logged in. Token is: " + anyToken.String())
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Login successful",
 		Data:    anyToken,
 	}, nil
 }
 
-func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (*pb.ApiResponseUser, error) {
 	if req.Email == "" || req.Username == "" || req.Password == "" || req.Name == "" || req.SecurityQuestion == "" || req.SecurityAnswer == "" || req.Gender == "" || req.DateOfBirth == "" {
-		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
 	}
 
 	if len(req.Name) < 5 || !regexp.MustCompile(`^[A-Za-z\s]+$`).MatchString(req.Name) {
-		return &pb.ApiResponse{Success: false, Message: "Name must be more than 4 characters and contain only letters and spaces."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Name must be more than 4 characters and contain only letters and spaces."}, nil
 	}
 
 	var existingUser models.User
 	if err := h.DB.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
-		return &pb.ApiResponse{Success: false, Message: "Username is already taken."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Username is already taken."}, nil
 	}
 
 	if !regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$`).MatchString(req.Email) {
-		return &pb.ApiResponse{Success: false, Message: "Invalid email format. Must end with .com"}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid email format. Must end with .com"}, nil
 	}
 
 	if err := h.DB.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
-		return &pb.ApiResponse{Success: false, Message: "Email is already registered."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Email is already registered."}, nil
 	}
 
 	if len(req.Password) < 8 ||
@@ -109,19 +109,19 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 		!regexp.MustCompile(`[a-z]`).MatchString(req.Password) ||
 		!regexp.MustCompile(`[0-9]`).MatchString(req.Password) ||
 		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.Password) {
-		return &pb.ApiResponse{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
 	}
 
 	if req.Gender != "male" && req.Gender != "female" {
-		return &pb.ApiResponse{Success: false, Message: "Gender must be 'male' or 'female'."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Gender must be 'male' or 'female'."}, nil
 	}
 
 	dob, err := time.Parse("2006-01-02", req.DateOfBirth)
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Invalid date of birth format. Use YYYY-MM-DD."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid date of birth format. Use YYYY-MM-DD."}, nil
 	}
 	if time.Since(dob).Hours() < 13*365*24 {
-		return &pb.ApiResponse{Success: false, Message: "You must be at least 13 years old to register."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You must be at least 13 years old to register."}, nil
 	}
 
 	validQuestions := map[string]bool{
@@ -132,11 +132,11 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 		"What was your childhood nickname?":       true,
 	}
 	if !validQuestions[req.SecurityQuestion] {
-		return &pb.ApiResponse{Success: false, Message: "Invalid security question selected."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid security question selected."}, nil
 	}
 
 	// if err := verifyRecaptcha(req.RecaptchaToken); err != nil {
-	// 	return &pb.ApiResponse{Success: false, Message: "reCAPTCHA verification failed."}, nil
+	// 	return &pb.ApiResponseUser{Success: false, Message: "reCAPTCHA verification failed."}, nil
 	// }
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -165,26 +165,25 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 		CreatedAt:        time.Now(),
 		UpdatedAt:        time.Now(),
 		JoinedAt:         time.Now(),
-		WantsNewsletter:  req.WantsNewsletter,
 		IsVerified:       false,
 		IsDeactivated:    true,
 	}
 
 	if err := h.DB.Create(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to register user: " + err.Error()}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to register user: " + err.Error()}, nil
 	}
 
 	h.User_RequestVerificationCode(ctx, &pb.VerificationRequest{
 		Email: req.Email,
 	})
 
-	anyGeneratedId, _ := anypb.New(&pb.String{Value: generatedId})
-	return &pb.ApiResponse{Success: true, Message: "User registered successfully. Please verify your email.", Data: anyGeneratedId}, nil
+	anyGeneratedId, _ := anypb.New(&pb.StringUser{Value: generatedId})
+	return &pb.ApiResponseUser{Success: true, Message: "User registered successfully. Please verify your email.", Data: anyGeneratedId}, nil
 }
 
-func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponseUser, error) {
 	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" || req.UserId == "" {
-		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
 	}
 
 	if len(req.NewPassword) < 8 ||
@@ -192,25 +191,25 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
 		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
 		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
-		return &pb.ApiResponse{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
 	}
 
 	var user models.User
 	if err := h.DB.Where("email = ? AND user_id = ?", req.Email, req.UserId).First(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword)); err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Old password is incorrect."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Old password is incorrect."}, nil
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Error hashing new password."}, err
+		return &pb.ApiResponseUser{Success: false, Message: "Error hashing new password."}, err
 	}
 
 	if err := h.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to update password."}, err
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to update password."}, err
 	}
 
 	rabbitmq.PublishEmail(req.Email,
@@ -218,46 +217,46 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 		"Your Password was just changed at "+time.Now().String()+".<br>If this wasn't you, contact support immediately.",
 	)
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Password changed successfully.",
 	}, nil
 }
 
-func (h *Handlers) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetSecurityQuestion(ctx context.Context, req *pb.GetSecurityQuestionRequest) (*pb.ApiResponseUser, error) {
 	var user models.User
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	if user.IsDeactivated {
-		return &pb.ApiResponse{Success: false, Message: "Account is not active. Please verify your email or contact support."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Account is not active. Please verify your email or contact support."}, nil
 	}
 
 	if user.IsBanned {
-		return &pb.ApiResponse{Success: false, Message: "Your account is banned. Contact support if you think this is a mistake."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Your account is banned. Contact support if you think this is a mistake."}, nil
 	}
 
-	anyQuestion, err := anypb.New(&pb.String{Value: user.SecurityQuestion})
+	anyQuestion, err := anypb.New(&pb.StringUser{Value: user.SecurityQuestion})
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to get security question."}, err
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get security question."}, err
 	}
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Security question retrieved successfully.",
 		Data:    anyQuestion,
 	}, nil
 }
 
-func (h *Handlers) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ValidateSecurityAnswer(ctx context.Context, req *pb.ValidateSecurityAnswerRequest) (*pb.ApiResponseUser, error) {
 	var user models.User
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	if user.SecurityAnswer != req.Answer {
-		return &pb.ApiResponse{Success: false, Message: "Invalid Credentials."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid Credentials."}, nil
 	}
 
 	code := fmt.Sprintf("%10d", rand.Intn(10000000000))
@@ -269,7 +268,7 @@ func (h *Handlers) User_ValidateSecurityAnswer(ctx context.Context, req *pb.Vali
 	`, req.Email, code, time.Now().Add(time.Minute*5)).Error
 
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An error occured. Please try again or contact support.\n" + err.Error(),
 			Data:    nil,
@@ -282,16 +281,16 @@ func (h *Handlers) User_ValidateSecurityAnswer(ctx context.Context, req *pb.Vali
 		"Please go to <a href='"+link+"' target='_blank'>reset-password-page</a> to reset your password and insert the following code: <b>"+code+"</b>.<br> <i>This code is valid for 10 minutes.</i>",
 	)
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Security answer verified. Check your email for further instructions.",
 		Data:    nil,
 	}, nil
 }
 
-func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ApiResponseUser, error) {
 	if req.Email == "" || req.Code == "" || req.NewPassword == "" {
-		return &pb.ApiResponse{Success: false, Message: "All fields must be filled."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
 	}
 
 	if len(req.NewPassword) < 8 ||
@@ -299,12 +298,12 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
 		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
 		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
-		return &pb.ApiResponse{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
 	}
 
 	var user models.User
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "User not found."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
 	var count int
@@ -316,16 +315,16 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 	`, req.Email, req.Code, time.Now().Format("2006-01-02 15:04:05")).Scan(&count).Error
 
 	if err != nil || count != 1 {
-		return &pb.ApiResponse{Success: false, Message: "Invalid or expired code."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "Invalid or expired code."}, nil
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Error hashing new password."}, err
+		return &pb.ApiResponseUser{Success: false, Message: "Error hashing new password."}, err
 	}
 
 	if err := h.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
-		return &pb.ApiResponse{Success: false, Message: "Failed to update password."}, err
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to update password."}, err
 	}
 
 	h.DB.WithContext(ctx).Exec(`
@@ -338,7 +337,7 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 		"Your Password was just changed at "+time.Now().String()+".<br>If this wasn't you, contact support immediately.",
 	)
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Password reset successfully.",
 		Data:    nil,

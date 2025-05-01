@@ -19,10 +19,10 @@ func safeString(s *string) string {
 	return *s
 }
 
-func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
 	var user models.User
 	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User Not Found.",
 		}, nil
@@ -30,21 +30,21 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 
 	var requester models.User
 	if err := h.DB.Where("user_id = ?", req.RequesterId).First(&requester).Error; err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Requester Not Found.",
 		}, nil
 	}
 
 	if user.IsDeactivated || user.IsBanned {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User is inactive or currently banned.",
 		}, nil
 	}
 
 	if requester.IsDeactivated || requester.IsBanned {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Your account is inactive or currently banned.",
 		}, nil
@@ -73,7 +73,7 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 
 	returnData, err := anypb.New(userData)
 	if err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "An error occured: " + err.Error(),
 			Data:    nil,
@@ -85,40 +85,40 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		rabbitmq.PublishSetRedis("getprofile/"+user.UserId, string(redisData))
 	}
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Get User Profile successful.",
 		Data:    returnData,
 	}, nil
 }
 
-func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.DeactivateAccountRequest) (*pb.ApiResponse, error) {
+func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.DeactivateAccountRequest) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User Deactivating Account", zap.String("user_id", req.UserId))
 
 	var user models.User
 	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User Not Found.",
 		}, nil
 	}
 
 	if user.IsDeactivated {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User is already deactivated.",
 		}, nil
 	}
 
 	if user.IsBanned {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User is banned.",
 		}, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Invalid Credentials.",
 		}, nil
@@ -129,7 +129,7 @@ func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.Deactivat
 		Update("is_deactivated", true).Error
 	if err != nil {
 		zap.L().Error("Failed to deactivate user account", zap.Error(err))
-		return &pb.ApiResponse{
+		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "Failed to deactivate user account:" + err.Error(),
 		}, nil
@@ -140,7 +140,7 @@ func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.Deactivat
 		"Your account has been deactivated. If this was a mistake, please head to the activation page or contact support.",
 	)
 
-	return &pb.ApiResponse{
+	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Account deactivated successfully.",
 	}, nil
