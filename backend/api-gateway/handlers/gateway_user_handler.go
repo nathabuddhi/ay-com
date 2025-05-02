@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
-	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -99,11 +98,17 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go func() {
-			if err := supabase.UploadAvatarAndBanner(userIdString.Value, avatarFile, bannerFile); err != nil {
-				zap.L().Error("Error uploading avatar and banner to Supabase", zap.Error(err))
-			}
-		}()
+		if err := UploadAvatar(userIdString.Value, avatarFile); err != nil {
+			zap.L().Error("Error uploading avatar.", zap.Error(err))
+			returnErrorResponse(w, "Failed to upload avatar files.")
+			return
+		}
+
+		if err := UploadBanner(userIdString.Value, bannerFile); err != nil {
+			zap.L().Error("Error uploading banner.", zap.Error(err))
+			returnErrorResponse(w, "Failed to upload banner files.")
+			return
+		}
 	}
 	processUserResponseWithoutPayload(resp, err, w)
 }
@@ -399,4 +404,24 @@ func User_UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.User_UpdateProfile(ctx, req)
 
 	processUserResponseWithoutPayload(resp, err, w)
+}
+
+func User_IsUserPrivate(user_id string) (bool, error) {
+	zap.L().Info("User Is User Private is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+	req := &pb.IsAccountPrivateRequest{}
+	req.UserId = user_id
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	isPrivate, err := client.User_IsUserPrivate(ctx, req)
+
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		return false, err
+	}
+	return isPrivate.Value, nil
 }

@@ -34,6 +34,7 @@ service UserService {
 
     rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponseUser);
     rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponseUser);
+    rpc User_IsUserPrivate (IsAccountPrivateRequest) returns (BoolUser);
 }
 
 message ApiResponseUser {
@@ -208,4 +209,8 @@ message UpdateUserProfileRequest {
     string bio = 4;
     string gender = 5;
     string date_of_birth = 6;
+}
+
+message IsAccountPrivateRequest {
+    string user_id = 1;
 }

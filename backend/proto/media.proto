@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package media;
+
+option go_package = "media/";
+
+service MediaService {
+    rpc Media_UploadMedia(UploadImageRequest) returns (ApiResponseMedia);
+}
+
+message ApiResponseMedia {
+    bool success = 1;
+    string message = 2;
+    string url = 3;
+}
+
+message UploadImageRequest {
+    string upload_type = 1;
+    bytes image = 2;
+    string image_type = 3;
+    string type_id = 4;
+}

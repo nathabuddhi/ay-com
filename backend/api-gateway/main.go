@@ -7,7 +7,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/handlers"
 	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
-	"github.com/nathabuddhi/ay-com/backend/api-gateway/supabase"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -53,10 +52,9 @@ func main() {
 
 	handlers.InitEnvironmentVariables()
 	redis_client.InitRedis()
-	supabase.InitSupabase()
 
 	r := handlers.InitRoutes()
-	
+
 	httpHandler := allowCors(r)
 
 	zap.L().Info("API Gateway Running. Listening on port 5000.")

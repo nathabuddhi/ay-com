@@ -21,6 +21,7 @@ var (
 	USER_SERVICE_PATH         string
 	NOTIFICATION_SERVICE_PATH string
 	FLASK_SERVICE_PATH        string
+	MEDIA_SERVICE_PATH        string
 )
 
 func InitEnvironmentVariables() {
@@ -32,6 +33,7 @@ func InitEnvironmentVariables() {
 	USER_SERVICE_PATH = os.Getenv("USER_SERVICE_PATH")
 	FLASK_SERVICE_PATH = os.Getenv("FLASK_SERVICE_PATH")
 	NOTIFICATION_SERVICE_PATH = os.Getenv("NOTIFICATION_SERVICE_PATH")
+	MEDIA_SERVICE_PATH = os.Getenv("MEDIA_SERVICE_PATH")
 
 	zap.L().Info("Service Paths Loaded Successfully.")
 }
