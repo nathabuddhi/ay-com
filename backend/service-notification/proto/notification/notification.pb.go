@@ -626,7 +626,7 @@ var File_notification_proto protoreflect.FileDescriptor
 
 const file_notification_proto_rawDesc = "" +
 	"\n" +
-	"\x12notification.proto\x12\x04user\x1a\x19google/protobuf/any.proto\"w\n" +
+	"\x12notification.proto\x12\fnotification\x1a\x19google/protobuf/any.proto\"w\n" +
 	"\x17ApiResponseNotification\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12(\n" +
@@ -639,9 +639,9 @@ const file_notification_proto_rawDesc = "" +
 	"\x04read\x18\x05 \x01(\bR\x04read\x12\x1c\n" +
 	"\ttimestamp\x18\x06 \x01(\tR\ttimestamp\"5\n" +
 	"\x1aGetAllNotificationsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"V\n" +
-	"\x1aGetAllNotificationResponse\x128\n" +
-	"\rnotifications\x18\x01 \x03(\v2\x12.user.NotificationR\rnotifications\"a\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"^\n" +
+	"\x1aGetAllNotificationResponse\x12@\n" +
+	"\rnotifications\x18\x01 \x03(\v2\x1a.notification.NotificationR\rnotifications\"a\n" +
 	"\x1dMarkNotificationAsReadRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12'\n" +
 	"\x0fnotification_id\x18\x02 \x01(\tR\x0enotificationId\"]\n" +
@@ -668,14 +668,14 @@ const file_notification_proto_rawDesc = "" +
 	"\fnotif_follow\x18\x04 \x01(\bR\vnotifFollow\x12#\n" +
 	"\rnotif_mention\x18\x05 \x01(\bR\fnotifMention\x12'\n" +
 	"\x0fnotif_community\x18\x06 \x01(\bR\x0enotifCommunity\x12)\n" +
-	"\x10notif_newsletter\x18\a \x01(\bR\x0fnotifNewsletter2\xf3\x04\n" +
-	"\x13NotificationService\x12c\n" +
-	" Notification_GetAllNotifications\x12 .user.GetAllNotificationsRequest\x1a\x1d.user.ApiResponseNotification\x12i\n" +
-	"#Notification_MarkNotificationAsRead\x12#.user.MarkNotificationAsReadRequest\x1a\x1d.user.ApiResponseNotification\x12a\n" +
-	"\x1fNotification_DeleteNotification\x12\x1f.user.DeleteNotificationRequest\x1a\x1d.user.ApiResponseNotification\x12a\n" +
-	"\x1fNotification_ClearNotifications\x12\x1f.user.ClearNotificationsRequest\x1a\x1d.user.ApiResponseNotification\x12_\n" +
-	"\x18Notification_GetSettings\x12$.user.GetNotificationSettingsRequest\x1a\x1d.user.ApiResponseNotification\x12e\n" +
-	"\x1bNotification_UpdateSettings\x12'.user.UpdateNotificationSettingsRequest\x1a\x1d.user.ApiResponseNotificationB\x0fZ\rnotification/b\x06proto3"
+	"\x10notif_newsletter\x18\a \x01(\bR\x0fnotifNewsletter2\xd3\x05\n" +
+	"\x13NotificationService\x12s\n" +
+	" Notification_GetAllNotifications\x12(.notification.GetAllNotificationsRequest\x1a%.notification.ApiResponseNotification\x12y\n" +
+	"#Notification_MarkNotificationAsRead\x12+.notification.MarkNotificationAsReadRequest\x1a%.notification.ApiResponseNotification\x12q\n" +
+	"\x1fNotification_DeleteNotification\x12'.notification.DeleteNotificationRequest\x1a%.notification.ApiResponseNotification\x12q\n" +
+	"\x1fNotification_ClearNotifications\x12'.notification.ClearNotificationsRequest\x1a%.notification.ApiResponseNotification\x12o\n" +
+	"\x18Notification_GetSettings\x12,.notification.GetNotificationSettingsRequest\x1a%.notification.ApiResponseNotification\x12u\n" +
+	"\x1bNotification_UpdateSettings\x12/.notification.UpdateNotificationSettingsRequest\x1a%.notification.ApiResponseNotificationB\x0fZ\rnotification/b\x06proto3"
 
 var (
 	file_notification_proto_rawDescOnce sync.Once
@@ -691,33 +691,33 @@ func file_notification_proto_rawDescGZIP() []byte {
 
 var file_notification_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_notification_proto_goTypes = []any{
-	(*ApiResponseNotification)(nil),           // 0: user.ApiResponseNotification
-	(*Notification)(nil),                      // 1: user.Notification
-	(*GetAllNotificationsRequest)(nil),        // 2: user.GetAllNotificationsRequest
-	(*GetAllNotificationResponse)(nil),        // 3: user.GetAllNotificationResponse
-	(*MarkNotificationAsReadRequest)(nil),     // 4: user.MarkNotificationAsReadRequest
-	(*DeleteNotificationRequest)(nil),         // 5: user.DeleteNotificationRequest
-	(*ClearNotificationsRequest)(nil),         // 6: user.ClearNotificationsRequest
-	(*NotificationSettings)(nil),              // 7: user.NotificationSettings
-	(*GetNotificationSettingsRequest)(nil),    // 8: user.GetNotificationSettingsRequest
-	(*UpdateNotificationSettingsRequest)(nil), // 9: user.UpdateNotificationSettingsRequest
+	(*ApiResponseNotification)(nil),           // 0: notification.ApiResponseNotification
+	(*Notification)(nil),                      // 1: notification.Notification
+	(*GetAllNotificationsRequest)(nil),        // 2: notification.GetAllNotificationsRequest
+	(*GetAllNotificationResponse)(nil),        // 3: notification.GetAllNotificationResponse
+	(*MarkNotificationAsReadRequest)(nil),     // 4: notification.MarkNotificationAsReadRequest
+	(*DeleteNotificationRequest)(nil),         // 5: notification.DeleteNotificationRequest
+	(*ClearNotificationsRequest)(nil),         // 6: notification.ClearNotificationsRequest
+	(*NotificationSettings)(nil),              // 7: notification.NotificationSettings
+	(*GetNotificationSettingsRequest)(nil),    // 8: notification.GetNotificationSettingsRequest
+	(*UpdateNotificationSettingsRequest)(nil), // 9: notification.UpdateNotificationSettingsRequest
 	(*anypb.Any)(nil),                         // 10: google.protobuf.Any
 }
 var file_notification_proto_depIdxs = []int32{
-	10, // 0: user.ApiResponseNotification.data:type_name -> google.protobuf.Any
-	1,  // 1: user.GetAllNotificationResponse.notifications:type_name -> user.Notification
-	2,  // 2: user.NotificationService.Notification_GetAllNotifications:input_type -> user.GetAllNotificationsRequest
-	4,  // 3: user.NotificationService.Notification_MarkNotificationAsRead:input_type -> user.MarkNotificationAsReadRequest
-	5,  // 4: user.NotificationService.Notification_DeleteNotification:input_type -> user.DeleteNotificationRequest
-	6,  // 5: user.NotificationService.Notification_ClearNotifications:input_type -> user.ClearNotificationsRequest
-	8,  // 6: user.NotificationService.Notification_GetSettings:input_type -> user.GetNotificationSettingsRequest
-	9,  // 7: user.NotificationService.Notification_UpdateSettings:input_type -> user.UpdateNotificationSettingsRequest
-	0,  // 8: user.NotificationService.Notification_GetAllNotifications:output_type -> user.ApiResponseNotification
-	0,  // 9: user.NotificationService.Notification_MarkNotificationAsRead:output_type -> user.ApiResponseNotification
-	0,  // 10: user.NotificationService.Notification_DeleteNotification:output_type -> user.ApiResponseNotification
-	0,  // 11: user.NotificationService.Notification_ClearNotifications:output_type -> user.ApiResponseNotification
-	0,  // 12: user.NotificationService.Notification_GetSettings:output_type -> user.ApiResponseNotification
-	0,  // 13: user.NotificationService.Notification_UpdateSettings:output_type -> user.ApiResponseNotification
+	10, // 0: notification.ApiResponseNotification.data:type_name -> google.protobuf.Any
+	1,  // 1: notification.GetAllNotificationResponse.notifications:type_name -> notification.Notification
+	2,  // 2: notification.NotificationService.Notification_GetAllNotifications:input_type -> notification.GetAllNotificationsRequest
+	4,  // 3: notification.NotificationService.Notification_MarkNotificationAsRead:input_type -> notification.MarkNotificationAsReadRequest
+	5,  // 4: notification.NotificationService.Notification_DeleteNotification:input_type -> notification.DeleteNotificationRequest
+	6,  // 5: notification.NotificationService.Notification_ClearNotifications:input_type -> notification.ClearNotificationsRequest
+	8,  // 6: notification.NotificationService.Notification_GetSettings:input_type -> notification.GetNotificationSettingsRequest
+	9,  // 7: notification.NotificationService.Notification_UpdateSettings:input_type -> notification.UpdateNotificationSettingsRequest
+	0,  // 8: notification.NotificationService.Notification_GetAllNotifications:output_type -> notification.ApiResponseNotification
+	0,  // 9: notification.NotificationService.Notification_MarkNotificationAsRead:output_type -> notification.ApiResponseNotification
+	0,  // 10: notification.NotificationService.Notification_DeleteNotification:output_type -> notification.ApiResponseNotification
+	0,  // 11: notification.NotificationService.Notification_ClearNotifications:output_type -> notification.ApiResponseNotification
+	0,  // 12: notification.NotificationService.Notification_GetSettings:output_type -> notification.ApiResponseNotification
+	0,  // 13: notification.NotificationService.Notification_UpdateSettings:output_type -> notification.ApiResponseNotification
 	8,  // [8:14] is the sub-list for method output_type
 	2,  // [2:8] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name

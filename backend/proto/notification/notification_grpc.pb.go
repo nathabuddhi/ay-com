@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	NotificationService_Notification_GetAllNotifications_FullMethodName    = "/user.NotificationService/Notification_GetAllNotifications"
-	NotificationService_Notification_MarkNotificationAsRead_FullMethodName = "/user.NotificationService/Notification_MarkNotificationAsRead"
-	NotificationService_Notification_DeleteNotification_FullMethodName     = "/user.NotificationService/Notification_DeleteNotification"
-	NotificationService_Notification_ClearNotifications_FullMethodName     = "/user.NotificationService/Notification_ClearNotifications"
-	NotificationService_Notification_GetSettings_FullMethodName            = "/user.NotificationService/Notification_GetSettings"
-	NotificationService_Notification_UpdateSettings_FullMethodName         = "/user.NotificationService/Notification_UpdateSettings"
+	NotificationService_Notification_GetAllNotifications_FullMethodName    = "/notification.NotificationService/Notification_GetAllNotifications"
+	NotificationService_Notification_MarkNotificationAsRead_FullMethodName = "/notification.NotificationService/Notification_MarkNotificationAsRead"
+	NotificationService_Notification_DeleteNotification_FullMethodName     = "/notification.NotificationService/Notification_DeleteNotification"
+	NotificationService_Notification_ClearNotifications_FullMethodName     = "/notification.NotificationService/Notification_ClearNotifications"
+	NotificationService_Notification_GetSettings_FullMethodName            = "/notification.NotificationService/Notification_GetSettings"
+	NotificationService_Notification_UpdateSettings_FullMethodName         = "/notification.NotificationService/Notification_UpdateSettings"
 )
 
 // NotificationServiceClient is the client API for NotificationService service.
@@ -280,7 +280,7 @@ func _NotificationService_Notification_UpdateSettings_Handler(srv interface{}, c
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var NotificationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user.NotificationService",
+	ServiceName: "notification.NotificationService",
 	HandlerType: (*NotificationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

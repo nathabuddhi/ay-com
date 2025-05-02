@@ -29,6 +29,7 @@ const (
 	UserService_User_GetProfile_FullMethodName                 = "/user.UserService/User_GetProfile"
 	UserService_User_ChangePassword_FullMethodName             = "/user.UserService/User_ChangePassword"
 	UserService_User_UpdateProfile_FullMethodName              = "/user.UserService/User_UpdateProfile"
+	UserService_User_SearchPeople_FullMethodName               = "/user.UserService/User_SearchPeople"
 	UserService_User_FollowUser_FullMethodName                 = "/user.UserService/User_FollowUser"
 	UserService_User_BlockUser_FullMethodName                  = "/user.UserService/User_BlockUser"
 	UserService_User_UnFollowUser_FullMethodName               = "/user.UserService/User_UnFollowUser"
@@ -40,6 +41,8 @@ const (
 	UserService_User_GetAllFollowing_FullMethodName            = "/user.UserService/User_GetAllFollowing"
 	UserService_User_SubmitVerifyAccountRequest_FullMethodName = "/user.UserService/User_SubmitVerifyAccountRequest"
 	UserService_User_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/User_GetAllVerifyAccountRequest"
+	UserService_User_IsUserPrivate_FullMethodName              = "/user.UserService/User_IsUserPrivate"
+	UserService_User_IsUserFollowing_FullMethodName            = "/user.UserService/User_IsUserFollowing"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -57,6 +60,7 @@ type UserServiceClient interface {
 	User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_UpdateProfile(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_SearchPeople(ctx context.Context, in *SearchPeopleRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
@@ -68,6 +72,8 @@ type UserServiceClient interface {
 	User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error)
+	User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error)
 }
 
 type userServiceClient struct {
@@ -172,6 +178,16 @@ func (c *userServiceClient) User_UpdateProfile(ctx context.Context, in *UpdateUs
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_UpdateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_SearchPeople(ctx context.Context, in *SearchPeopleRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_SearchPeople_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -288,6 +304,26 @@ func (c *userServiceClient) User_GetAllVerifyAccountRequest(ctx context.Context,
 	return out, nil
 }
 
+func (c *userServiceClient) User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoolUser)
+	err := c.cc.Invoke(ctx, UserService_User_IsUserPrivate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoolUser)
+	err := c.cc.Invoke(ctx, UserService_User_IsUserFollowing_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -303,6 +339,7 @@ type UserServiceServer interface {
 	User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponseUser, error)
 	User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponseUser, error)
 	User_UpdateProfile(context.Context, *UpdateUserProfileRequest) (*ApiResponseUser, error)
+	User_SearchPeople(context.Context, *SearchPeopleRequest) (*ApiResponseUser, error)
 	User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponseUser, error)
 	User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponseUser, error)
 	User_UnFollowUser(context.Context, *UnFollowUserRequest) (*ApiResponseUser, error)
@@ -314,6 +351,8 @@ type UserServiceServer interface {
 	User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponseUser, error)
 	User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponseUser, error)
 	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error)
+	User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error)
+	User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -354,6 +393,9 @@ func (UnimplementedUserServiceServer) User_ChangePassword(context.Context, *Chan
 func (UnimplementedUserServiceServer) User_UpdateProfile(context.Context, *UpdateUserProfileRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UpdateProfile not implemented")
 }
+func (UnimplementedUserServiceServer) User_SearchPeople(context.Context, *SearchPeopleRequest) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_SearchPeople not implemented")
+}
 func (UnimplementedUserServiceServer) User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_FollowUser not implemented")
 }
@@ -386,6 +428,12 @@ func (UnimplementedUserServiceServer) User_SubmitVerifyAccountRequest(context.Co
 }
 func (UnimplementedUserServiceServer) User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllVerifyAccountRequest not implemented")
+}
+func (UnimplementedUserServiceServer) User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_IsUserPrivate not implemented")
+}
+func (UnimplementedUserServiceServer) User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_IsUserFollowing not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -588,6 +636,24 @@ func _UserService_User_UpdateProfile_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_SearchPeople_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPeopleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_SearchPeople(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_SearchPeople_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_SearchPeople(ctx, req.(*SearchPeopleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_User_FollowUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FollowUserRequest)
 	if err := dec(in); err != nil {
@@ -786,6 +852,42 @@ func _UserService_User_GetAllVerifyAccountRequest_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_IsUserPrivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsAccountPrivateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_IsUserPrivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_IsUserPrivate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_IsUserPrivate(ctx, req.(*IsAccountPrivateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_IsUserFollowing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsUserFollowingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_IsUserFollowing(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_IsUserFollowing_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_IsUserFollowing(ctx, req.(*IsUserFollowingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -834,6 +936,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_User_UpdateProfile_Handler,
 		},
 		{
+			MethodName: "User_SearchPeople",
+			Handler:    _UserService_User_SearchPeople_Handler,
+		},
+		{
 			MethodName: "User_FollowUser",
 			Handler:    _UserService_User_FollowUser_Handler,
 		},
@@ -876,6 +982,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_GetAllVerifyAccountRequest",
 			Handler:    _UserService_User_GetAllVerifyAccountRequest_Handler,
+		},
+		{
+			MethodName: "User_IsUserPrivate",
+			Handler:    _UserService_User_IsUserPrivate_Handler,
+		},
+		{
+			MethodName: "User_IsUserFollowing",
+			Handler:    _UserService_User_IsUserFollowing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

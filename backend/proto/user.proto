@@ -19,6 +19,7 @@ service UserService {
     rpc User_GetProfile (GetProfileRequest) returns (ApiResponseUser);
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
     rpc User_UpdateProfile (UpdateUserProfileRequest) returns (ApiResponseUser);
+    rpc User_SearchPeople (SearchPeopleRequest) returns (ApiResponseUser);
 
     rpc User_FollowUser (FollowUserRequest) returns (ApiResponseUser);
     rpc User_BlockUser (BlockUserRequest) returns (ApiResponseUser);
@@ -35,6 +36,7 @@ service UserService {
     rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponseUser);
     rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponseUser);
     rpc User_IsUserPrivate (IsAccountPrivateRequest) returns (BoolUser);
+    rpc User_IsUserFollowing (IsUserFollowingRequest) returns (BoolUser);
 }
 
 message ApiResponseUser {
@@ -213,4 +215,13 @@ message UpdateUserProfileRequest {
 
 message IsAccountPrivateRequest {
     string user_id = 1;
+}
+
+message IsUserFollowingRequest {
+    string user_id = 1;
+    string private_id = 2;
+}
+
+message SearchPeopleRequest {
+    string keyword = 1;
 }

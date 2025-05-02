@@ -1,14 +1,18 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/notification"
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -25,6 +29,65 @@ func getNotifServiceConn() *grpc.ClientConn {
 		}
 	})
 	return notifServiceConn
+}
+
+func processNotificationResponseWithoutPayload(resp *pb.ApiResponseNotification, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processNotificationResponseWithPayload[T any](resp *pb.ApiResponseNotification, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	decodedObject := new(T)
+	if _, ok := any(decodedObject).(proto.Message); !ok {
+		zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: decodedObject,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processNotificationRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T, client pb.NotificationServiceClient) {
+	conn := getNotifServiceConn()
+	client = pb.NewNotificationServiceClient(conn)
+
+	var req T
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to encode API request", zap.Error(err))
+		returnErrorResponse(w, "Failed to encode API request: "+err.Error())
+	}
+	return &req, client
 }
 
 func Notification_GetSettings(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package thread;
+
+import "google/protobuf/any.proto";
+
+option go_package = "thread/";
+
+service ThreadService {
+    // Protected Routes
+    rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_DeleteThread (DeleteThreadRequest) returns (ApiResponseThread);
+}
+
+message ApiResponseThread {
+    bool success = 1;
+    string message = 2;
+    google.protobuf.Any data = 3;
+}
+
+message StringThread {
+    string value = 1;
+}
+
+message Thread {
+    string thread_id = 1;
+    string user_id = 2;
+    string content = 3;
+    string category = 4;
+    bool is_advertisement = 5;
+    string reply_permission = 6;
+    bool pinned = 7;
+    repeated Media media = 8;
+    repeated PollOption poll_options = 9;
+    int32 like_count = 10;
+    int32 repost_count = 11;
+    int32 reply_count = 12;
+    string posted_at = 13; 
+    bool is_private = 14; 
+}
+
+message Media {
+    string id = 1;
+    string media_url = 2;
+    string media_type = 3;
+}
+
+message PollOption {
+    string id = 1;
+    string option = 2;
+    int32 vote_count = 3;
+}
+
+message ThreadLike {
+    string id = 1;
+    string user_id = 2;
+}
+
+message ThreadRepost {
+    string id = 1;
+    string user_id = 2;
+    string text = 3;
+}
+
+message ThreadReply {
+    string id = 1;
+    string user_id = 2;
+    string content = 3;
+    bool is_pinned = 4;
+}
+
+message GetAllThreadsRequest {
+    string user_id = 1;
+}
+
+message GetThreadsByUserRequest {
+    string user_id = 1;
+    string requester_id = 2;
+}
+
+message GetThreadsByCommunityRequest {
+    string community_id = 1;
+    string requester_id = 2;
+}
+
+message PostThread {
+    string user_id = 1;
+    bool is_community = 2;
+    string community_id = 3;
+    int32 poll_count = 4;
+    repeated string poll_options = 5; 
+    int32 media_count = 56;
+    repeated string media_urls = 7;
+    bool is_scheduled = 8;
+    string scheduled_at = 9;
+    bool is_advertisement = 10;
+    string reply_permission = 11;
+    bool is_private = 12;
+}
+
+message GetThreadsResponse {
+    repeated Thread threads = 1;
+}
+
+message DeleteThreadRequest {
+    string user_id = 1;
+    string thread_id = 2;
+}

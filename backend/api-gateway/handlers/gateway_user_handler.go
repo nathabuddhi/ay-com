@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -8,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,6 +32,65 @@ func getUserServiceConn() *grpc.ClientConn {
 		}
 	})
 	return userServiceConn
+}
+
+func processUserResponseWithoutPayload(resp *pb.ApiResponseUser, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processUserResponseWithPayload[T any](resp *pb.ApiResponseUser, err error, w http.ResponseWriter) {
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	decodedObject := new(T)
+	if _, ok := any(decodedObject).(proto.Message); !ok {
+		zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: resp.Success,
+		Message: resp.Message,
+		Payload: decodedObject,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func processUserRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T, client pb.UserServiceClient) {
+	conn := getUserServiceConn()
+	client = pb.NewUserServiceClient(conn)
+
+	var req T
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		zap.L().Error("Failed to encode API request", zap.Error(err))
+		returnErrorResponse(w, "Failed to encode API request: "+err.Error())
+	}
+	return &req, client
 }
 
 func User_Register(w http.ResponseWriter, r *http.Request) {
@@ -406,6 +468,19 @@ func User_UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+func User_SearchPeople(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Search People is called.")
+
+	req, client := processUserRequest[pb.SearchPeopleRequest](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_SearchPeople(ctx, req)
+
+	processUserResponseWithoutPayload(resp, err, w)
+}
+
 func User_IsUserPrivate(user_id string) (bool, error) {
 	zap.L().Info("User Is User Private is called.")
 
@@ -424,4 +499,26 @@ func User_IsUserPrivate(user_id string) (bool, error) {
 		return false, err
 	}
 	return isPrivate.Value, nil
+}
+
+func User_IsUserFollowing(user_id string, private_id string) (bool, error) {
+	zap.L().Info("User Is User Following is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+	req := &pb.IsUserFollowingRequest{
+		UserId:    user_id,
+		PrivateId: private_id,
+	}
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	isFollowing, err := client.User_IsUserFollowing(ctx, req)
+
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		return false, err
+	}
+	return isFollowing.Value, nil
 }

@@ -21,6 +21,7 @@ func InitSecuredRoutes(r *mux.Router) {
 	secured.Use(middleware.JwtAuthMiddleware)
 	InitSecuredUserRoutes(secured)
 	InitSecuredNotificationRoutes(secured)
+	InitSecuredThreadRoutes(secured)
 
 	zap.L().Info("Secured Routes Initialized.")
 }
@@ -38,6 +39,7 @@ func InitUserRoutes(r *mux.Router) {
 
 func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{id}", User_GetProfile).Methods("GET")
+	secured.HandleFunc("/user/searchpeople", User_SearchPeople).Methods("GET")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("PATCH")
 	secured.HandleFunc("/user/updateprofile", User_UpdateProfile).Methods("PATCH")
 
@@ -63,4 +65,23 @@ func InitSecuredNotificationRoutes(secured *mux.Router) {
 
 	secured.HandleFunc("/notification/getsettings", Notification_GetSettings).Methods("GET")
 	secured.HandleFunc("/notification/updatesettings", Notification_UpdateSettings).Methods("PATCH")
+}
+
+func InitSecuredThreadRoutes(secured *mux.Router) {
+	secured.HandleFunc("/thread/getallthreads", Thread_GetAllThreads).Methods("GET")
+	// secured.HandleFunc("/thread/getthreadsbyuser", Thread_).Methods("GET")
+	// secured.HandleFunc("/thread/getthreadsbycommunity", Thread_).Methods("GET")
+	// secured.HandleFunc("/thread/searchthread", Thread_).Methods("GET")
+	// secured.HandleFunc("/thread/getpopularhashtags", Thread_).Methods("GET")
+	// secured.HandleFunc("/thread/getthreadsbyhashtag", Thread_).Methods("GET")
+	// secured.HandleFunc("/thread/getthreadsbymedia", Thread_).Methods("GET")
+
+	// secured.HandleFunc("/thread/createthread", Thread_).Methods("POST")
+	// secured.HandleFunc("/thread/deletethread", Thread_).Methods("DELETE")
+
+	// secured.HandleFunc("/thread/likethread", Thread_).Methods("POST")
+	// secured.HandleFunc("/thread/unlikethread", Thread_).Methods("POST")
+
+	// secured.HandleFunc("/thread/replythread", Thread_).Methods("POST")
+	// secured.HandleFunc("/thread/deletereply", Thread_).Methods("POST")
 }
