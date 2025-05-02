@@ -18,6 +18,7 @@ service UserService {
     // protected routes
     rpc User_GetProfile (GetProfileRequest) returns (ApiResponseUser);
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
+    rpc User_UpdateProfile (UpdateUserProfileRequest) returns (ApiResponseUser);
 
     rpc User_FollowUser (FollowUserRequest) returns (ApiResponseUser);
     rpc User_BlockUser (BlockUserRequest) returns (ApiResponseUser);
@@ -198,4 +199,13 @@ message AllFollowersResponse {
 
 message AllFollowingResponse {
     repeated StringUser following = 1;
+}
+
+message UpdateUserProfileRequest {
+    string user_id = 1; 
+    string username = 2;
+    string name = 3;
+    string bio = 4;
+    string gender = 5;
+    string date_of_birth = 6;
 }

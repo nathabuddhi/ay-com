@@ -99,6 +99,10 @@ func (s *UserServer) User_DeactivateAccount(ctx context.Context, req *pb.Deactiv
 	return s.Handlers.User_DeactivateAccount(ctx, req)
 }
 
+func (s *UserServer) User_UpdateProfile(ctx context.Context, req *pb.UpdateUserProfileRequest) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_UpdateProfile(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

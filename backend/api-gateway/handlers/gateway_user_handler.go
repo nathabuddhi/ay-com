@@ -386,3 +386,17 @@ func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 
 	processUserResponseWithPayload[pb.GetAllVerifyAccountResponse](resp, err, w)
 }
+
+func User_UpdateProfile(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Submit Verify Account Request is called.")
+
+	req, client := processUserRequest[pb.UpdateUserProfileRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_UpdateProfile(ctx, req)
+
+	processUserResponseWithoutPayload(resp, err, w)
+}

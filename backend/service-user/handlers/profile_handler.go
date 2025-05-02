@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
@@ -143,5 +144,79 @@ func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.Deactivat
 	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Account deactivated successfully.",
+	}, nil
+}
+
+func (h *Handlers) User_UpdateProfile(ctx context.Context, req *pb.UpdateUserProfileRequest) (*pb.ApiResponseUser, error) {
+	zap.L().Info("User Updating Profile", zap.String("user_id", req.UserId))
+
+	if req.Username == "" || req.Name == "" || req.DateOfBirth == "" || req.Bio == "" || req.Gender == "" {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "All fields are required.",
+		}, nil
+	}
+
+	var user models.User
+	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User Not Found.",
+		}, nil
+	}
+
+	if user.IsDeactivated {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User is already deactivated.",
+		}, nil
+	}
+
+	if user.IsBanned {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User is banned.",
+		}, nil
+	}
+
+	user.Username = req.Username
+
+	if err := h.DB.Where("username = ?", req.Username).First(&user).Error; err != nil && user.Username != req.Username {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Username already taken.",
+		}, nil
+	}
+
+	user.Name = req.Name
+	user.Bio = &req.Bio
+	parsedDate, err := time.Parse("2006-01-02", req.DateOfBirth)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Invalid date format. Please use YYYY-MM-DD.",
+		}, nil
+	}
+
+	if time.Since(parsedDate) < 13*365*24*time.Hour {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User must be at least 13 years old.",
+		}, nil
+	}
+	user.DateOfBirth = parsedDate
+	user.Gender = req.Gender
+
+	if err := h.DB.Save(&user).Error; err != nil {
+		zap.L().Error("Failed to update user profile", zap.Error(err))
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Failed to update user profile: " + err.Error(),
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "User profile updated successfully.",
 	}, nil
 }
