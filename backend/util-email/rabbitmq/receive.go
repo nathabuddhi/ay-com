@@ -72,6 +72,6 @@ func StartConsuming() {
 }
 
 func sendEmail(toEmail string, subject string, body string) {
-	zap.L().Info("Sending verification email to " + toEmail + " with subject " + subject + ".")
+	zap.L().Info("Sending email to " + toEmail + " with subject " + subject + ".")
 	email.SendEmail(toEmail, subject, body)
 }
