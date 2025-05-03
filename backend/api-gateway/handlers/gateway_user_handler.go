@@ -522,3 +522,25 @@ func User_IsUserFollowing(user_id string, private_id string) (bool, error) {
 	}
 	return isFollowing.Value, nil
 }
+
+func User_CheckToken(w http.ResponseWriter, r *http.Request) {
+	var token = r.Context().Value(middleware.UserIdKey).(string)
+
+	zap.L().Info("Checking Token " + token)
+
+	req, client := processUserRequest[pb.StringUser](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_CheckToken(ctx, req)
+
+	if err != nil {
+		resp.Value = false
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}

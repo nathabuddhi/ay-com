@@ -343,3 +343,12 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 		Data:    nil,
 	}, nil
 }
+
+func (h *Handlers) User_CheckToken(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
+	var user models.User
+	if err := h.DB.Where("user_id = ? AND is_deactivated = false AND is_banned = FALSE", req.Value).First(&user).Error; err != nil {
+		return &pb.BoolUser{Value: false}, nil
+	} else {
+		return &pb.BoolUser{Value: true}, nil
+	}
+}

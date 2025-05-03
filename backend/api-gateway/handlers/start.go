@@ -38,6 +38,8 @@ func InitUserRoutes(r *mux.Router) {
 }
 
 func InitSecuredUserRoutes(secured *mux.Router) {
+	secured.HandleFunc("/user/checktoken/{token}", User_CheckToken).Methods("GET")
+
 	secured.HandleFunc("/user/getprofile/{id}", User_GetProfile).Methods("GET")
 	secured.HandleFunc("/user/searchpeople", User_SearchPeople).Methods("GET")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("PATCH")

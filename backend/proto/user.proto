@@ -37,6 +37,8 @@ service UserService {
     rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponseUser);
     rpc User_IsUserPrivate (IsAccountPrivateRequest) returns (BoolUser);
     rpc User_IsUserFollowing (IsUserFollowingRequest) returns (BoolUser);
+
+    rpc User_CheckToken(StringUser) returns (BoolUser);
 }
 
 message ApiResponseUser {
