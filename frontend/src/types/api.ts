@@ -1,5 +1,9 @@
 export interface ApiResponse<T> {
-    Success: boolean;
+    success: boolean;
     message: string;
     payload: T;
+}
+
+export interface StringPayload {
+    value: string;
 }
