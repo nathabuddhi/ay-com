@@ -1,6 +1,0 @@
-{
-  "plugins": ["prettier-plugin-svelte"],
-  "pluginSearchDirs": false,
-  "useTabs": true,
-  "tabWidth": 2
-}
