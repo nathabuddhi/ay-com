@@ -4,20 +4,89 @@
     min-height: 100vh;
     background-color: var(--background);
     color: var(--text);
+    justify-content: center;
+    align-items: center;
 }
 
 .login-content {
     display: flex;
-    flex: 1;
     flex-direction: row;
-    height: calc(100vh - 50px);
+    max-width: 800px;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.logo-img {
+    max-width: 250px;
+    width: 100%;
+}
+
+.auth-section {
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    background-color: var(--background-light);
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    background-color: var(--background);
+}
+
+.theme-toggle-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.auth-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 70%;
+}
+
+h1,
+h2 {
+    color: var(--text);
+    text-align: center;
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1rem;
+}
+
+.tagline {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
 }
 
 .form-group {
@@ -26,18 +95,19 @@
 }
 
 .form-group label {
-    font-size: 15px;
-    margin-bottom: 8px;
+    font-size: 14px;
+    margin-bottom: 6px;
     color: var(--text);
 }
 
 .form-group input {
-    padding: 12px;
+    padding: 10px;
     border: 1px solid var(--border);
     border-radius: 4px;
-    font-size: 15px;
+    font-size: 14px;
     background-color: var(--background);
     color: var(--text);
+    width: 94%;
 }
 
 .form-group input:focus {
@@ -49,12 +119,13 @@
     background-color: var(--primary);
     color: white;
     border: none;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 9999px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     text-align: center;
     transition: background-color 0.2s ease;
+    width: 100%;
 }
 
 .sign-in-button:hover {
@@ -66,16 +137,40 @@
     cursor: not-allowed;
 }
 
-.error-message {
-    color: #ff4d4f;
-    font-size: 14px;
-    margin-bottom: 16px;
+.account-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.account-prompt {
+    font-size: 0.9rem;
+}
+
+.create-account-button {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.create-account-button:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 1024px) {
     .login-content {
         flex-direction: column;
-        height: auto;
+        gap: 20px;
+    }
+
+    .logo-section {
+        order: 1;
+        max-width: 220px;
+    }
+
+    .auth-section {
+        padding: 20px;
+        gap: 16px;
     }
 
     .auth-content {
@@ -84,11 +179,19 @@
 }
 
 @media (max-width: 480px) {
+    .login-form {
+        gap: 8px;
+    }
+
     .form-group input {
-        font-size: 14px;
+        font-size: 12px;
     }
 
     .sign-in-button {
-        font-size: 14px;
+        font-size: 12px;
+    }
+
+    .logo-img {
+        max-width: 180px;
     }
 }

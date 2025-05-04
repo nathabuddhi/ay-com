@@ -1,0 +1,325 @@
+import type { ApiResponse, StringPayload } from "../types/api";
+import type { LoginResponse, UserProfile } from "../types/user";
+import { getToken, setToken } from "./token-controller";
+
+function returnDefaultError<T>(error: any): ApiResponse<T> {
+    return {
+        success: false,
+        message:
+            error instanceof Error
+                ? error.message
+                : "An unknown error occurred during login.",
+        payload: null,
+    };
+}
+
+export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch("http://localhost:5000/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({}),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function login(
+    email: string,
+    password: string
+): Promise<ApiResponse<LoginResponse>> {
+    try {
+        const response = await fetch("http://localhost:5000/user/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+            }),
+        });
+        const data: ApiResponse<LoginResponse> = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Invalid email or password");
+        }
+
+        if (data && data.payload?.token) setToken(data.payload?.token);
+        if (data && data.payload?.user_id) {
+            localStorage.setItem("user_id", data.payload?.user_id);
+        }
+        if (data && data.payload?.username) {
+            localStorage.setItem("username", data.payload?.username);
+        }
+        if (data && data.payload?.name) {
+            localStorage.setItem("name", data.payload?.name);
+        }
+        if (data && data.payload?.is_verified) {
+            localStorage.setItem("is_verified", "yes");
+        }
+        return data;
+    } catch (error) {
+        return returnDefaultError<LoginResponse>(error);
+    }
+}
+
+export async function register(
+    email: string,
+    name: string,
+    username: string,
+    password: string,
+    gender: string,
+    date_of_birth: Date,
+    security_question: string,
+    security_answer: string,
+    avatar: File,
+    banner: File
+): Promise<ApiResponse<null>> {
+    try {
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("name", name);
+        formData.append("username", username);
+        formData.append("password", password);
+        formData.append("gender", gender);
+        formData.append(
+            "date_of_birth",
+            date_of_birth.toISOString().split("T")[0]
+        );
+        formData.append("security_question", security_question);
+        formData.append("security_answer", security_answer);
+        formData.append("avatar", avatar);
+        formData.append("banner", banner);
+
+        const response = await fetch("http://localhost:5000/user/register", {
+            method: "POST",
+            body: formData,
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function validateVerificationCode(
+    email: string,
+    code: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/validateverificationcode",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    code: code,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function requestVerificationCode(
+    email: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/requestverificationcode",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function getProfile(
+    user_id: string
+): Promise<ApiResponse<UserProfile>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/getprofile/" + user_id,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({}),
+            }
+        );
+        const data: ApiResponse<UserProfile> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<UserProfile>(error);
+    }
+}
+
+export async function updateProfile(
+    name: string,
+    username: string,
+    bio: string,
+    date_of_birth: Date,
+    gender: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/updateprofile",
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({
+                    name: name,
+                    username: username,
+                    bio: bio,
+                    date_of_birth: date_of_birth.toISOString().split("T")[0],
+                    gender: gender,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function getSecurityQuestion(
+    email: string
+): Promise<ApiResponse<StringPayload>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/getsecurityquestion",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                }),
+            }
+        );
+        const data: ApiResponse<StringPayload> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<StringPayload>(error);
+    }
+}
+
+export async function validateSecurityQuestion(
+    email: string,
+    answer: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/validatesecurityanswer",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    answer: answer,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function changePassword(
+    email: string,
+    old_password: string,
+    new_password: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/changepassword",
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({
+                    email: email,
+                    old_password: old_password,
+                    new_password: new_password,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function resetPassword(
+    email: string,
+    old_password: string,
+    new_password: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/validatesecurityanswer",
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    old_password: old_password,
+                    new_password: new_password,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}

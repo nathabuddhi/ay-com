@@ -1,19 +1,31 @@
-export interface AuthResponse {
-    success: boolean;
-    message: string;
-    payload: {
-        token?: string;
-        user?: User;
-    };
-}
-
-export interface User {
+export interface VerifyAccountRequest {
+    user_id: string;
     id: string;
-    username: string;
-    email: string;
+    reason_text: string;
+    status: string;
+    submitted_at: string;
 }
 
-export interface UserCredentials {
-    email: string;
-    password: string;
+export interface UserSettings {
+    font_size: string;
+    font_color: string;
+    is_private: boolean;
+}
+
+export interface UserProfile {
+    user_id: string;
+    username: string;
+    name: string;
+    bio: string;
+    is_verified: boolean;
+    followers: number;
+    following: number;
+}
+
+export interface LoginResponse {
+    token: string;
+    user_id: string;
+    username: string;
+    name: string;
+    is_verified: boolean;
 }

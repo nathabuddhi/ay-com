@@ -227,3 +227,11 @@ message IsUserFollowingRequest {
 message SearchPeopleRequest {
     string keyword = 1;
 }
+
+message LoginResponse {
+    string token = 1;
+    string user_id = 2;
+    string username = 3;
+    string name = 4;
+    bool is_verified = 5;
+}

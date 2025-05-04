@@ -210,7 +210,7 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_Login(ctx, req)
 
-	processUserResponseWithPayload[pb.StringUser](resp, err, w)
+	processUserResponseWithPayload[pb.LoginResponse](resp, err, w)
 }
 
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
@@ -524,12 +524,11 @@ func User_IsUserFollowing(user_id string, private_id string) (bool, error) {
 }
 
 func User_CheckToken(w http.ResponseWriter, r *http.Request) {
-	var token = r.Context().Value(middleware.UserIdKey).(string)
-
-	zap.L().Info("Checking Token " + token)
 
 	req, client := processUserRequest[pb.StringUser](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
 
+	zap.L().Info("Checking Token " + req.Value)
 	ctx, cancel := createContext()
 	defer cancel()
 

@@ -2,12 +2,12 @@
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
     import Footer from "../components/Footer.svelte";
-    import { isLoggedIn } from "../services/auth";
+    import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
 
     let currentTheme: "light" | "dark" = "dark";
-    onMount(() => {
-        if (isLoggedIn()) {
+    onMount(async () => {
+        if (await isLoggedIn()) {
             window.location.href = "/home";
         }
 

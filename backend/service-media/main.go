@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	pb "github.com/nathabuddhi/ay-com/backend/service-media/proto/media"
 	"github.com/nathabuddhi/ay-com/backend/service-media/server"
+	"github.com/nathabuddhi/ay-com/backend/service-media/supabase"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
@@ -55,6 +56,8 @@ func main() {
 	if err != nil {
 		zap.L().Fatal("Failed to listen: " + err.Error())
 	}
+
+	supabase.InitSupabase()
 
 	mediaServer := server.NewMediaServer()
 

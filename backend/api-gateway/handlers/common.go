@@ -43,7 +43,7 @@ func returnErrorResponse(w http.ResponseWriter, message string) {
 		Payload: nil,
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusInternalServerError)
+	w.WriteHeader(http.StatusBadRequest)
 	json.NewEncoder(w).Encode(response)
 }
 

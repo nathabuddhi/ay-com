@@ -2,20 +2,27 @@
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
     import Footer from "../components/Footer.svelte";
-    import { isLoggedIn, setToken } from "../services/auth";
-    import type { UserCredentials } from "../types/user";
+    import { isLoggedIn, setToken } from "../controllers/token-controller";
     import "../styles/app.scss";
-    import type { ApiResponse, StringPayload } from "../types/api";
+    import { login } from "../controllers/user-controller";
+    import { addToast } from "../stores/toast-wrapper";
+    import ToastContainer from "../components/ToastContainer.svelte";
 
     let currentTheme: "light" | "dark" = "dark";
     let email: string = "";
     let password: string = "";
-    let errorMessage: string | null = null;
     let isLoading: boolean = false;
 
-    onMount(() => {
-        if (isLoggedIn()) {
-            window.location.href = "/home";
+    onMount(async () => {
+        if (await isLoggedIn()) {
+            addToast(
+                "success",
+                "User cookie validated! Redirecting...",
+                "Success."
+            );
+            setTimeout(() => {
+                window.location.href = "/home";
+            }, 2500);
         }
 
         const savedTheme =
@@ -24,45 +31,25 @@
         document.documentElement.setAttribute("data-theme", savedTheme);
     });
 
-    async function handleLogin(event: Event) {
+    async function onLoginClick(event: Event) {
         event.preventDefault();
         isLoading = true;
-        errorMessage = null;
 
-        const credentials: UserCredentials = { email, password };
-
-        try {
-            const response = await fetch("http://localhost:5000/user/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(credentials),
-            });
-            console.log("response");
-            console.log(response);
-            const data: ApiResponse<StringPayload> = await response.json();
-            console.log("data");
-            console.log(data);
-            if (!response.ok || !data.success) {
-                throw new Error(data.message || "Invalid email or password");
-            }
-
-            setToken(data.payload.value);
-            window.location.href = "/home";
-        } catch (error) {
-            console.log(error);
-            errorMessage =
-                error instanceof Error
-                    ? error.message
-                    : "An error occurred during login.";
-        } finally {
+        let response = await login(email, password);
+        if (response.success) {
+            addToast("success", "Login successful! Redirecting...", "Success.");
+            setTimeout(() => {
+                window.location.href = "/home";
+            }, 1500);
+        } else {
+            addToast("error", response.message, "Failed logging in.");
             isLoading = false;
         }
     }
 </script>
 
 <div class="login-container">
+    <ToastContainer />
     <div class="login-content">
         <div class="logo-section">
             <img
@@ -84,11 +71,10 @@
                 <h2>Access your account</h2>
                 <p class="tagline">Connect, share, engage.</p>
 
-                {#if errorMessage}
-                    <p class="error-message">{errorMessage}</p>
-                {/if}
-
-                <form on:submit|preventDefault={handleLogin} class="login-form">
+                <form
+                    on:submit|preventDefault={onLoginClick}
+                    class="login-form"
+                >
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input
@@ -121,9 +107,11 @@
                 </form>
 
                 <div class="account-options">
-                    <p class="account-prompt">Don't have an account?</p>
                     <a href="/register" class="create-account-button">
-                        Create account
+                        Don't have an account? Create account
+                    </a>
+                    <a href="/forgot" class="create-account-button">
+                        Forgot your account? Recover it
                     </a>
                 </div>
             </div>

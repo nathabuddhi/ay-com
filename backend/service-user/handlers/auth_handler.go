@@ -63,9 +63,14 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 			Message: "An Error Occured: " + err.Error(),
 		}, nil
 	}
-
-	tokenMessage := &pb.StringUser{Value: tokenString}
-	anyToken, err := anypb.New(tokenMessage)
+	loginResponse := &pb.LoginResponse{
+		UserId:     user.UserId,
+		Username:   user.Username,
+		Name:       user.Name,
+		IsVerified: user.IsVerified,
+		Token:      tokenString,
+	}
+	dataReturn, err := anypb.New(loginResponse)
 	if err != nil {
 		return &pb.ApiResponseUser{
 			Success: false,
@@ -73,12 +78,12 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		}, nil
 	}
 
-	zap.L().Info("User Logged in. Token is: " + anyToken.String())
+	zap.L().Info("User Logged in. Token is: " + tokenString)
 
 	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "Login successful",
-		Data:    anyToken,
+		Data:    dataReturn,
 	}, nil
 }
 
@@ -184,6 +189,10 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ApiResponseUser, error) {
 	if req.Email == "" || req.OldPassword == "" || req.NewPassword == "" || req.UserId == "" {
 		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
+	}
+
+	if req.OldPassword == req.NewPassword {
+		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
 	}
 
 	if len(req.NewPassword) < 8 ||
@@ -306,6 +315,10 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
+	if user.Password == req.NewPassword {
+		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
+	}
+
 	var count int
 
 	err := h.DB.WithContext(ctx).Raw(`
@@ -347,8 +360,10 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 func (h *Handlers) User_CheckToken(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
 	var user models.User
 	if err := h.DB.Where("user_id = ? AND is_deactivated = false AND is_banned = FALSE", req.Value).First(&user).Error; err != nil {
+		zap.L().Info("Token " + req.Value + " is invalid.")
 		return &pb.BoolUser{Value: false}, nil
 	} else {
+		zap.L().Info("Token " + req.Value + " is valid.")
 		return &pb.BoolUser{Value: true}, nil
 	}
 }
