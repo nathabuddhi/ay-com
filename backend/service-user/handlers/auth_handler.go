@@ -191,21 +191,22 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
 	}
 
-	if req.OldPassword == req.NewPassword {
-		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
-	}
-
+	
 	if len(req.NewPassword) < 8 ||
-		!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
-		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
-		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
-		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
+	!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
+	!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
+	!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
+	!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
 		return &pb.ApiResponseUser{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
 	}
-
+	
 	var user models.User
 	if err := h.DB.Where("email = ? AND user_id = ?", req.Email, req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
+	}
+	
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.NewPassword)); err == nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword)); err != nil {
@@ -315,7 +316,7 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
 
-	if user.Password == req.NewPassword {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.NewPassword)); err == nil {
 		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
 	}
 
