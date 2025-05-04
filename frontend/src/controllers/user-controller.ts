@@ -255,7 +255,7 @@ export async function validateSecurityQuestion(
                 },
                 body: JSON.stringify({
                     email: email,
-                    answer: answer,
+                    answer: answer
                 }),
             }
         );
@@ -298,20 +298,20 @@ export async function changePassword(
 
 export async function resetPassword(
     email: string,
-    old_password: string,
+    code: string,
     new_password: string
 ): Promise<ApiResponse<null>> {
     try {
         const response = await fetch(
-            "http://localhost:5000/user/validatesecurityanswer",
+            "http://localhost:5000/user/resetpassword",
             {
-                method: "PATCH",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     email: email,
-                    old_password: old_password,
+                    code: code,
                     new_password: new_password,
                 }),
             }

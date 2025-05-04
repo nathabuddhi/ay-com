@@ -8,6 +8,9 @@
     import LoginPage from "./pages/LoginPage.svelte";
     import RegisterPage from "./pages/RegisterPage.svelte";
     import VerificationPage from "./pages/VerificationPage.svelte";
+    import ForgotPasswordPage from "./pages/ForgotPasswordPage.svelte";
+    import ResetPasswordPage from "./pages/ResetPasswordPage.svelte";
+    import HomePage from "./pages/HomePage.svelte";
 
     let route: string = "/";
 
@@ -41,8 +44,17 @@
     <Route path="/register">
         <RegisterPage />
     </Route>
+    <Route path="/home">
+        <HomePage />
+    </Route>
     <Route path="/verification">
         <VerificationPage />
+    </Route>
+    <Route path="/forgot">
+        <ForgotPasswordPage />
+    </Route>
+    <Route path="/reset-password">
+        <ResetPasswordPage />
     </Route>
     <Route path="*">
         <NotFoundPage />

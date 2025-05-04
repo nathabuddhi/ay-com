@@ -20,7 +20,12 @@ export function removeToken(): void {
 }
 
 export function logout(): void {
-    removeToken();
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    localStorage.removeItem("username");
+    localStorage.removeItem("is_verified");
+    localStorage.removeItem("user_id");
+
     window.location.href = "/";
 }
 
