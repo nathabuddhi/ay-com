@@ -57,6 +57,9 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 
 	secured.HandleFunc("/user/getallfollowers/{id}", User_GetAllFollowers).Methods("GET")
 	secured.HandleFunc("/user/getallfollowing/{id}", User_GetAllFollowing).Methods("GET")
+
+	secured.HandleFunc("/user/changeavatar", User_ChangeAvatar).Methods("POST")
+	secured.HandleFunc("/user/changebanner", User_ChangeBanner).Methods("POST")
 }
 
 func InitSecuredNotificationRoutes(secured *mux.Router) {

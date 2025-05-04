@@ -524,7 +524,6 @@ func User_IsUserFollowing(user_id string, private_id string) (bool, error) {
 }
 
 func User_CheckToken(w http.ResponseWriter, r *http.Request) {
-
 	req, client := processUserRequest[pb.StringUser](r, w)
 	req.Value = r.Context().Value(middleware.UserIdKey).(string)
 
@@ -543,3 +542,4 @@ func User_CheckToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }
+

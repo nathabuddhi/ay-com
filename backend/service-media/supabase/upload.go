@@ -63,7 +63,20 @@ func fileExists(bucket, mediaPath string) bool {
 	return file != nil
 }
 
+func deleteFile(bucket string, mediaPath string) bool {
+	if _, err := Client.RemoveFile(bucket, []string{mediaPath}); err != nil {
+		return false
+	}
+	return true
+}
+
 func uploadFile(bucketName, filePath string, file io.Reader) error {
+	if fileExists(bucketName, filePath) {
+		if !deleteFile(bucketName, filePath) {
+			return fmt.Errorf("failed to delete existing file: %s", filePath)
+		}
+	}
+
 	_, err := Client.UploadFile(bucketName, filePath, file)
 	if err != nil {
 		zap.L().Error("Failed to upload file to Supabase: " + err.Error())

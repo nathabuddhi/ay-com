@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 	"sync"
 
+	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/media"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -111,7 +114,7 @@ func UploadThreadMedia(threadId string, threadFile io.Reader) error {
 	bannerReq := &pb.UploadImageRequest{
 		TypeId:     threadId,
 		Image:      imageData,
-		UploadType: "banner",
+		UploadType: "thread",
 		ImageType:  fileExtension,
 	}
 
@@ -123,8 +126,8 @@ func UploadThreadMedia(threadId string, threadFile io.Reader) error {
 	return nil
 }
 
-func UploadMessageMedia(threadId string, threadFile io.Reader) error {
-	imageData, err := readFileToBytes(threadFile)
+func UploadMessageMedia(messageId string, messageFile io.Reader) error {
+	imageData, err := readFileToBytes(messageFile)
 	if err != nil {
 		return fmt.Errorf("failed to read thread file: %w", err)
 	}
@@ -135,7 +138,7 @@ func UploadMessageMedia(threadId string, threadFile io.Reader) error {
 	defer cancel()
 
 	fileExtension := "png"
-	if file, ok := threadFile.(interface{ Name() string }); ok {
+	if file, ok := messageFile.(interface{ Name() string }); ok {
 		fileName := file.Name()
 		if dotIndex := strings.LastIndex(fileName, "."); dotIndex != -1 && dotIndex < len(fileName)-1 {
 			fileExtension = fileName[dotIndex+1:]
@@ -143,9 +146,9 @@ func UploadMessageMedia(threadId string, threadFile io.Reader) error {
 	}
 
 	bannerReq := &pb.UploadImageRequest{
-		TypeId:     threadId,
+		TypeId:     messageId,
 		Image:      imageData,
-		UploadType: "banner",
+		UploadType: "message",
 		ImageType:  fileExtension,
 	}
 
@@ -155,4 +158,108 @@ func UploadMessageMedia(threadId string, threadFile io.Reader) error {
 	}
 
 	return nil
+}
+
+func User_ChangeAvatar(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Change Avatar is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewMediaServiceClient(conn)
+
+	err := r.ParseMultipartForm(20 << 20)
+	if err != nil {
+		zap.L().Error("Failed to parse multipart form", zap.Error(err))
+		returnErrorResponse(w, "Failed to parse multipart form")
+		return
+	}
+
+	avatarFile, avatarHeader, err := r.FormFile("avatar")
+	if err != nil {
+		zap.L().Error("Failed to get avatar file", zap.Error(err))
+		returnErrorResponse(w, "Failed to get avatar file")
+		return
+	}
+	defer avatarFile.Close()
+
+	if len(avatarHeader.Filename) < 4 || strings.ToLower(avatarHeader.Filename[len(avatarHeader.Filename)-4:]) != ".png" {
+		returnErrorResponse(w, "Avatar file must be a .png file")
+		return
+	}
+
+	imageData, err := readFileToBytes(avatarFile)
+	if err != nil {
+		returnErrorResponse(w, "Failed to read avatar file.")
+		return
+	}
+
+	uploadImageReq := &pb.UploadImageRequest{
+		TypeId:     r.Context().Value(middleware.UserIdKey).(string),
+		Image:      imageData,
+		UploadType: "avatar",
+		ImageType:  "png",
+	}
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Media_UploadMedia(ctx, uploadImageReq)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	}
+}
+
+func User_ChangeBanner(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Change Banner is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewMediaServiceClient(conn)
+
+	err := r.ParseMultipartForm(20 << 20)
+	if err != nil {
+		zap.L().Error("Failed to parse multipart form", zap.Error(err))
+		returnErrorResponse(w, "Failed to parse multipart form")
+		return
+	}
+
+	bannerFile, bannerHeader, err := r.FormFile("banner")
+	if err != nil {
+		zap.L().Error("Failed to get banner file", zap.Error(err))
+		returnErrorResponse(w, "Failed to get banner file")
+		return
+	}
+	defer bannerFile.Close()
+
+	if len(bannerHeader.Filename) < 4 || strings.ToLower(bannerHeader.Filename[len(bannerHeader.Filename)-4:]) != ".png" {
+		returnErrorResponse(w, "Banner file must be a .png file")
+		return
+	}
+
+	imageData, err := readFileToBytes(bannerFile)
+	if err != nil {
+		returnErrorResponse(w, "Failed to read banner file.")
+		return
+	}
+
+	uploadImageReq := &pb.UploadImageRequest{
+		TypeId:     r.Context().Value(middleware.UserIdKey).(string),
+		Image:      imageData,
+		UploadType: "banner",
+		ImageType:  "png",
+	}
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Media_UploadMedia(ctx, uploadImageReq)
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	}
 }
