@@ -6,6 +6,8 @@
     import NotFoundPage from "./pages/NotFoundPage.svelte";
     import LandingPage from "./pages/LandingPage.svelte";
     import LoginPage from "./pages/LoginPage.svelte";
+    import RegisterPage from "./pages/RegisterPage.svelte";
+    import VerificationPage from "./pages/VerificationPage.svelte";
 
     let route: string = "/";
 
@@ -35,6 +37,12 @@
     </Route>
     <Route path="/login">
         <LoginPage />
+    </Route>
+    <Route path="/register">
+        <RegisterPage />
+    </Route>
+    <Route path="/verification">
+        <VerificationPage />
     </Route>
     <Route path="*">
         <NotFoundPage />
