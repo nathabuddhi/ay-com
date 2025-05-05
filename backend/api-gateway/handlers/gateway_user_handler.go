@@ -179,16 +179,16 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Profile is called.")
 
 	vars := mux.Vars(r)
-	userID := vars["id"]
-	if userID == "" {
-		zap.L().Error("User ID parameter missing")
-		returnErrorResponse(w, "User ID is required")
+	username := vars["username"]
+	if username == "" {
+		zap.L().Error("Username parameter missing")
+		returnErrorResponse(w, "Username is required")
 		return
 	}
 
-	if !checkRedisData("getprofile/"+userID, w) {
+	if !checkRedisData("getprofile/"+username, w) {
 		req, client := processUserRequest[pb.GetProfileRequest](r, w)
-		req.UserId = userID
+		req.UserId = username
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 
 		ctx, cancel := createContext()
@@ -468,6 +468,20 @@ func User_UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+func User_DeactivateAccount(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Deactivate Account is called.")
+
+	req, client := processUserRequest[pb.DeactivateAccountRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_DeactivateAccount(ctx, req)
+
+	processUserResponseWithoutPayload(resp, err, w)
+}
+
 func User_SearchPeople(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Search People is called.")
 
@@ -543,3 +557,16 @@ func User_CheckToken(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func User_GetSelfProfile(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get Self Profile is called.")
+
+	req, client := processUserRequest[pb.StringUser](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_GetSelfProfile(ctx, req)
+
+	processUserResponseWithPayload[pb.UserProfile](resp, err, w)
+}

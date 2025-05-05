@@ -20,6 +20,7 @@ service UserService {
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
     rpc User_UpdateProfile (UpdateUserProfileRequest) returns (ApiResponseUser);
     rpc User_SearchPeople (SearchPeopleRequest) returns (ApiResponseUser);
+    rpc User_GetSelfProfile (StringUser) returns (ApiResponseUser);
 
     rpc User_FollowUser (FollowUserRequest) returns (ApiResponseUser);
     rpc User_BlockUser (BlockUserRequest) returns (ApiResponseUser);
@@ -63,6 +64,9 @@ message UserProfile {
     bool is_verified = 5;
     int32 followers = 6;
     int32 following = 7;
+    string date_of_birth = 8;
+    string gender = 9;
+    string email = 10;
 }
 
 message GetProfileRequest {

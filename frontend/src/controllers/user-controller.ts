@@ -1,5 +1,5 @@
 import type { ApiResponse, StringPayload } from "../types/api";
-import type { LoginResponse, UserProfile } from "../types/user";
+import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { getToken, setToken } from "./token-controller";
 
 function returnDefaultError<T>(error: any): ApiResponse<T> {
@@ -184,6 +184,29 @@ export async function getProfile(
     }
 }
 
+export async function getSelfProfile(
+    user_id: string
+): Promise<ApiResponse<UserProfile>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/getselfprofile",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({}),
+            }
+        );
+        const data: ApiResponse<UserProfile> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<UserProfile>(error);
+    }
+}
+
 export async function updateProfile(
     name: string,
     username: string,
@@ -255,7 +278,7 @@ export async function validateSecurityQuestion(
                 },
                 body: JSON.stringify({
                     email: email,
-                    answer: answer
+                    answer: answer,
                 }),
             }
         );
@@ -313,6 +336,78 @@ export async function resetPassword(
                     email: email,
                     code: code,
                     new_password: new_password,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function deactivateAccount(
+    password: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/deactivateaccount",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({
+                    password: password,
+                }),
+            }
+        );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function getSettings(): Promise<ApiResponse<Settings>> {
+    try {
+        const response = await fetch("http://localhost:5000/user/getsettings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({}),
+        });
+        const data: ApiResponse<Settings> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<Settings>(error);
+    }
+}
+
+export async function updateSettings(
+    font_size: string,
+    font_color: string,
+    is_private: boolean
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/updatesettings",
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({
+                    font_size: font_size,
+                    font_color: font_color,
+                    private: is_private,
                 }),
             }
         );

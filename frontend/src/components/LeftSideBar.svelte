@@ -21,18 +21,8 @@
         is_verified: boolean;
         user_id: string;
     };
-    export let currentTheme: "light" | "dark";
 
-    const dispatch = createEventDispatcher<{
-        themeChange: { theme: "light" | "dark" };
-    }>();
     let showLogoutMenu = false;
-
-    function handleThemeChange(
-        event: CustomEvent<{ theme: "light" | "dark" }>
-    ): void {
-        dispatch("themeChange", { theme: event.detail.theme });
-    }
 
     function toggleLogoutMenu(): void {
         showLogoutMenu = !showLogoutMenu;
@@ -113,10 +103,7 @@
         <button class="post-button">Post</button>
 
         <div class="theme-toggle-wrapper" style="margin: 0; padding: 0;">
-            <ToggleTheme
-                bind:theme={currentTheme}
-                on:change={handleThemeChange}
-            />
+            <ToggleTheme />
         </div>
     </div>
 

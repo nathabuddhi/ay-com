@@ -11,6 +11,7 @@
     import ForgotPasswordPage from "./pages/ForgotPasswordPage.svelte";
     import ResetPasswordPage from "./pages/ResetPasswordPage.svelte";
     import HomePage from "./pages/HomePage.svelte";
+    import SettingsPage from "./pages/SettingsPage.svelte";
 
     let route: string = "/";
 
@@ -55,6 +56,12 @@
     </Route>
     <Route path="/reset-password">
         <ResetPasswordPage />
+    </Route>
+    <!-- <Route path="/profile">
+        <ProfilePage />
+    </Route> -->
+    <Route path="/settings">
+        <SettingsPage />
     </Route>
     <Route path="*">
         <NotFoundPage />

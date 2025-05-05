@@ -179,6 +179,9 @@ type UserProfile struct {
 	IsVerified    bool                   `protobuf:"varint,5,opt,name=is_verified,json=isVerified,proto3" json:"is_verified,omitempty"`
 	Followers     int32                  `protobuf:"varint,6,opt,name=followers,proto3" json:"followers,omitempty"`
 	Following     int32                  `protobuf:"varint,7,opt,name=following,proto3" json:"following,omitempty"`
+	DateOfBirth   string                 `protobuf:"bytes,8,opt,name=date_of_birth,json=dateOfBirth,proto3" json:"date_of_birth,omitempty"`
+	Gender        string                 `protobuf:"bytes,9,opt,name=gender,proto3" json:"gender,omitempty"`
+	Email         string                 `protobuf:"bytes,10,opt,name=email,proto3" json:"email,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -260,6 +263,27 @@ func (x *UserProfile) GetFollowing() int32 {
 		return x.Following
 	}
 	return 0
+}
+
+func (x *UserProfile) GetDateOfBirth() string {
+	if x != nil {
+		return x.DateOfBirth
+	}
+	return ""
+}
+
+func (x *UserProfile) GetGender() string {
+	if x != nil {
+		return x.Gender
+	}
+	return ""
+}
+
+func (x *UserProfile) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
 }
 
 type GetProfileRequest struct {
@@ -2004,7 +2028,7 @@ const file_user_proto_rawDesc = "" +
 	"StringUser\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\" \n" +
 	"\bBoolUser\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\bR\x05value\"\xc5\x01\n" +
+	"\x05value\x18\x01 \x01(\bR\x05value\"\x97\x02\n" +
 	"\vUserProfile\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
@@ -2013,7 +2037,11 @@ const file_user_proto_rawDesc = "" +
 	"\vis_verified\x18\x05 \x01(\bR\n" +
 	"isVerified\x12\x1c\n" +
 	"\tfollowers\x18\x06 \x01(\x05R\tfollowers\x12\x1c\n" +
-	"\tfollowing\x18\a \x01(\x05R\tfollowing\"O\n" +
+	"\tfollowing\x18\a \x01(\x05R\tfollowing\x12\"\n" +
+	"\rdate_of_birth\x18\b \x01(\tR\vdateOfBirth\x12\x16\n" +
+	"\x06gender\x18\t \x01(\tR\x06gender\x12\x14\n" +
+	"\x05email\x18\n" +
+	" \x01(\tR\x05email\"O\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
 	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"\x97\x03\n" +
@@ -2133,7 +2161,7 @@ const file_user_proto_rawDesc = "" +
 	"\busername\x18\x03 \x01(\tR\busername\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x1f\n" +
 	"\vis_verified\x18\x05 \x01(\bR\n" +
-	"isVerified2\xc8\x0e\n" +
+	"isVerified2\x88\x0f\n" +
 	"\vUserService\x12=\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x15.user.ApiResponseUser\x127\n" +
 	"\n" +
@@ -2146,7 +2174,8 @@ const file_user_proto_rawDesc = "" +
 	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12I\n" +
 	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x15.user.ApiResponseUser\x12K\n" +
 	"\x12User_UpdateProfile\x12\x1e.user.UpdateUserProfileRequest\x1a\x15.user.ApiResponseUser\x12E\n" +
-	"\x11User_SearchPeople\x12\x19.user.SearchPeopleRequest\x1a\x15.user.ApiResponseUser\x12A\n" +
+	"\x11User_SearchPeople\x12\x19.user.SearchPeopleRequest\x1a\x15.user.ApiResponseUser\x12>\n" +
+	"\x13User_GetSelfProfile\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12A\n" +
 	"\x0fUser_FollowUser\x12\x17.user.FollowUserRequest\x1a\x15.user.ApiResponseUser\x12?\n" +
 	"\x0eUser_BlockUser\x12\x16.user.BlockUserRequest\x1a\x15.user.ApiResponseUser\x12E\n" +
 	"\x11User_UnFollowUser\x12\x19.user.UnFollowUserRequest\x1a\x15.user.ApiResponseUser\x12C\n" +
@@ -2228,47 +2257,49 @@ var file_user_proto_depIdxs = []int32{
 	9,  // 12: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
 	29, // 13: user.UserService.User_UpdateProfile:input_type -> user.UpdateUserProfileRequest
 	32, // 14: user.UserService.User_SearchPeople:input_type -> user.SearchPeopleRequest
-	13, // 15: user.UserService.User_FollowUser:input_type -> user.FollowUserRequest
-	14, // 16: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
-	15, // 17: user.UserService.User_UnFollowUser:input_type -> user.UnFollowUserRequest
-	16, // 18: user.UserService.User_UnBlockUser:input_type -> user.UnBlockUserRequest
-	17, // 19: user.UserService.User_GetSettings:input_type -> user.GetSettingsRequest
-	18, // 20: user.UserService.User_UpdateSettings:input_type -> user.UpdateSettingsRequest
-	20, // 21: user.UserService.User_DeactivateAccount:input_type -> user.DeactivateAccountRequest
-	25, // 22: user.UserService.User_GetAllFollowers:input_type -> user.GetAllFollowersRequest
-	26, // 23: user.UserService.User_GetAllFollowing:input_type -> user.GetAllFollowingRequest
-	21, // 24: user.UserService.User_SubmitVerifyAccountRequest:input_type -> user.SubmitVerifyAccountRequest
-	23, // 25: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
-	30, // 26: user.UserService.User_IsUserPrivate:input_type -> user.IsAccountPrivateRequest
-	31, // 27: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
-	1,  // 28: user.UserService.User_CheckToken:input_type -> user.StringUser
-	0,  // 29: user.UserService.User_Register:output_type -> user.ApiResponseUser
-	0,  // 30: user.UserService.User_Login:output_type -> user.ApiResponseUser
-	0,  // 31: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 32: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 33: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
-	0,  // 34: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
-	0,  // 35: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
-	0,  // 36: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
-	0,  // 37: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
-	0,  // 38: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
-	0,  // 39: user.UserService.User_SearchPeople:output_type -> user.ApiResponseUser
-	0,  // 40: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
-	0,  // 41: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
-	0,  // 42: user.UserService.User_UnFollowUser:output_type -> user.ApiResponseUser
-	0,  // 43: user.UserService.User_UnBlockUser:output_type -> user.ApiResponseUser
-	0,  // 44: user.UserService.User_GetSettings:output_type -> user.ApiResponseUser
-	0,  // 45: user.UserService.User_UpdateSettings:output_type -> user.ApiResponseUser
-	0,  // 46: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponseUser
-	0,  // 47: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponseUser
-	0,  // 48: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponseUser
-	0,  // 49: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponseUser
-	0,  // 50: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
-	2,  // 51: user.UserService.User_IsUserPrivate:output_type -> user.BoolUser
-	2,  // 52: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
-	2,  // 53: user.UserService.User_CheckToken:output_type -> user.BoolUser
-	29, // [29:54] is the sub-list for method output_type
-	4,  // [4:29] is the sub-list for method input_type
+	1,  // 15: user.UserService.User_GetSelfProfile:input_type -> user.StringUser
+	13, // 16: user.UserService.User_FollowUser:input_type -> user.FollowUserRequest
+	14, // 17: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
+	15, // 18: user.UserService.User_UnFollowUser:input_type -> user.UnFollowUserRequest
+	16, // 19: user.UserService.User_UnBlockUser:input_type -> user.UnBlockUserRequest
+	17, // 20: user.UserService.User_GetSettings:input_type -> user.GetSettingsRequest
+	18, // 21: user.UserService.User_UpdateSettings:input_type -> user.UpdateSettingsRequest
+	20, // 22: user.UserService.User_DeactivateAccount:input_type -> user.DeactivateAccountRequest
+	25, // 23: user.UserService.User_GetAllFollowers:input_type -> user.GetAllFollowersRequest
+	26, // 24: user.UserService.User_GetAllFollowing:input_type -> user.GetAllFollowingRequest
+	21, // 25: user.UserService.User_SubmitVerifyAccountRequest:input_type -> user.SubmitVerifyAccountRequest
+	23, // 26: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
+	30, // 27: user.UserService.User_IsUserPrivate:input_type -> user.IsAccountPrivateRequest
+	31, // 28: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
+	1,  // 29: user.UserService.User_CheckToken:input_type -> user.StringUser
+	0,  // 30: user.UserService.User_Register:output_type -> user.ApiResponseUser
+	0,  // 31: user.UserService.User_Login:output_type -> user.ApiResponseUser
+	0,  // 32: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 33: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 34: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
+	0,  // 35: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
+	0,  // 36: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
+	0,  // 37: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
+	0,  // 38: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
+	0,  // 39: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
+	0,  // 40: user.UserService.User_SearchPeople:output_type -> user.ApiResponseUser
+	0,  // 41: user.UserService.User_GetSelfProfile:output_type -> user.ApiResponseUser
+	0,  // 42: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
+	0,  // 43: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
+	0,  // 44: user.UserService.User_UnFollowUser:output_type -> user.ApiResponseUser
+	0,  // 45: user.UserService.User_UnBlockUser:output_type -> user.ApiResponseUser
+	0,  // 46: user.UserService.User_GetSettings:output_type -> user.ApiResponseUser
+	0,  // 47: user.UserService.User_UpdateSettings:output_type -> user.ApiResponseUser
+	0,  // 48: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponseUser
+	0,  // 49: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponseUser
+	0,  // 50: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponseUser
+	0,  // 51: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponseUser
+	0,  // 52: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
+	2,  // 53: user.UserService.User_IsUserPrivate:output_type -> user.BoolUser
+	2,  // 54: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
+	2,  // 55: user.UserService.User_CheckToken:output_type -> user.BoolUser
+	30, // [30:56] is the sub-list for method output_type
+	4,  // [4:30] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name

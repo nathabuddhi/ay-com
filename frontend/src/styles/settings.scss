@@ -1,0 +1,223 @@
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--text);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background-color: var(--background);
+    z-index: 10;
+}
+
+.back-button {
+    margin-right: 20px;
+}
+
+.back-button a {
+    color: var(--text);
+    display: flex;
+    align-items: center;
+}
+
+h1 {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.theme-toggle button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.theme-toggle button:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+.settings-content {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 20px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.tabs button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.tabs button.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.message.error {
+    background-color: rgba(224, 36, 94, 0.1);
+    color: var(--error);
+    border: 1px solid var(--error);
+}
+
+.message.success {
+    background-color: rgba(23, 191, 99, 0.1);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.tab-content {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--text);
+    font-size: 16px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.form-actions {
+    margin-top: 24px;
+}
+
+.form-actions button {
+    padding: 12px 24px;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+}
+
+.form-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-actions button.danger {
+    background-color: var(--error);
+}
+
+.deactivate-warning {
+    padding: 16px;
+    background-color: rgba(224, 36, 94, 0.1);
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.deactivate-warning p {
+    color: var(--error);
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .settings-content {
+        padding: 16px;
+    }
+
+    .tabs {
+        margin-bottom: 16px;
+    }
+
+    .tabs button {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .settings-header {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    .settings-content {
+        padding: 12px;
+    }
+
+    .tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 12px;
+    }
+
+    .tabs button {
+        padding: 8px 10px;
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-actions button {
+        width: 100%;
+        padding: 10px;
+    }
+}

@@ -17,9 +17,12 @@ export interface UserProfile {
     username: string;
     name: string;
     bio: string;
+    gender: string;
     is_verified: boolean;
     followers: number;
     following: number;
+    date_of_birth: string;
+    email: string;
 }
 
 export interface LoginResponse {
@@ -28,4 +31,10 @@ export interface LoginResponse {
     username: string;
     name: string;
     is_verified: boolean;
+}
+
+export interface Settings {
+    font_size: string;
+    font_color: string;
+    private: boolean;
 }

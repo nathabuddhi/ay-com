@@ -107,6 +107,10 @@ func (s *UserServer) User_CheckToken(ctx context.Context, req *pb.StringUser) (*
 	return s.Handlers.User_CheckToken(ctx, req)
 }
 
+func (s *UserServer) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_GetSelfProfile(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

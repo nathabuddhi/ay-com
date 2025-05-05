@@ -22,7 +22,7 @@ func safeString(s *string) string {
 
 func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
 	var user models.User
-	if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
+	if err := h.DB.Where("username = ?", req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponseUser{
 			Success: false,
 			Message: "User Not Found.",
@@ -218,5 +218,49 @@ func (h *Handlers) User_UpdateProfile(ctx context.Context, req *pb.UpdateUserPro
 	return &pb.ApiResponseUser{
 		Success: true,
 		Message: "User profile updated successfully.",
+	}, nil
+}
+
+func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	var user models.User
+	if err := h.DB.Where("user_id = ?", req.Value).First(&user).Error; err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User Not Found.",
+		}, nil
+	}
+
+	if user.IsDeactivated || user.IsBanned {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "User is inactive or currently banned.",
+		}, nil
+	}
+
+	bio := safeString(user.Bio)
+
+	userData := &pb.UserProfile{
+		UserId:      user.UserId,
+		Username:    user.Username,
+		Name:        user.Name,
+		Bio:         bio,
+		Gender:      user.Gender,
+		DateOfBirth: user.DateOfBirth.Format("2006-01-02"),
+		Email:       user.Email,
+	}
+
+	returnData, err := anypb.New(userData)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Get Self Profile successful.",
+		Data:    returnData,
 	}, nil
 }
