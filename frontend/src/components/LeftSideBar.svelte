@@ -113,7 +113,7 @@
     >
         <div class="profile-image">
             <img
-                src={`${import.meta.env.AVATAR_LINK}/${userData.user_id}.png`}
+                src={`${import.meta.env.VITE_AVATAR_LINK}${userData.user_id}.png`}
                 alt="Profile"
             />
         </div>

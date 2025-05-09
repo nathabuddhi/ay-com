@@ -3,12 +3,7 @@ import type {
     BlockedUserResponse,
     StringPayload,
 } from "../types/api";
-import type {
-    BlockedUser,
-    LoginResponse,
-    Settings,
-    UserProfile,
-} from "../types/user";
+import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { getToken, setToken } from "./token-controller";
 
 function returnDefaultError<T>(error: any): ApiResponse<T> {

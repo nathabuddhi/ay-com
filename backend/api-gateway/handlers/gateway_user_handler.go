@@ -187,7 +187,11 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !checkRedisData("getprofile/"+username, w) {
-		req, client := processUserRequest[pb.GetProfileRequest](r, w)
+		conn := getUserServiceConn()
+		client := pb.NewUserServiceClient(conn)
+
+		req := &pb.GetProfileRequest{}
+
 		req.UserId = username
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 

@@ -57,7 +57,7 @@
     <Route path="/reset-password">
         <ResetPasswordPage />
     </Route>
-    <Route path="/profile">
+    <Route path="/profile/*">
         <HomePage />
     </Route>
     <Route path="/settings">
