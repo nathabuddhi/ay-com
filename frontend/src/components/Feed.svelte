@@ -1,58 +1,9 @@
 <script lang="ts">
+    import type { Thread } from "../types/thread";
     import Post from "./Post.svelte";
     // import CreatePost from "./CreatePost.svelte";
 
-    // Dummy data for posts
-    const posts = [
-        {
-            id: "1",
-            user: {
-                id: "101",
-                name: "Deedee",
-                username: "deedeesmith",
-                is_verified: true,
-            },
-            content:
-                "I've been working on my home office setup! What do you think? #homeoffice #workfromhome",
-            images: ["/images/post1.jpg", "/images/post2.jpg"],
-            timestamp: "2023-05-04T14:30:00Z",
-            likes: 235,
-            reposts: 36,
-            comments: 128,
-        },
-        {
-            id: "2",
-            user: {
-                id: "102",
-                name: "BAZNAS",
-                username: "baznasindonesia",
-                is_verified: true,
-            },
-            content:
-                "Mari tunjukan kepedulian untuk membantu masyarakat Indonesia #BantuanSosial #Indonesia",
-            images: [],
-            timestamp: "2023-05-04T12:15:00Z",
-            likes: 456,
-            reposts: 89,
-            comments: 32,
-        },
-        {
-            id: "3",
-            user: {
-                id: "103",
-                name: "Tech Insider",
-                username: "techinsider",
-                is_verified: false,
-            },
-            content:
-                "New features coming to @AYplatform next week! Stay tuned for the big announcement. #tech #innovation",
-            images: ["/images/post3.jpg"],
-            timestamp: "2023-05-04T10:45:00Z",
-            likes: 789,
-            reposts: 145,
-            comments: 67,
-        },
-    ];
+    const posts: Thread[] = [];
 
     const tabs = ["For you", "Following"];
     let activeTab = "For you";
@@ -78,9 +29,14 @@
     </div>
 
     <div class="posts-container">
-        {#each posts as post (post.id)}
+        {#each posts as post}
             <Post {post} />
         {/each}
+        {#if posts.length === 0}
+            <p class="no-posts-message">No posts yet.</p>
+        {:else}
+            <p class="end-posts-message">You have reached the end.</p>
+        {/if}
     </div>
 </div>
 

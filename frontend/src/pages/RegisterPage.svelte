@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import Footer from "../components/Footer.svelte";
     import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
     import { register } from "../controllers/user-controller";
@@ -484,8 +483,6 @@
             Already have an account? <a href="/login">Sign in</a>
         </div>
     </main>
-
-    <Footer />
 </div>
 
 <style lang="scss">

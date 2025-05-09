@@ -1,3 +1,5 @@
+import type BlockedUser from "../components/BlockedUser.svelte";
+
 export interface ApiResponse<T> {
     success: boolean;
     message: string;
@@ -16,4 +18,6 @@ export interface NumberPayload {
     value: number;
 }
 
-
+export interface BlockedUserResponse {
+    blocked: BlockedUser[];
+}

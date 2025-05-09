@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import Footer from "../components/Footer.svelte";
     import "../styles/app.scss";
     import { MessageCircleQuestion } from "@lucide/svelte";
 
@@ -49,8 +48,6 @@
             <MessageCircleQuestion size="300" color="var(--primary-light)" />
         </div>
     </main>
-
-    <Footer />
 </div>
 
 <style lang="scss">

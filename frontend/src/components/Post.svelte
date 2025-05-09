@@ -8,21 +8,22 @@
         Heart,
         EllipsisVertical,
     } from "@lucide/svelte";
+    import type { Thread } from "../types/thread";
+    import type { UserProfile } from "../types/user";
 
-    export let post: {
-        id: string;
-        user: {
-            id: string;
-            name: string;
-            username: string;
-            is_verified: boolean;
-        };
-        content: string;
-        images: string[];
-        timestamp: string;
-        likes: number;
-        reposts: number;
-        comments: number;
+    export let post: Thread;
+    let user: UserProfile = {
+        name: "loading",
+        username: "loading",
+        is_verified: false,
+        user_id: post.user_id,
+        bio: "",
+        followers: 0,
+        following: 0,
+        gender: "",
+        date_of_birth: "",
+        email: "",
+        join_date: "",
     };
 
     const formattedTime = formatDistanceToNow(new Date(post.timestamp), {
@@ -91,8 +92,8 @@
 <article class="post">
     <div class="post-avatar">
         <img
-            src={`http://localhost:5000/images/profile/${post.user.id}`}
-            alt={post.user.name}
+            src={`http://localhost:5000/images/profile/${post.user_id}`}
+            alt={post.user_id}
         />
     </div>
 
@@ -100,12 +101,12 @@
         <div class="post-header">
             <div class="post-user-info">
                 <span class="post-user-name">
-                    {post.user.name}
-                    {#if post.user.is_verified}
+                    {user.username}
+                    {#if user.is_verified}
                         <BadgeCheck />
                     {/if}
                 </span>
-                <span class="post-user-username">@{post.user.username}</span>
+                <span class="post-user-username">@{user.username}</span>
                 <span class="post-time">{formattedTime}</span>
             </div>
 
@@ -118,16 +119,16 @@
             {@html processContent(post.content)}
         </div>
 
-        {#if post.images.length > 0}
+        {#if post.media.length > 0}
             <div
-                class="post-images {post.images.length > 1
+                class="post-images {post.media.length > 1
                     ? 'multiple-images'
                     : ''}"
             >
-                {#each post.images as image, i}
+                {#each post.media as image, i}
                     <div class="image-container">
                         <img
-                            src={image || "/placeholder.svg"}
+                            src={`${import.meta.env.MEDIA_LINK}/{image.media_url}`}
                             alt="Post image {i + 1}"
                         />
                     </div>
@@ -138,17 +139,17 @@
         <div class="post-actions">
             <button class="post-action comment">
                 <MessageCircleMore />
-                <span>{formatNumber(post.comments)}</span>
+                <span>{formatNumber(post.reply_count)}</span>
             </button>
 
             <button class="post-action repost">
                 <Repeat2 />
-                <span>{formatNumber(post.reposts)}</span>
+                <span>{formatNumber(post.repost_count)}</span>
             </button>
 
             <button class="post-action like">
                 <Heart />
-                <span>{formatNumber(post.likes)}</span>
+                <span>{formatNumber(post.like_count)}</span>
             </button>
 
             <button class="post-action share">

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import Footer from "../components/Footer.svelte";
     import ToastContainer from "../components/ToastContainer.svelte";
     import { addToast } from "../stores/toast-wrapper";
     import { isLoggedIn } from "../controllers/token-controller";
@@ -230,8 +229,6 @@
             <a href="/login">Back to Login</a>
         </div>
     </main>
-
-    <Footer />
 </div>
 
 <style lang="scss">

@@ -1,5 +1,14 @@
-import type { ApiResponse, StringPayload } from "../types/api";
-import type { LoginResponse, Settings, UserProfile } from "../types/user";
+import type {
+    ApiResponse,
+    BlockedUserResponse,
+    StringPayload,
+} from "../types/api";
+import type {
+    BlockedUser,
+    LoginResponse,
+    Settings,
+    UserProfile,
+} from "../types/user";
 import { getToken, setToken } from "./token-controller";
 
 function returnDefaultError<T>(error: any): ApiResponse<T> {
@@ -15,7 +24,7 @@ function returnDefaultError<T>(error: any): ApiResponse<T> {
 
 export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch("http://localhost:5000/", {
+        const response = await fetch("http://localhost:5000/" + user_id, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -184,9 +193,7 @@ export async function getProfile(
     }
 }
 
-export async function getSelfProfile(
-    user_id: string
-): Promise<ApiResponse<UserProfile>> {
+export async function getSelfProfile(): Promise<ApiResponse<UserProfile>> {
     try {
         const response = await fetch(
             "http://localhost:5000/user/getselfprofile",
@@ -411,6 +418,49 @@ export async function updateSettings(
                 }),
             }
         );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function getBlockedUsers(): Promise<
+    ApiResponse<BlockedUserResponse>
+> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/getallblocked",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({}),
+            }
+        );
+        const data: ApiResponse<BlockedUserResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<BlockedUserResponse>(error);
+    }
+}
+
+export async function unblockUser(user_id: string): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch("http://localhost:5000/user/unblockuser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                to_unblock_id: user_id,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;

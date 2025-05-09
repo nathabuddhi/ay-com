@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import Footer from "../components/Footer.svelte";
     import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
 
@@ -64,8 +63,6 @@
             </div>
         </div>
     </div>
-
-    <Footer />
 </div>
 
 <style lang="scss">

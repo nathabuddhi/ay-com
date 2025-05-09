@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
     import { ArrowLeft } from "@lucide/svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import Footer from "../components/Footer.svelte";
     import ToastContainer from "../components/ToastContainer.svelte";
     import { isLoggedIn } from "../controllers/token-controller";
     import { addToast } from "../stores/toast-wrapper";
@@ -16,6 +15,7 @@
         getSettings,
     } from "../controllers/user-controller";
     import type { Settings } from "../types/user";
+    import BlockedUser from "../components/BlockedUser.svelte";
 
     let activeTab: string = "profile";
     let theme: "light" | "dark" = "dark";
@@ -63,8 +63,7 @@
                     addToast("error", response.message, "Settings Fetch Error");
                 }
             } else {
-                const userId = localStorage.getItem("userId") || "";
-                const response = await getSelfProfile(userId);
+                const response = await getSelfProfile();
                 if (response.success) {
                     profile = {
                         name: response.payload?.name || "",
@@ -233,25 +232,31 @@
                 class={activeTab === "profile" ? "active" : ""}
                 on:click={() => setActiveTab("profile")}
             >
-                Change Profile
+                Profile
             </button>
             <button
                 class={activeTab === "password" ? "active" : ""}
                 on:click={() => setActiveTab("password")}
             >
-                Change Password
+                Password
             </button>
             <button
                 class={activeTab === "deactivate" ? "active" : ""}
                 on:click={() => setActiveTab("deactivate")}
             >
-                Deactivate Account
+                Account
             </button>
             <button
                 class={activeTab === "settings" ? "active" : ""}
                 on:click={() => setActiveTab("settings")}
             >
-                Other Settings
+                Other
+            </button>
+            <button
+                class={activeTab === "blocked" ? "active" : ""}
+                on:click={() => setActiveTab("blocked")}
+            >
+                Blocked
             </button>
         </div>
 
@@ -397,7 +402,6 @@
                             <option value="small">Small</option>
                             <option value="medium">Medium</option>
                             <option value="large">Large</option>
-                            <option value="x-large">Extra Large</option>
                         </select>
                     </div>
 
@@ -407,7 +411,7 @@
                             id="font-color"
                             bind:value={otherSettings.font_color}
                         >
-                            <option value="black">Black</option>
+                            <option value="default">Black</option>
                         </select>
                     </div>
 
@@ -426,11 +430,11 @@
                         </button>
                     </div>
                 </form>
+            {:else if activeTab === "blocked"}
+                <div><BlockedUser /></div>
             {/if}
         </div>
     </div>
-
-    <Footer />
 </div>
 
 <!-- svelte-ignore css-unused-selector -->

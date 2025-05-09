@@ -23,6 +23,7 @@ export interface UserProfile {
     following: number;
     date_of_birth: string;
     email: string;
+    join_date: string;
 }
 
 export interface LoginResponse {
@@ -37,4 +38,10 @@ export interface Settings {
     font_size: string;
     font_color: string;
     private: boolean;
+}
+
+export interface BlockedUser {
+    user_id: string;
+    username: string;
+    name: string;
 }

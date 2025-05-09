@@ -306,6 +306,9 @@ func (h *Handlers) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (
 		err = h.DB.WithContext(ctx).Where("user_id = ?", request.BlockedId).First(&blockedUser).Error
 
 		if err != nil {
+			zap.L().Error("Failed to get blocked user: " + err.Error())
+		} else {
+			zap.L().Info("Blocked User: ", zap.Any("blocked", request))
 			allBlockedResponse.Blocked[i] = &pb.BlockedUser{
 				UserId:   blockedUser.UserId,
 				Username: blockedUser.Username,
@@ -313,7 +316,6 @@ func (h *Handlers) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (
 			}
 		}
 	}
-
 	returnData, err := anypb.New(allBlockedResponse)
 	if err != nil {
 		return &pb.ApiResponseUser{
@@ -325,7 +327,7 @@ func (h *Handlers) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (
 
 	return &pb.ApiResponseUser{
 		Success: true,
-		Message: "Get All Followers successful.",
+		Message: "Get All Blocked successful.",
 		Data:    returnData,
 	}, nil
 }

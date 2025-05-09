@@ -23,6 +23,9 @@
   "dependencies": {
     "@lucide/svelte": "^0.507.0",
     "date-fns": "^4.1.0",
-    "svelte-routing": "^2.13.0"
+    "eslint": "^9.26.0",
+    "eslint-plugin-svelte": "^3.5.1",
+    "svelte-routing": "^2.13.0",
+    "typescript-eslint": "^8.32.0"
   }
 }

@@ -34,6 +34,8 @@
     .logo {
         padding: 12px;
         margin: 4px 0;
+        display: flex;
+        justify-content: space-between;
 
         a {
             font-size: 28px;
@@ -145,7 +147,7 @@
         }
 
         .profile-image {
-            width: 40px;
+            width: 55px;
             height: 40px;
             border-radius: 100%;
             overflow: hidden;

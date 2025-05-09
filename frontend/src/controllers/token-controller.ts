@@ -30,6 +30,22 @@ export function logout(): void {
 }
 
 async function checkTokenValidity(): Promise<boolean> {
+    if (
+        localStorage.getItem("token_checked") === "true" &&
+        localStorage.getItem("token_checked_expiry")
+    ) {
+        const expiryTime = parseInt(
+            localStorage.getItem("token_checked_expiry") || "0"
+        );
+        if (Date.now() < expiryTime) {
+            return true;
+        } else {
+            localStorage.removeItem("token_checked");
+            localStorage.removeItem("token_checked_expiry");
+        }
+        return true;
+    }
+
     addToast("info", "Checking user cookie validity...", "Token Check");
 
     const token = getToken();
@@ -46,6 +62,10 @@ async function checkTokenValidity(): Promise<boolean> {
     if (!response.ok || !data.value) {
         removeToken();
         return false;
+    } else {
+        const expiryTime = Date.now() + 20 * 60 * 1000;
+        localStorage.setItem("token_checked", "true");
+        localStorage.setItem("token_checked_expiry", expiryTime.toString());
     }
 
     return true;

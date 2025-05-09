@@ -33,6 +33,7 @@
     <div class="sidebar-content">
         <div class="logo">
             <a href="/home">AY</a>
+            <ToggleTheme />
         </div>
 
         <nav class="nav-links">
@@ -101,10 +102,6 @@
         </nav>
 
         <button class="post-button">Post</button>
-
-        <div class="theme-toggle-wrapper" style="margin: 0; padding: 0;">
-            <ToggleTheme />
-        </div>
     </div>
 
     <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -116,7 +113,7 @@
     >
         <div class="profile-image">
             <img
-                src={`https://jrgqordovipwwaolwwkv.supabase.co/storage/v1/object/public/avatars/${userData.user_id}.png`}
+                src={`${import.meta.env.AVATAR_LINK}/${userData.user_id}.png`}
                 alt="Profile"
             />
         </div>
