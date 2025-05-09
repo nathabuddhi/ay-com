@@ -33,6 +33,7 @@ service UserService {
 
     rpc User_GetAllFollowers (GetAllFollowersRequest) returns (ApiResponseUser);
     rpc User_GetAllFollowing (GetAllFollowingRequest) returns (ApiResponseUser);
+    rpc User_GetAllBlocked (StringUser) returns (ApiResponseUser);
 
     rpc User_SubmitVerifyAccountRequest (SubmitVerifyAccountRequest) returns (ApiResponseUser);
     rpc User_GetAllVerifyAccountRequest (GetAllVerifyAccountRequest) returns (ApiResponseUser);
@@ -67,6 +68,7 @@ message UserProfile {
     string date_of_birth = 8;
     string gender = 9;
     string email = 10;
+    string join_date = 11;
 }
 
 message GetProfileRequest {
@@ -238,4 +240,14 @@ message LoginResponse {
     string username = 3;
     string name = 4;
     bool is_verified = 5;
+}
+
+message BlockedUser {
+    string user_id = 1;
+    string username = 2;
+    string name = 3;
+}
+
+message AllBlockedUserResponse {
+    repeated BlockedUser blocked = 1;
 }

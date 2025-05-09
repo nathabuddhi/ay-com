@@ -277,3 +277,55 @@ func (h *Handlers) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFollo
 		Data:    returnData,
 	}, nil
 }
+
+func (h *Handlers) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("User " + req.Value + " is getting all blocked users.")
+
+	var user models.User
+	err := h.DB.WithContext(ctx).Where("user_id = ?", req.Value).First(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
+	}
+
+	if user.IsBanned || user.IsDeactivated {
+		return &pb.ApiResponseUser{Success: false, Message: "This user account is not active or is banned."}, nil
+	}
+
+	var blocked []models.BlockedUsers
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.Value).Find(&blocked).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
+	}
+
+	allBlockedResponse := &pb.AllBlockedUserResponse{
+		Blocked: make([]*pb.BlockedUser, len(blocked)),
+	}
+
+	for i, request := range blocked {
+		var blockedUser models.User
+		err = h.DB.WithContext(ctx).Where("user_id = ?", request.BlockedId).First(&blockedUser).Error
+
+		if err != nil {
+			allBlockedResponse.Blocked[i] = &pb.BlockedUser{
+				UserId:   blockedUser.UserId,
+				Username: blockedUser.Username,
+				Name:     blockedUser.Name,
+			}
+		}
+	}
+
+	returnData, err := anypb.New(allBlockedResponse)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Get All Followers successful.",
+		Data:    returnData,
+	}, nil
+}

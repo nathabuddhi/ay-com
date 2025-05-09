@@ -70,6 +70,7 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		Bio:        bio,
 		Followers:  int32(followers),
 		Following:  int32(following),
+		JoinDate:   user.JoinedAt.Format("2006-01-02"),
 	}
 
 	returnData, err := anypb.New(userData)

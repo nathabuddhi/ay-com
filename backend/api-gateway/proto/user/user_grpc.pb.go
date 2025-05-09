@@ -40,6 +40,7 @@ const (
 	UserService_User_DeactivateAccount_FullMethodName          = "/user.UserService/User_DeactivateAccount"
 	UserService_User_GetAllFollowers_FullMethodName            = "/user.UserService/User_GetAllFollowers"
 	UserService_User_GetAllFollowing_FullMethodName            = "/user.UserService/User_GetAllFollowing"
+	UserService_User_GetAllBlocked_FullMethodName              = "/user.UserService/User_GetAllBlocked"
 	UserService_User_SubmitVerifyAccountRequest_FullMethodName = "/user.UserService/User_SubmitVerifyAccountRequest"
 	UserService_User_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/User_GetAllVerifyAccountRequest"
 	UserService_User_IsUserPrivate_FullMethodName              = "/user.UserService/User_IsUserPrivate"
@@ -73,6 +74,7 @@ type UserServiceClient interface {
 	User_DeactivateAccount(ctx context.Context, in *DeactivateAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetAllFollowers(ctx context.Context, in *GetAllFollowersRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetAllFollowing(ctx context.Context, in *GetAllFollowingRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetAllBlocked(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error)
@@ -298,6 +300,16 @@ func (c *userServiceClient) User_GetAllFollowing(ctx context.Context, in *GetAll
 	return out, nil
 }
 
+func (c *userServiceClient) User_GetAllBlocked(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_GetAllBlocked_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) User_SubmitVerifyAccountRequest(ctx context.Context, in *SubmitVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseUser)
@@ -374,6 +386,7 @@ type UserServiceServer interface {
 	User_DeactivateAccount(context.Context, *DeactivateAccountRequest) (*ApiResponseUser, error)
 	User_GetAllFollowers(context.Context, *GetAllFollowersRequest) (*ApiResponseUser, error)
 	User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponseUser, error)
+	User_GetAllBlocked(context.Context, *StringUser) (*ApiResponseUser, error)
 	User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponseUser, error)
 	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error)
 	User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error)
@@ -451,6 +464,9 @@ func (UnimplementedUserServiceServer) User_GetAllFollowers(context.Context, *Get
 }
 func (UnimplementedUserServiceServer) User_GetAllFollowing(context.Context, *GetAllFollowingRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllFollowing not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetAllBlocked(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetAllBlocked not implemented")
 }
 func (UnimplementedUserServiceServer) User_SubmitVerifyAccountRequest(context.Context, *SubmitVerifyAccountRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_SubmitVerifyAccountRequest not implemented")
@@ -866,6 +882,24 @@ func _UserService_User_GetAllFollowing_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_GetAllBlocked_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetAllBlocked(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetAllBlocked_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetAllBlocked(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_User_SubmitVerifyAccountRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitVerifyAccountRequest)
 	if err := dec(in); err != nil {
@@ -1046,6 +1080,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_GetAllFollowing",
 			Handler:    _UserService_User_GetAllFollowing_Handler,
+		},
+		{
+			MethodName: "User_GetAllBlocked",
+			Handler:    _UserService_User_GetAllBlocked_Handler,
 		},
 		{
 			MethodName: "User_SubmitVerifyAccountRequest",

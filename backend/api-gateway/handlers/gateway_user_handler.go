@@ -570,3 +570,17 @@ func User_GetSelfProfile(w http.ResponseWriter, r *http.Request) {
 
 	processUserResponseWithPayload[pb.UserProfile](resp, err, w)
 }
+
+func User_GetAllBlocked(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get All Blocked Request is called.")
+
+	req, client := processUserRequest[pb.StringUser](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_GetAllBlocked(ctx, req)
+
+	processUserResponseWithPayload[pb.AllBlockedUserResponse](resp, err, w)
+}
