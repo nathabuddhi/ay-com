@@ -2,7 +2,13 @@
     import { onMount } from "svelte";
     import Post from "../components/Post.svelte";
     import type { UserProfile } from "../types/user";
-    import { getProfile, getSelfProfile } from "../controllers/user-controller";
+    import {
+    blockUser,
+        followUser,
+        getProfile,
+        getSelfProfile,
+        unfollowUser,
+    } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import { navigate } from "svelte-routing";
     import { BadgeCheck } from "@lucide/svelte";
@@ -40,6 +46,36 @@
                 "Error fetching user profile: " + response?.message,
                 "Error!"
             );
+        }
+    }
+
+    async function handleBlock(userId: string) {
+        const response = await blockUser(userId);
+
+        if (response.success) {
+            addToast("success", "Blocked successfully!", "Success!");
+        } else {
+            addToast("error", response.message, "Error!");
+        }
+    }
+
+    async function handleUnfollow(userId: string) {
+        const response = await unfollowUser(userId);
+
+        if (response.success) {
+            addToast("success", "Unfollowed successfully!", "Success!");
+        } else {
+            addToast("error", response.message, "Error!");
+        }
+    }
+
+    async function handleFollow(userId: string) {
+        const response = await followUser(userId);
+
+        if (response.success) {
+            addToast("success", "Followed successfully!", "Success!");
+        } else {
+            addToast("error", response.message, "Error!");
         }
     }
 
@@ -106,12 +142,39 @@
         </div>
         <div class="profile-info">
             <div class="profile-actions">
-                <button
-                    class="edit-profile-button"
-                    on:click={() => navigate("/settings")}
-                >
-                    Edit profile
-                </button>
+                {#if user.username === localStorage.getItem("username")}
+                    <button
+                        class="edit-profile-button"
+                        on:click={() => navigate("/settings")}
+                    >
+                        Edit profile
+                    </button>
+                {:else}
+                    <button
+                        class="edit-profile-button"
+                        on:click={() => {
+                            handleBlock(user.user_id);
+                        }}
+                    >
+                        Block
+                    </button>
+                    <button
+                        class="edit-profile-button"
+                        on:click={() => {
+                            handleFollow(user.user_id);
+                        }}
+                    >
+                        Follow
+                    </button>
+                    <button
+                        class="edit-profile-button"
+                        on:click={() => {
+                            handleUnfollow(user.user_id);
+                        }}
+                    >
+                        Unfollow
+                    </button>
+                {/if}
             </div>
 
             <div class="profile-name-section">
@@ -154,10 +217,10 @@
 
                 <div class="follow-info">
                     <span class="following"
-                        ><strong>{user.following}</strong> Following</span
+                        ><strong>{user.following ? user.following : 0}</strong> Following</span
                     >
                     <span class="followers"
-                        ><strong>{user.followers}</strong> Followers</span
+                        ><strong>{user.followers ? user.followers : 0}</strong> Followers</span
                     >
                 </div>
             </div>

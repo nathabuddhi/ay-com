@@ -166,18 +166,17 @@ export async function requestVerificationCode(
 }
 
 export async function getProfile(
-    user_id: string
+    username: string
 ): Promise<ApiResponse<UserProfile>> {
     try {
         const response = await fetch(
-            "http://localhost:5000/user/getprofile/" + user_id,
+            "http://localhost:5000/user/getprofile/" + username,
             {
-                method: "POST",
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: getToken(),
                 },
-                body: JSON.stringify({}),
             }
         );
         const data: ApiResponse<UserProfile> = await response.json();
@@ -456,6 +455,71 @@ export async function unblockUser(user_id: string): Promise<ApiResponse<null>> {
                 to_unblock_id: user_id,
             }),
         });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function blockUser(user_id: string): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch("http://localhost:5000/user/blockuser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                to_block_id: user_id,
+            }),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function followUser(user_id: string): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch("http://localhost:5000/user/followuser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                to_follow_id: user_id,
+            }),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function unfollowUser(
+    user_id: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(
+            "http://localhost:5000/user/unfollowuser",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: getToken(),
+                },
+                body: JSON.stringify({
+                    to_unfollow_id: user_id,
+                }),
+            }
+        );
         const data: ApiResponse<null> = await response.json();
 
         return data;
