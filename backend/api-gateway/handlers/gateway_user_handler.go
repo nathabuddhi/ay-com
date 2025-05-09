@@ -93,6 +93,25 @@ func processUserRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T,
 	return &req, client
 }
 
+// User_Register godoc
+// @Summary Register a new user
+// @Description Register a new user with email, name, username, password, gender, date of birth, security question, security answer, avatar, and banner
+// @Tags user
+// @Accept multipart/form-data
+// @Produce json
+// @Param email formData string true "Email"
+// @Param name formData string true "Name"
+// @Param username formData string true "Username"
+// @Param password formData string true "Password"
+// @Param gender formData string true "Gender"
+// @Param date_of_birth formData string true "Date of birth"
+// @Param security_question formData string true "Security question"
+// @Param security_answer formData string true "Security answer"
+// @Param avatar formData file true "Avatar image (PNG)"
+// @Param banner formData file true "Banner image (PNG)"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/register [post]
 func User_Register(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Register is called.")
 
@@ -175,6 +194,16 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_GetProfile godoc
+// @Summary Get user profile by username
+// @Description Get the profile of a user by their username
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param username path string true "Username"
+// @Success 200 {object} pb.UserProfile
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getprofile/{username} [get]
 func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Profile is called.")
 
@@ -204,6 +233,16 @@ func User_GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// User_Login godoc
+// @Summary Login a user
+// @Description Login a user with email and password
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param login body pb.LoginRequest true "Login request"
+// @Success 200 {object} pb.LoginResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/login [post]
 func User_Login(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Login is called.")
 
@@ -217,330 +256,410 @@ func User_Login(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithPayload[pb.LoginResponse](resp, err, w)
 }
 
+// User_RequestVerificationCode godoc
+// @Summary Request a verification code
+// @Description Request a verification code for user verification
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param verification body pb.VerificationRequest true "Verification request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/requestverificationcode [post]
 func User_RequestVerificationCode(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Request Verification Code is called.")
-
 	req, client := processUserRequest[pb.VerificationRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_RequestVerificationCode(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_ValidateVerificationCode godoc
+// @Summary Validate a verification code
+// @Description Validate a verification code provided by the user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param validateCode body pb.ValidateCodeRequest true "Validate code request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/validateverificationcode [post]
 func User_ValidateVerificationCode(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Validate Verification Code is called.")
-
 	req, client := processUserRequest[pb.ValidateCodeRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_ValidateVerificationCode(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_ChangePassword godoc
+// @Summary Change user password
+// @Description Change the password for the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param changePassword body pb.ChangePasswordRequest true "Change password request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/changepassword [patch]
 func User_ChangePassword(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Change Password is called.")
-
 	req, client := processUserRequest[pb.ChangePasswordRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_ChangePassword(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_GetSecurityQuestion godoc
+// @Summary Get security question
+// @Description Retrieve the security question for a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param getSecurityQuestion body pb.GetSecurityQuestionRequest true "Get security question request"
+// @Success 200 {object} pb.StringUser
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getsecurityquestion [post]
 func User_GetSecurityQuestion(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Security Question is called.")
-
 	req, client := processUserRequest[pb.GetSecurityQuestionRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_GetSecurityQuestion(ctx, req)
-
 	processUserResponseWithPayload[pb.StringUser](resp, err, w)
 }
 
+// User_ValidateSecurityAnswer godoc
+// @Summary Validate security answer
+// @Description Validate the security answer provided by the user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param validateSecurityAnswer body pb.ValidateSecurityAnswerRequest true "Validate security answer request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/validatesecurityanswer [post]
 func User_ValidateSecurityAnswer(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Validate Security Answer is called.")
-
 	req, client := processUserRequest[pb.ValidateSecurityAnswerRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_ValidateSecurityAnswer(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_ResetPassword godoc
+// @Summary Reset user password
+// @Description Reset the password for a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param resetPassword body pb.ResetPasswordRequest true "Reset password request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/resetpassword [put]
 func User_ResetPassword(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Reset Password is called.")
-
 	req, client := processUserRequest[pb.ResetPasswordRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_ResetPassword(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_FollowUser godoc
+// @Summary Follow a user
+// @Description Follow another user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param followUser body pb.FollowUserRequest true "Follow user request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/followuser [post]
 func User_FollowUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Follow User is called.")
-
 	req, client := processUserRequest[pb.FollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_FollowUser(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_UnFollowUser godoc
+// @Summary Unfollow a user
+// @Description Unfollow another user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param unfollowUser body pb.UnFollowUserRequest true "Unfollow user request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/unfollowuser [post]
 func User_UnFollowUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Unfollow User is called.")
-
 	req, client := processUserRequest[pb.UnFollowUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_UnFollowUser(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_BlockUser godoc
+// @Summary Block a user
+// @Description Block another user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param blockUser body pb.BlockUserRequest true "Block user request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/blockuser [post]
 func User_BlockUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Block User is called.")
-
 	req, client := processUserRequest[pb.BlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_BlockUser(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_UnBlockUser godoc
+// @Summary Unblock a user
+// @Description Unblock a previously blocked user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param unblockUser body pb.UnBlockUserRequest true "Unblock user request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/unblockuser [post]
 func User_UnBlockUser(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Unblock is called.")
-
 	req, client := processUserRequest[pb.UnBlockUserRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_UnBlockUser(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_GetSettings godoc
+// @Summary Get user settings
+// @Description Retrieve the settings for the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param getSettings body pb.GetSettingsRequest true "Get settings request"
+// @Success 200 {object} pb.UserSettings
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getsettings [post]
 func User_GetSettings(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get Settings is called.")
-
 	req, client := processUserRequest[pb.GetSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_GetSettings(ctx, req)
 	if err != nil {
 		zap.L().Error("Error forwarding request", zap.Error(err))
 		returnErrorResponse(w, "Error forwarding request: "+err.Error())
 		return
 	}
-
 	processUserResponseWithPayload[pb.UserSettings](resp, err, w)
 }
 
+// User_UpdateSettings godoc
+// @Summary Update user settings
+// @Description Update the settings for the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param updateSettings body pb.UpdateSettingsRequest true "Update settings request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/updatesettings [patch]
 func User_UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Update Settings is called.")
-
 	req, client := processUserRequest[pb.UpdateSettingsRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_UpdateSettings(ctx, req)
 	if err != nil {
 		zap.L().Error("Error forwarding request", zap.Error(err))
 		returnErrorResponse(w, "Error forwarding request: "+err.Error())
 		return
 	}
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_GetAllFollowers godoc
+// @Summary Get all followers
+// @Description Get a list of all followers of a user by their ID
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} pb.AllFollowersResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getallfollowers/{id} [get]
 func User_GetAllFollowers(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get All Followers is called.")
-
 	vars := mux.Vars(r)
 	userID := vars["id"]
-
 	if !checkRedisData("getallfollowers/"+userID, w) {
 		req, client := processUserRequest[pb.GetAllFollowersRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 		req.UserId = userID
-
 		ctx, cancel := createContext()
 		defer cancel()
-
 		resp, err := client.User_GetAllFollowers(ctx, req)
-
 		processUserResponseWithPayload[pb.AllFollowersResponse](resp, err, w)
 	}
 }
 
+// User_GetAllFollowing godoc
+// @Summary Get all following
+// @Description Get a list of all users followed by a user by their ID
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} pb.AllFollowingResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getallfollowing/{id} [get]
 func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get All Following is called.")
-
 	vars := mux.Vars(r)
 	userID := vars["id"]
-
 	if !checkRedisData("getallfollowing/"+userID, w) {
 		req, client := processUserRequest[pb.GetAllFollowingRequest](r, w)
 		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
 		req.UserId = userID
-
 		ctx, cancel := createContext()
 		defer cancel()
-
 		resp, err := client.User_GetAllFollowing(ctx, req)
-
 		processUserResponseWithPayload[pb.AllFollowingResponse](resp, err, w)
 	}
 }
 
+// User_SubmitVerifyAccountRequest godoc
+// @Summary Submit account verification request
+// @Description Submit a request to verify the authenticated user's account
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param verifyAccount body pb.SubmitVerifyAccountRequest true "Verify account request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/submitverifyaccountrequest [post]
 func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
-
 	req, client := processUserRequest[pb.SubmitVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_SubmitVerifyAccountRequest(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_GetAllVerifyAccountRequest godoc
+// @Summary Get all account verification requests
+// @Description Retrieve all account verification requests for the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param getVerifyRequests body pb.GetAllVerifyAccountRequest true "Get verification requests"
+// @Success 200 {object} pb.GetAllVerifyAccountResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getallverifyaccountrequest [post]
 func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
-
 	req, client := processUserRequest[pb.GetAllVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_GetAllVerifyAccountRequest(ctx, req)
-
 	processUserResponseWithPayload[pb.GetAllVerifyAccountResponse](resp, err, w)
 }
 
+// User_UpdateProfile godoc
+// @Summary Update user profile
+// @Description Update the profile of the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param updateProfile body pb.UpdateUserProfileRequest true "Update profile request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/updateprofile [patch]
 func User_UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
-
 	req, client := processUserRequest[pb.UpdateUserProfileRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_UpdateProfile(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_DeactivateAccount godoc
+// @Summary Deactivate user account
+// @Description Deactivate the authenticated user's account
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param deactivateAccount body pb.DeactivateAccountRequest true "Deactivate account request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/deactivateaccount [post]
 func User_DeactivateAccount(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Deactivate Account is called.")
-
 	req, client := processUserRequest[pb.DeactivateAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_DeactivateAccount(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
+// User_SearchPeople godoc
+// @Summary Search for people
+// @Description Search for users based on criteria
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param searchPeople body pb.SearchPeopleRequest true "Search people request"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/searchpeople [post]
 func User_SearchPeople(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Search People is called.")
-
 	req, client := processUserRequest[pb.SearchPeopleRequest](r, w)
-
 	ctx, cancel := createContext()
 	defer cancel()
-
 	resp, err := client.User_SearchPeople(ctx, req)
-
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
-func User_IsUserPrivate(user_id string) (bool, error) {
-	zap.L().Info("User Is User Private is called.")
-
-	conn := getUserServiceConn()
-	client := pb.NewUserServiceClient(conn)
-	req := &pb.IsAccountPrivateRequest{}
-	req.UserId = user_id
-
-	ctx, cancel := createContext()
-	defer cancel()
-
-	isPrivate, err := client.User_IsUserPrivate(ctx, req)
-
-	if err != nil {
-		zap.L().Error("Error forwarding request", zap.Error(err))
-		return false, err
-	}
-	return isPrivate.Value, nil
-}
-
-func User_IsUserFollowing(user_id string, private_id string) (bool, error) {
-	zap.L().Info("User Is User Following is called.")
-
-	conn := getUserServiceConn()
-	client := pb.NewUserServiceClient(conn)
-	req := &pb.IsUserFollowingRequest{
-		UserId:    user_id,
-		PrivateId: private_id,
-	}
-
-	ctx, cancel := createContext()
-	defer cancel()
-
-	isFollowing, err := client.User_IsUserFollowing(ctx, req)
-
-	if err != nil {
-		zap.L().Error("Error forwarding request", zap.Error(err))
-		return false, err
-	}
-	return isFollowing.Value, nil
-}
-
+// User_CheckToken godoc
+// @Summary Check token validity
+// @Description Check if the authenticated user's token is valid
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param checkToken body pb.StringUser true "Token check request"
+// @Success 200 {object} pb.BoolUser
+// @Failure 400 {object} pb.BoolUser
+// @Router /user/checktoken [post]
 func User_CheckToken(w http.ResponseWriter, r *http.Request) {
 	req, client := processUserRequest[pb.StringUser](r, w)
 	req.Value = r.Context().Value(middleware.UserIdKey).(string)

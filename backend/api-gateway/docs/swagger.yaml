@@ -1,0 +1,887 @@
+definitions:
+  types.ApiResponse:
+    properties:
+      message:
+        type: string
+      payload: {}
+      success:
+        type: boolean
+    type: object
+  user.AllFollowersResponse:
+    properties:
+      followers:
+        items:
+          $ref: '#/definitions/user.StringUser'
+        type: array
+    type: object
+  user.AllFollowingResponse:
+    properties:
+      following:
+        items:
+          $ref: '#/definitions/user.StringUser'
+        type: array
+    type: object
+  user.BlockUserRequest:
+    properties:
+      to_block_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.BoolUser:
+    properties:
+      value:
+        type: boolean
+    type: object
+  user.ChangePasswordRequest:
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+      old_password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.DeactivateAccountRequest:
+    properties:
+      password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.FollowUserRequest:
+    properties:
+      to_follow_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.GetAllVerifyAccountRequest:
+    properties:
+      password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.GetAllVerifyAccountResponse:
+    properties:
+      requests:
+        items:
+          $ref: '#/definitions/user.VerifyAccountRequest'
+        type: array
+    type: object
+  user.GetSecurityQuestionRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  user.GetSettingsRequest:
+    properties:
+      user_id:
+        type: string
+    type: object
+  user.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user.LoginResponse:
+    properties:
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  user.ResetPasswordRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      new_password:
+        type: string
+    type: object
+  user.SearchPeopleRequest:
+    properties:
+      keyword:
+        type: string
+    type: object
+  user.StringUser:
+    properties:
+      value:
+        type: string
+    type: object
+  user.SubmitVerifyAccountRequest:
+    properties:
+      identity_card_number:
+        type: string
+      reason_text:
+        type: string
+      selfie_url:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.UnBlockUserRequest:
+    properties:
+      to_unblock_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.UnFollowUserRequest:
+    properties:
+      to_unfollow_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  user.UpdateSettingsRequest:
+    properties:
+      font_color:
+        type: string
+      font_size:
+        type: string
+      private:
+        type: boolean
+      user_id:
+        type: string
+    type: object
+  user.UpdateUserProfileRequest:
+    properties:
+      bio:
+        type: string
+      date_of_birth:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  user.UserProfile:
+    properties:
+      bio:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      followers:
+        type: integer
+      following:
+        type: integer
+      gender:
+        type: string
+      is_verified:
+        type: boolean
+      join_date:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  user.UserSettings:
+    properties:
+      font_color:
+        type: string
+      font_size:
+        type: string
+      private:
+        type: boolean
+    type: object
+  user.ValidateCodeRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    type: object
+  user.ValidateSecurityAnswerRequest:
+    properties:
+      answer:
+        type: string
+      email:
+        type: string
+      question:
+        type: string
+    type: object
+  user.VerificationRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  user.VerifyAccountRequest:
+    properties:
+      id:
+        type: string
+      reason_text:
+        type: string
+      status:
+        type: string
+      submitted_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /user/blockuser:
+    post:
+      consumes:
+      - application/json
+      description: Block another user
+      parameters:
+      - description: Block user request
+        in: body
+        name: blockUser
+        required: true
+        schema:
+          $ref: '#/definitions/user.BlockUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Block a user
+      tags:
+      - user
+  /user/changepassword:
+    patch:
+      consumes:
+      - application/json
+      description: Change the password for the authenticated user
+      parameters:
+      - description: Change password request
+        in: body
+        name: changePassword
+        required: true
+        schema:
+          $ref: '#/definitions/user.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Change user password
+      tags:
+      - user
+  /user/checktoken:
+    post:
+      consumes:
+      - application/json
+      description: Check if the authenticated user's token is valid
+      parameters:
+      - description: Token check request
+        in: body
+        name: checkToken
+        required: true
+        schema:
+          $ref: '#/definitions/user.StringUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.BoolUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/user.BoolUser'
+      summary: Check token validity
+      tags:
+      - user
+  /user/deactivateaccount:
+    post:
+      consumes:
+      - application/json
+      description: Deactivate the authenticated user's account
+      parameters:
+      - description: Deactivate account request
+        in: body
+        name: deactivateAccount
+        required: true
+        schema:
+          $ref: '#/definitions/user.DeactivateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Deactivate user account
+      tags:
+      - user
+  /user/followuser:
+    post:
+      consumes:
+      - application/json
+      description: Follow another user
+      parameters:
+      - description: Follow user request
+        in: body
+        name: followUser
+        required: true
+        schema:
+          $ref: '#/definitions/user.FollowUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Follow a user
+      tags:
+      - user
+  /user/getallfollowers/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all followers of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.AllFollowersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get all followers
+      tags:
+      - user
+  /user/getallfollowing/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all users followed by a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.AllFollowingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get all following
+      tags:
+      - user
+  /user/getallverifyaccountrequest:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve all account verification requests for the authenticated
+        user
+      parameters:
+      - description: Get verification requests
+        in: body
+        name: getVerifyRequests
+        required: true
+        schema:
+          $ref: '#/definitions/user.GetAllVerifyAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetAllVerifyAccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get all account verification requests
+      tags:
+      - user
+  /user/getprofile/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of a user by their username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserProfile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get user profile by username
+      tags:
+      - user
+  /user/getsecurityquestion:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve the security question for a user
+      parameters:
+      - description: Get security question request
+        in: body
+        name: getSecurityQuestion
+        required: true
+        schema:
+          $ref: '#/definitions/user.GetSecurityQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.StringUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get security question
+      tags:
+      - user
+  /user/getsettings:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve the settings for the authenticated user
+      parameters:
+      - description: Get settings request
+        in: body
+        name: getSettings
+        required: true
+        schema:
+          $ref: '#/definitions/user.GetSettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserSettings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Get user settings
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user with email and password
+      parameters:
+      - description: Login request
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/user.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Login a user
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Register a new user with email, name, username, password, gender,
+        date of birth, security question, security answer, avatar, and banner
+      parameters:
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: Gender
+        in: formData
+        name: gender
+        required: true
+        type: string
+      - description: Date of birth
+        in: formData
+        name: date_of_birth
+        required: true
+        type: string
+      - description: Security question
+        in: formData
+        name: security_question
+        required: true
+        type: string
+      - description: Security answer
+        in: formData
+        name: security_answer
+        required: true
+        type: string
+      - description: Avatar image (PNG)
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      - description: Banner image (PNG)
+        in: formData
+        name: banner
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Register a new user
+      tags:
+      - user
+  /user/requestverificationcode:
+    post:
+      consumes:
+      - application/json
+      description: Request a verification code for user verification
+      parameters:
+      - description: Verification request
+        in: body
+        name: verification
+        required: true
+        schema:
+          $ref: '#/definitions/user.VerificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Request a verification code
+      tags:
+      - user
+  /user/resetpassword:
+    put:
+      consumes:
+      - application/json
+      description: Reset the password for a user
+      parameters:
+      - description: Reset password request
+        in: body
+        name: resetPassword
+        required: true
+        schema:
+          $ref: '#/definitions/user.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Reset user password
+      tags:
+      - user
+  /user/searchpeople:
+    post:
+      consumes:
+      - application/json
+      description: Search for users based on criteria
+      parameters:
+      - description: Search people request
+        in: body
+        name: searchPeople
+        required: true
+        schema:
+          $ref: '#/definitions/user.SearchPeopleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Search for people
+      tags:
+      - user
+  /user/submitverifyaccountrequest:
+    post:
+      consumes:
+      - application/json
+      description: Submit a request to verify the authenticated user's account
+      parameters:
+      - description: Verify account request
+        in: body
+        name: verifyAccount
+        required: true
+        schema:
+          $ref: '#/definitions/user.SubmitVerifyAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Submit account verification request
+      tags:
+      - user
+  /user/unblockuser:
+    post:
+      consumes:
+      - application/json
+      description: Unblock a previously blocked user
+      parameters:
+      - description: Unblock user request
+        in: body
+        name: unblockUser
+        required: true
+        schema:
+          $ref: '#/definitions/user.UnBlockUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Unblock a user
+      tags:
+      - user
+  /user/unfollowuser:
+    post:
+      consumes:
+      - application/json
+      description: Unfollow another user
+      parameters:
+      - description: Unfollow user request
+        in: body
+        name: unfollowUser
+        required: true
+        schema:
+          $ref: '#/definitions/user.UnFollowUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Unfollow a user
+      tags:
+      - user
+  /user/updateprofile:
+    patch:
+      consumes:
+      - application/json
+      description: Update the profile of the authenticated user
+      parameters:
+      - description: Update profile request
+        in: body
+        name: updateProfile
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Update user profile
+      tags:
+      - user
+  /user/updatesettings:
+    patch:
+      consumes:
+      - application/json
+      description: Update the settings for the authenticated user
+      parameters:
+      - description: Update settings request
+        in: body
+        name: updateSettings
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateSettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Update user settings
+      tags:
+      - user
+  /user/validatesecurityanswer:
+    post:
+      consumes:
+      - application/json
+      description: Validate the security answer provided by the user
+      parameters:
+      - description: Validate security answer request
+        in: body
+        name: validateSecurityAnswer
+        required: true
+        schema:
+          $ref: '#/definitions/user.ValidateSecurityAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Validate security answer
+      tags:
+      - user
+  /user/validateverificationcode:
+    post:
+      consumes:
+      - application/json
+      description: Validate a verification code provided by the user
+      parameters:
+      - description: Validate code request
+        in: body
+        name: validateCode
+        required: true
+        schema:
+          $ref: '#/definitions/user.ValidateCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.ApiResponse'
+      summary: Validate a verification code
+      tags:
+      - user
+swagger: "2.0"

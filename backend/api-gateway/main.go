@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/nathabuddhi/ay-com/backend/api-gateway/docs"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/handlers"
 	redis_client "github.com/nathabuddhi/ay-com/backend/api-gateway/redis"
 	"go.uber.org/zap"

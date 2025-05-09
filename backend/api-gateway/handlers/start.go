@@ -3,11 +3,14 @@ package handlers
 import (
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
 
 func InitRoutes() (r *mux.Router) {
 	r = mux.NewRouter()
+
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	InitUserRoutes(r)
 	zap.L().Info("Public Routes Initialized.")

@@ -6,7 +6,7 @@ import type {
 import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { getToken, setToken } from "./token-controller";
 
-function returnDefaultError<T>(error: any): ApiResponse<T> {
+function returnDefaultError<T>(error: unknown): ApiResponse<T> {
     return {
         success: false,
         message:
