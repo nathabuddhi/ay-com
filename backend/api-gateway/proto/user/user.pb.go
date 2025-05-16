@@ -1953,6 +1953,7 @@ type LoginResponse struct {
 	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
 	Name          string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
 	IsVerified    bool                   `protobuf:"varint,5,opt,name=is_verified,json=isVerified,proto3" json:"is_verified,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,6,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2020,6 +2021,13 @@ func (x *LoginResponse) GetIsVerified() bool {
 		return x.IsVerified
 	}
 	return false
+}
+
+func (x *LoginResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
 }
 
 type BlockedUser struct {
@@ -2267,14 +2275,15 @@ const file_user_proto_rawDesc = "" +
 	"\n" +
 	"private_id\x18\x02 \x01(\tR\tprivateId\"/\n" +
 	"\x13SearchPeopleRequest\x12\x18\n" +
-	"\akeyword\x18\x01 \x01(\tR\akeyword\"\x8f\x01\n" +
+	"\akeyword\x18\x01 \x01(\tR\akeyword\"\xb4\x01\n" +
 	"\rLoginResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x03 \x01(\tR\busername\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x1f\n" +
 	"\vis_verified\x18\x05 \x01(\bR\n" +
-	"isVerified\"V\n" +
+	"isVerified\x12#\n" +
+	"\rrefresh_token\x18\x06 \x01(\tR\frefreshToken\"V\n" +
 	"\vBlockedUser\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +

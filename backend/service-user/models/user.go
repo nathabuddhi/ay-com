@@ -34,3 +34,8 @@ type UserVerificationRequest struct {
 	Status             string
 	SubmittedAt        time.Time
 }
+
+type RefreshToken struct {
+	UserId string `gorm:"primaryKey"`
+	Token  string
+}

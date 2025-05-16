@@ -1,8 +1,11 @@
 package models
 
+import "time"
+
 type VerificationCode struct {
-	Email string `gorm:"primaryKey"`
-	Code  string
+	Email  string `gorm:"primaryKey"`
+	Code   string
+	Expiry time.Time
 }
 
 type ValidateVerificationCodeRequest struct {

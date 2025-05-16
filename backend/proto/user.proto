@@ -240,6 +240,7 @@ message LoginResponse {
     string username = 3;
     string name = 4;
     bool is_verified = 5;
+    string refresh_token = 6;
 }
 
 message BlockedUser {

@@ -20,6 +20,7 @@ import (
 
 func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponseUser, error) {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+	var refreshKey = []byte(os.Getenv("JWT_REFRESH_KEY"))
 
 	var user models.User
 
@@ -63,12 +64,39 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 			Message: "An Error Occured: " + err.Error(),
 		}, nil
 	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.UserId,
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+	})
+
+	refreshString, err := refreshToken.SignedString(refreshKey)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An Error Occured: " + err.Error(),
+		}, nil
+	}
+
+	rt := models.RefreshToken{
+		UserId: user.UserId,
+		Token:  refreshString,
+	}
+	err = h.DB.Create(&rt).Error
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An Error Occured: " + err.Error(),
+		}, nil
+	}
+
 	loginResponse := &pb.LoginResponse{
-		UserId:     user.UserId,
-		Username:   user.Username,
-		Name:       user.Name,
-		IsVerified: user.IsVerified,
-		Token:      tokenString,
+		UserId:       user.UserId,
+		Username:     user.Username,
+		Name:         user.Name,
+		IsVerified:   user.IsVerified,
+		Token:        tokenString,
+		RefreshToken: refreshString,
 	}
 	dataReturn, err := anypb.New(loginResponse)
 	if err != nil {
@@ -96,17 +124,34 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 		return &pb.ApiResponseUser{Success: false, Message: "Name must be more than 4 characters and contain only letters and spaces."}, nil
 	}
 
-	var existingUser models.User
-	if err := h.DB.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
-		return &pb.ApiResponseUser{Success: false, Message: "Username is already taken."}, nil
-	}
-
 	if !regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$`).MatchString(req.Email) {
 		return &pb.ApiResponseUser{Success: false, Message: "Invalid email format. Must end with .com"}, nil
 	}
 
-	if err := h.DB.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
-		return &pb.ApiResponseUser{Success: false, Message: "Email is already registered."}, nil
+	var existingUser models.User
+
+	if err := h.DB.
+		Where("username = ? OR email = ?", req.Username, req.Email).
+		First(&existingUser).Error; err == nil {
+
+		if existingUser.Username == req.Username && !existingUser.IsDeactivated {
+			return &pb.ApiResponseUser{Success: false, Message: "Username is already taken."}, nil
+		}
+
+		if existingUser.Email == req.Email {
+			if existingUser.IsDeactivated {
+				var verifCode models.VerificationCode
+				if err := h.DB.
+					Where("email = ? AND expiry > ?", existingUser.Email, time.Now().Add(-time.Hour).Format("2006-01-02 15:04:05")).
+					First(&verifCode).Error; err == nil {
+					return &pb.ApiResponseUser{Success: false, Message: "Email is already registered."}, nil
+				} else {
+					h.DB.Delete(&existingUser)
+				}
+			} else {
+				return &pb.ApiResponseUser{Success: false, Message: "Email is already registered."}, nil
+			}
+		}
 	}
 
 	if len(req.Password) < 8 ||
@@ -191,20 +236,19 @@ func (h *Handlers) User_ChangePassword(ctx context.Context, req *pb.ChangePasswo
 		return &pb.ApiResponseUser{Success: false, Message: "All fields must be filled."}, nil
 	}
 
-	
 	if len(req.NewPassword) < 8 ||
-	!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
-	!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
-	!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
-	!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
+		!regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[a-z]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) ||
+		!regexp.MustCompile(`[!@#~$%^&*()+|_]`).MatchString(req.NewPassword) {
 		return &pb.ApiResponseUser{Success: false, Message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."}, nil
 	}
-	
+
 	var user models.User
 	if err := h.DB.Where("email = ? AND user_id = ?", req.Email, req.UserId).First(&user).Error; err != nil {
 		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
 	}
-	
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.NewPassword)); err == nil {
 		return &pb.ApiResponseUser{Success: false, Message: "Old and new password may not be the same!"}, nil
 	}
@@ -343,8 +387,8 @@ func (h *Handlers) User_ResetPassword(ctx context.Context, req *pb.ResetPassword
 
 	h.DB.WithContext(ctx).Exec(`
 		DELETE FROM reset_password_codes
-		WHERE email = ? AND code = ?
-	`, req.Email, req.Code)
+		WHERE email = ?
+	`, req.Email)
 
 	rabbitmq.PublishEmail(req.Email,
 		"AY.com Password Change.",

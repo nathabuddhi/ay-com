@@ -34,16 +34,16 @@ func (h *Handlers) User_RequestVerificationCode(ctx context.Context, req *pb.Ver
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
 
 	err = h.DB.WithContext(ctx).Exec(`
-		INSERT INTO verification_codes (email, code) 
-		VALUES (?, ?) 
-		ON CONFLICT(email) DO UPDATE SET code = excluded.code
-	`, req.Email, code).Error
+		INSERT INTO verification_codes (email, code, expiry) 
+		VALUES (?, ?, ?) 
+		ON CONFLICT(email) DO UPDATE SET code = excluded.code, expiry = excluded.expiry
+	`, req.Email, code, time.Now().Add(time.Minute*15)).Error
 	if err != nil {
 		zap.L().Error("Failed to sign token: " + err.Error())
 		return &pb.ApiResponseUser{Success: false, Message: "An unknown error occured. Please try again."}, nil
 	}
 
-	body := fmt.Sprintf("Your verification code is: <b>%s</b><br><br>This code is only valid for <b>5 minutes</b>.<br><i>You may request another code.<br>Ignore this email if this wasn't you.</i>", code)
+	body := fmt.Sprintf("Your verification code is: <b>%s</b><br><br>This code is only valid for <b>15 minutes</b>.<br><i>You may request another code.<br>Ignore this email if this wasn't you.</i>", code)
 
 	rabbitmq.PublishEmail(req.Email, "AY.com Verification Code", body)
 	return &pb.ApiResponseUser{Success: true, Message: "Verification code sent successfully."}, nil
@@ -71,14 +71,21 @@ func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.Va
 	if err != nil {
 		return &pb.ApiResponseUser{
 			Success: false,
-			Message: "Verification code not found or expired.",
+			Message: "It doesn't seem you have requested a verification code.",
 		}, nil
 	}
 
 	if verificationCode.Code != req.Code {
 		return &pb.ApiResponseUser{
 			Success: false,
-			Message: "Invalid verification code",
+			Message: "Invalid verification code.",
+		}, nil
+	}
+
+	if time.Now().After(verificationCode.Expiry) {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Verification code expired.",
 		}, nil
 	}
 
@@ -92,6 +99,8 @@ func (h *Handlers) User_ValidateVerificationCode(ctx context.Context, req *pb.Va
 			Message: "Failed to activate user account:" + err.Error(),
 		}, nil
 	}
+
+	h.DB.Delete(&models.VerificationCode{}, "email = ?", req.Email)
 
 	rabbitmq.PublishSendNotification("system", user.UserId, req.Email,
 		"AY.com Account Activation",
