@@ -9,26 +9,21 @@
         getSecurityQuestion,
         validateSecurityQuestion,
     } from "../controllers/user-controller";
+    import { theme } from "../stores/theme-wrapper";
 
-    let currentTheme: "light" | "dark" = "dark";
-    let email = "";
-    let securityAnswer = "";
-    let isSubmitting = false;
-    let showSuccessMessage = false;
+    let email = $state("");
+    let securityAnswer = $state("");
+    let isSubmitting = $state(false);
+    let showSuccessMessage = $state(false);
 
-    let currentStep = 1;
+    let currentStep = $state(1);
 
-    let securityQuestion = "";
+    let securityQuestion = $state("");
 
     onMount(async () => {
         if (await isLoggedIn()) {
             window.location.href = "/home";
         }
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
     });
 
     function validateEmail(email: string): boolean {
@@ -119,15 +114,13 @@
     <header class="forgot-password-header">
         <div class="logo-container">
             <img
-                src={currentTheme === "dark"
-                    ? "logo-dark.png"
-                    : "logo-light.png"}
+                src={$theme === "dark" ? "logo-dark.png" : "logo-light.png"}
                 alt="AY Logo"
                 class="logo-img"
             />
         </div>
         <div class="theme-toggle-container">
-            <ToggleTheme bind:theme={currentTheme} />
+            <ToggleTheme />
         </div>
     </header>
 
@@ -169,7 +162,7 @@
 
                 <button
                     class="submit-button"
-                    on:click={handleEmailSubmit}
+                    onclick={handleEmailSubmit}
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? "Checking..." : "Continue"}
@@ -177,7 +170,7 @@
             {:else if currentStep === 2}
                 <div class="security-question-container">
                     <div class="security-question">
-                        <span class="question-label">Security Question:</span>
+                        <span class="question-label">Security Question</span>
                         <p class="question-text">{securityQuestion}</p>
                     </div>
 
@@ -200,14 +193,14 @@
                 <div class="button-group">
                     <button
                         class="back-button"
-                        on:click={() => (currentStep = 1)}
+                        onclick={() => (currentStep = 1)}
                         disabled={isSubmitting}
                     >
                         Back
                     </button>
                     <button
                         class="submit-button"
-                        on:click={handleSecurityAnswerSubmit}
+                        onclick={handleSecurityAnswerSubmit}
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? "Verifying..." : "Submit"}
@@ -233,84 +226,4 @@
 
 <style lang="scss">
     @use "../styles/forgot-password.scss";
-
-    .security-question-container {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .security-question {
-        background-color: rgba(var(--background-rgb), 0.5);
-        border-radius: 8px;
-        padding: 16px;
-        border: 1px solid var(--border);
-    }
-
-    .question-label {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--secondary);
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    .question-text {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text);
-    }
-
-    .button-group {
-        display: flex;
-        gap: 12px;
-        margin-top: 8px;
-    }
-
-    .back-button {
-        padding: 12px 16px;
-        border-radius: 9999px;
-        background-color: transparent;
-        color: var(--text);
-        font-size: 16px;
-        font-weight: 500;
-        border: 1px solid var(--border);
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        flex: 1;
-
-        &:hover {
-            background-color: rgba(var(--background-rgb), 0.1);
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
-
-    .submit-button {
-        flex: 2;
-    }
-
-    @media (max-width: 768px) {
-        .button-group {
-            flex-direction: column;
-        }
-
-        .back-button,
-        .submit-button {
-            flex: auto;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .security-question {
-            padding: 12px;
-        }
-
-        .question-text {
-            font-size: 14px;
-        }
-    }
 </style>

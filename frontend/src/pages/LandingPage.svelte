@@ -3,17 +3,12 @@
     import ToggleTheme from "../components/ToggleTheme.svelte";
     import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
+    import { theme } from "../stores/theme-wrapper";
 
-    let currentTheme: "light" | "dark" = "dark";
     onMount(async () => {
         if (await isLoggedIn()) {
             window.location.href = "/home";
         }
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
     });
 </script>
 
@@ -21,7 +16,7 @@
     <div class="landing-content">
         <div class="logo-section">
             <img
-                src={currentTheme === "dark"
+                src={$theme === "dark"
                     ? "logo-dark.png"
                     : "logo-light.png"}
                 alt="logo"
@@ -31,7 +26,7 @@
 
         <div class="auth-section">
             <div class="theme-toggle-container">
-                <ToggleTheme bind:theme={currentTheme} />
+                <ToggleTheme />
             </div>
 
             <div class="auth-content">
@@ -46,12 +41,12 @@
                             Create account
                         </a>
                         <p class="terms">
-                            By signing up, you agree to the <a href="/terms"
+                            By signing up, you agree to the <a href="/"
                                 >Terms of Service</a
                             >
                             and
-                            <a href="/privacy">Privacy Policy</a>, including
-                            <a href="/cookies">Cookie Use</a>.
+                            <a href="/">Privacy Policy</a>, including
+                            <a href="/">Cookie Use</a>.
                         </p>
                     </div>
 

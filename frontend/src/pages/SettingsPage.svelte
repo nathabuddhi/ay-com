@@ -10,41 +10,39 @@
         changePassword,
         deactivateAccount,
         updateSettings,
-        getProfile,
         getSelfProfile,
         getSettings,
     } from "../controllers/user-controller";
     import type { Settings } from "../types/user";
     import BlockedUser from "../components/BlockedUser.svelte";
 
-    let activeTab: string = "profile";
-    let theme: "light" | "dark" = "dark";
-    let isLoading: boolean = false;
+    let activeTab: string = $state("profile");
+    let isLoading: boolean = $state(false);
 
-    let profile = {
+    let profile = $state({
         name: "",
         username: "",
         bio: "",
         gender: "",
         dob: new Date(),
-    };
+    });
 
-    let passwordForm = {
+    let passwordForm = $state({
         email: "",
         oldPassword: "",
         newPassword: "",
         confirmPassword: "",
-    };
+    });
 
-    let deactivateForm = {
+    let deactivateForm = $state({
         password: "",
-    };
+    });
 
-    let otherSettings: Settings = {
+    let otherSettings: Settings = $state({
         font_size: "medium",
-        font_color: "default",
+        font_color: "black",
         private: false,
-    };
+    });
 
     async function setActiveTab(tab: string) {
         activeTab = tab;
@@ -56,7 +54,7 @@
                 if (response.success) {
                     otherSettings = {
                         font_size: response.payload?.font_size || "medium",
-                        font_color: response.payload?.font_color || "default",
+                        font_color: response.payload?.font_color || "black",
                         private: response.payload?.private ?? false,
                     };
                 } else {
@@ -105,8 +103,7 @@
                 response.success ? "Success!" : "Update Failed!"
             );
         } catch (error) {
-            addToast("error", "Failed to update profile", "Error");
-            console.error(error);
+            addToast("error", "Failed to update profile: " + error, "Error");
         } finally {
             isLoading = false;
         }
@@ -198,15 +195,9 @@
                 "Please log in to access settings",
                 "Authentication Error"
             );
-            setTimeout(() => (window.location.href = "/login"), 1500);
+            window.location.href = "/login";
             return;
         }
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "dark";
-        theme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
-
         await setActiveTab("profile");
     });
 </script>
@@ -222,7 +213,7 @@
         </div>
         <h1>Settings</h1>
         <div class="theme-toggle">
-            <ToggleTheme bind:theme />
+            <ToggleTheme />
         </div>
     </header>
 
@@ -230,31 +221,31 @@
         <div class="tabs">
             <button
                 class={activeTab === "profile" ? "active" : ""}
-                on:click={() => setActiveTab("profile")}
+                onclick={() => setActiveTab("profile")}
             >
                 Profile
             </button>
             <button
                 class={activeTab === "password" ? "active" : ""}
-                on:click={() => setActiveTab("password")}
+                onclick={() => setActiveTab("password")}
             >
                 Password
             </button>
             <button
                 class={activeTab === "deactivate" ? "active" : ""}
-                on:click={() => setActiveTab("deactivate")}
+                onclick={() => setActiveTab("deactivate")}
             >
                 Account
             </button>
             <button
                 class={activeTab === "settings" ? "active" : ""}
-                on:click={() => setActiveTab("settings")}
+                onclick={() => setActiveTab("settings")}
             >
                 Other
             </button>
             <button
                 class={activeTab === "blocked" ? "active" : ""}
-                on:click={() => setActiveTab("blocked")}
+                onclick={() => setActiveTab("blocked")}
             >
                 Blocked
             </button>
@@ -262,7 +253,7 @@
 
         <div class="tab-content">
             {#if activeTab === "profile"}
-                <form on:submit|preventDefault={handleUpdateProfile}>
+                <form onsubmit={handleUpdateProfile}>
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input
@@ -310,7 +301,7 @@
                     </div>
                 </form>
             {:else if activeTab === "password"}
-                <form on:submit|preventDefault={handleChangePassword}>
+                <form onsubmit={handleChangePassword}>
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input
@@ -368,7 +359,7 @@
                     </p>
                 </div>
 
-                <form on:submit|preventDefault={handleDeactivateAccount}>
+                <form onsubmit={handleDeactivateAccount}>
                     <div class="form-group">
                         <label for="deactivate-password"
                             >Enter your password to confirm</label
@@ -392,7 +383,7 @@
                     </div>
                 </form>
             {:else if activeTab === "settings"}
-                <form on:submit|preventDefault={saveOtherSettings}>
+                <form onsubmit={saveOtherSettings}>
                     <div class="form-group">
                         <label for="font-size">Font Size</label>
                         <select
@@ -437,7 +428,7 @@
     </div>
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/settings.scss";
 </style>

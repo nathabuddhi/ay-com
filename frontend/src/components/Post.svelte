@@ -10,9 +10,11 @@
     } from "@lucide/svelte";
     import type { Thread } from "../types/thread";
     import type { UserProfile } from "../types/user";
+    import { onMount } from "svelte";
 
-    export let post: Thread;
-    let user: UserProfile = {
+    let { post } = $props<{ post: Thread }>();
+
+    let user = $state<UserProfile>({
         name: "loading",
         username: "loading",
         is_verified: false,
@@ -24,7 +26,11 @@
         date_of_birth: "",
         email: "",
         join_date: "",
-    };
+    });
+
+    onMount(() => {
+        
+    })
 
     const formattedTime = formatDistanceToNow(new Date(post.timestamp), {
         addSuffix: true,

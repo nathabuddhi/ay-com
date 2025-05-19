@@ -2,20 +2,17 @@
     import { onMount } from "svelte";
     import { Sun, Moon } from "@lucide/svelte";
 
-    export let theme: "light" | "dark" = "dark";
-
-    let currTheme: "light" | "dark" = theme;
+    let currTheme: "light" | "dark" = $state("dark");
 
     onMount(() => {
         const storedTheme = localStorage.getItem("theme") as "light" | "dark";
 
         if (storedTheme) {
             currTheme = storedTheme;
-            theme = storedTheme;
             document.documentElement.setAttribute("data-theme", storedTheme);
         } else {
-            localStorage.setItem("theme", theme);
-            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", currTheme);
+            document.documentElement.setAttribute("data-theme", currTheme);
         }
     });
 
@@ -23,11 +20,10 @@
         currTheme = currTheme === "light" ? "dark" : "light";
         localStorage.setItem("theme", currTheme);
         document.documentElement.setAttribute("data-theme", currTheme);
-        theme = currTheme;
     }
 </script>
 
-<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle theme">
+<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle theme">
     {#if currTheme === "light"}
         <Moon />
     {:else}

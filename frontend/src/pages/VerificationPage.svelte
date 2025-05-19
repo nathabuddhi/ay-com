@@ -9,8 +9,8 @@
     } from "../controllers/user-controller";
     import ToastContainer from "../components/ToastContainer.svelte";
     import { addToast } from "../stores/toast-wrapper";
+    import { theme } from "../stores/theme-wrapper";
 
-    let currentTheme: "light" | "dark" = "dark";
     let email = "";
     let code = ["", "", "", "", "", ""];
     let isSubmitting = false;
@@ -36,11 +36,6 @@
             }, 2000);
             return;
         }
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
 
         startTimer(60);
         addToast(
@@ -176,7 +171,7 @@
     <header class="verification-header">
         <div class="logo-container">
             <img
-                src={currentTheme === "dark"
+                src={$theme === "dark"
                     ? "logo-dark.png"
                     : "logo-light.png"}
                 alt="AY Logo"
@@ -184,7 +179,7 @@
             />
         </div>
         <div class="theme-toggle-container">
-            <ToggleTheme bind:theme={currentTheme} />
+            <ToggleTheme />
         </div>
     </header>
 
@@ -199,7 +194,7 @@
                 </p>
             </div>
 
-            <div class="code-input-container" on:paste={handlePaste}>
+            <div class="code-input-container" onpaste={handlePaste}>
                 {#each Array(6) as _, i}
                     <input
                         type="text"
@@ -207,8 +202,8 @@
                         class="code-input"
                         maxlength="1"
                         bind:value={code[i]}
-                        on:input={(e) => handleInputChange(i, e)}
-                        on:keydown={(e) => handleKeyDown(i, e)}
+                        oninput={(e) => handleInputChange(i, e)}
+                        onkeydown={(e) => handleKeyDown(i, e)}
                         autocomplete="off"
                     />
                 {/each}
@@ -224,7 +219,7 @@
 
             <button
                 class="verify-button"
-                on:click={verifyCode}
+                onclick={verifyCode}
                 disabled={isSubmitting || code.join("").length !== 6}
             >
                 {isSubmitting ? "Verifying..." : "Verify"}
@@ -237,7 +232,7 @@
                 {:else}
                     <button
                         class="resend-button"
-                        on:click={requestNewCode}
+                        onclick={requestNewCode}
                         disabled={isSubmitting || timeLeft > 0}
                     >
                         Resend verification code

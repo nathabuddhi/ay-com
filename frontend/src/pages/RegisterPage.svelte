@@ -6,20 +6,21 @@
     import { register } from "../controllers/user-controller";
     import ToastContainer from "../components/ToastContainer.svelte";
     import { addToast } from "../stores/toast-wrapper";
+    import { theme } from "../stores/theme-wrapper";
 
-    let email = "";
-    let fullName = "";
-    let username = "";
-    let password = "";
-    let confirmPassword = "";
-    let gender = "male";
-    let dateOfBirth = "";
-    let securityQuestion = "";
-    let securityAnswer = "";
-    let avatar: File | null = null;
-    let banner: File | null = null;
+    let email = $state("");
+    let fullName = $state("");
+    let username = $state("");
+    let password = $state("");
+    let confirmPassword = $state("");
+    let gender = $state("male");
+    let dateOfBirth = $state("");
+    let securityQuestion = $state("");
+    let securityAnswer = $state("");
+    let avatar: File | null = $state(null);
+    let banner: File | null = $state(null);
 
-    let errors = {
+    let errors = $state({
         email: "",
         fullName: "",
         username: "",
@@ -30,11 +31,11 @@
         securityAnswer: "",
         avatar: "",
         banner: "",
-    };
+    });
 
-    let isSubmitting = false;
-    let avatarPreview = "";
-    let bannerPreview = "";
+    let isSubmitting = $state(false);
+    let avatarPreview = $state("");
+    let bannerPreview = $state("");
 
     const securityQuestions = [
         "What was the name of your first pet?",
@@ -44,8 +45,6 @@
         "What was your childhood nickname?",
     ];
 
-    let currentTheme: "light" | "dark" = "dark";
-
     onMount(async () => {
         if (await isLoggedIn()) {
             window.location.href = "/home";
@@ -53,7 +52,6 @@
 
         const savedTheme =
             (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
         document.documentElement.setAttribute("data-theme", savedTheme);
     });
 
@@ -243,15 +241,13 @@
     <header class="register-header">
         <div class="logo-container">
             <img
-                src={currentTheme === "dark"
-                    ? "logo-dark.png"
-                    : "logo-light.png"}
+                src={$theme === "dark" ? "logo-dark.png" : "logo-light.png"}
                 alt="AY Logo"
                 class="logo-img"
             />
         </div>
         <div class="theme-toggle-container">
-            <ToggleTheme bind:theme={currentTheme} />
+            <ToggleTheme />
         </div>
     </header>
 
@@ -260,7 +256,7 @@
 
         <h1 class="form-title">Create your account</h1>
 
-        <form class="register-form" on:submit|preventDefault={handleSubmit}>
+        <form class="register-form" onsubmit={handleSubmit}>
             <div class="form-group">
                 <label for="email" class="form-label">Email</label>
                 <input
@@ -268,7 +264,7 @@
                     id="email"
                     class="form-input"
                     bind:value={email}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.email}
@@ -283,7 +279,7 @@
                     id="fullName"
                     class="form-input"
                     bind:value={fullName}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.fullName}
@@ -298,7 +294,7 @@
                     id="username"
                     class="form-input"
                     bind:value={username}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.username}
@@ -313,7 +309,7 @@
                     id="password"
                     class="form-input"
                     bind:value={password}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.password}
@@ -330,7 +326,7 @@
                     id="confirmPassword"
                     class="form-input"
                     bind:value={confirmPassword}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.confirmPassword}
@@ -346,7 +342,7 @@
                     id="dateOfBirth"
                     class="form-input"
                     bind:value={dateOfBirth}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.dateOfBirth}
@@ -386,7 +382,7 @@
                     id="securityQuestion"
                     class="form-select"
                     bind:value={securityQuestion}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 >
                     <option value="" disabled selected
@@ -410,7 +406,7 @@
                     id="securityAnswer"
                     class="form-input"
                     bind:value={securityAnswer}
-                    on:blur={validateForm}
+                    onblur={validateForm}
                     required
                 />
                 {#if errors.securityAnswer}
@@ -429,7 +425,7 @@
                         id="avatar"
                         class="file-input"
                         accept="image/*"
-                        on:change={handleAvatarChange}
+                        onchange={handleAvatarChange}
                     />
                     {#if avatarPreview}
                         <img
@@ -455,7 +451,7 @@
                         id="banner"
                         class="file-input"
                         accept="image/*"
-                        on:change={handleBannerChange}
+                        onchange={handleBannerChange}
                     />
                     {#if bannerPreview}
                         <img
@@ -481,6 +477,9 @@
 
         <div class="login-link">
             Already have an account? <a href="/login">Sign in</a>
+        </div>
+        <div class="login-link">
+            <a href="/">Back to Landing Page</a>
         </div>
     </main>
 </div>

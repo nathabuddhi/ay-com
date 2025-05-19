@@ -1,19 +1,22 @@
 <script lang="ts">
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount } from "svelte";
 
-    export let type: "error" | "success" | "info" = "info";
-    export let title: string = "";
-    export let message: string = "";
-    export let duration: number = 5000;
-    export let show: boolean = false;
+    const { type, title, message, duration, show } = $props<{
+        type: "error" | "success" | "info";
+        title: string;
+        message: string;
+        duration: number;
+        show: boolean;
+    }>();
 
-    let isVisible = false;
+    let isVisible = $state(false);
     let timeoutId: number;
-    const dispatch = createEventDispatcher<{ close: void }>();
 
-    $: if (show) {
-        showToast();
-    }
+    $effect(() => {
+        if (show) {
+            showToast();
+        }
+    });
 
     function showToast(): void {
         isVisible = true;
@@ -22,17 +25,13 @@
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
                 closeToast();
-            }, duration) as unknown as number;
+            }, duration) as number;
         }
     }
 
     function closeToast(): void {
         isVisible = false;
         clearTimeout(timeoutId);
-
-        setTimeout(() => {
-            dispatch("close");
-        }, 300);
     }
 
     onMount(() => {
@@ -55,13 +54,14 @@
     </div>
     <button
         class="toast-close"
-        on:click={closeToast}
+        onclick={closeToast}
         aria-label="Close notification"
     >
         &times;
     </button>
 </div>
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/toast.scss";
 </style>

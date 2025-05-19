@@ -172,7 +172,7 @@
             />
         </div>
         <div class="theme-toggle-container">
-            <ToggleTheme bind:theme={currentTheme} />
+            <ToggleTheme />
         </div>
     </header>
 

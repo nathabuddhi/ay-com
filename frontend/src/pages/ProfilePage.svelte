@@ -3,7 +3,7 @@
     import Post from "../components/Post.svelte";
     import type { UserProfile } from "../types/user";
     import {
-    blockUser,
+        blockUser,
         followUser,
         getProfile,
         getSelfProfile,
@@ -11,11 +11,32 @@
     } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import { navigate } from "svelte-routing";
-    import { BadgeCheck } from "@lucide/svelte";
+    import { BadgeCheck, Calendar, CrossIcon, X } from "@lucide/svelte";
     import type { Thread } from "../types/thread";
 
-    let user: UserProfile;
-    let posts: Thread[] = [];
+    let user = $state<UserProfile>({
+        name: "loading",
+        username: "loading",
+        is_verified: false,
+        user_id: "loading",
+        bio: "",
+        followers: 0,
+        following: 0,
+        gender: "",
+        date_of_birth: "",
+        email: "",
+        join_date: "",
+    });
+    let posts = $state<Thread[]>([]);
+    let replies = $state<Thread[]>([]);
+    let likes = $state<Thread[]>([]);
+    let media = $state<Thread[]>([]);
+
+    const tabs = ["Posts", "Replies", "Likes", "Media"];
+    let activeTab = $state("Posts");
+
+    let showImagePreviewModal = $state(false);
+    let previewImageUrl = $state("");
 
     async function loadProfile() {
         const username = window.location.pathname.split("/").pop();
@@ -83,12 +104,6 @@
         await loadProfile();
     });
 
-    const tabs = ["Posts", "Replies", "Likes", "Media"];
-    let activeTab = "Posts";
-
-    let showImagePreviewModal = false;
-    let previewImageUrl = "";
-
     function setActiveTab(tab: string) {
         activeTab = tab;
     }
@@ -125,7 +140,7 @@
             /> -->
             <div
                 class="profile-avatar"
-                on:click={() =>
+                onclick={() =>
                     openImagePreviewModal(
                         import.meta.env.VITE_AVATAR_LINK +
                             user?.user_id +
@@ -145,14 +160,14 @@
                 {#if user.username === localStorage.getItem("username")}
                     <button
                         class="edit-profile-button"
-                        on:click={() => navigate("/settings")}
+                        onclick={() => navigate("/settings")}
                     >
                         Edit profile
                     </button>
                 {:else}
                     <button
                         class="edit-profile-button"
-                        on:click={() => {
+                        onclick={() => {
                             handleBlock(user.user_id);
                         }}
                     >
@@ -160,7 +175,7 @@
                     </button>
                     <button
                         class="edit-profile-button"
-                        on:click={() => {
+                        onclick={() => {
                             handleFollow(user.user_id);
                         }}
                     >
@@ -168,7 +183,7 @@
                     </button>
                     <button
                         class="edit-profile-button"
-                        on:click={() => {
+                        onclick={() => {
                             handleUnfollow(user.user_id);
                         }}
                     >
@@ -195,23 +210,7 @@
 
             <div class="profile-meta">
                 <div class="joined-date">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"
-                        ></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
+                    <Calendar />
                     Joined {user?.join_date}
                 </div>
 
@@ -230,7 +229,7 @@
             {#each tabs as tab}
                 <button
                     class="tab-button {activeTab === tab ? 'active' : ''}"
-                    on:click={() => setActiveTab(tab)}
+                    onclick={() => setActiveTab(tab)}
                 >
                     {tab}
                 </button>
@@ -495,27 +494,18 @@
             {/if}
         </div> -->
 
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
         {#if showImagePreviewModal}
-            <div class="modal-overlay" on:click={closeImagePreviewModal}>
-                <div class="image-preview-container" on:click|stopPropagation>
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="modal-overlay" onclick={closeImagePreviewModal}>
+                <div class="image-preview-container">
+                    <!-- svelte-ignore a11y_consider_explicit_label -->
                     <button
                         class="close-button"
-                        on:click={closeImagePreviewModal}
+                        onclick={closeImagePreviewModal}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
+                        <X />
                     </button>
                     <img
                         src={previewImageUrl || "/placeholder.svg"}
@@ -527,6 +517,7 @@
     </div>
 {/if}
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/profile.scss";
 </style>

@@ -32,6 +32,7 @@ export interface LoginResponse {
     username: string;
     name: string;
     is_verified: boolean;
+    refresh_token: string;
 }
 
 export interface Settings {

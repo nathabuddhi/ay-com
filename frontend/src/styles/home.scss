@@ -1,3 +1,5 @@
+$desktop: 1200px;
+$tablet: 768px;
 .home-container {
     display: grid;
     grid-template-columns: 275px 1fr 350px;
@@ -24,6 +26,36 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        svg {
+            fill: var(--text);
+        }
+    }
+
+    @media (max-width: $tablet) {
+        position: fixed;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+
+        &.open {
+            transform: translateX(0);
+        }
+
+        .hamburger {
+            display: block;
+        }
+
+        .sidebar-content {
+            background-color: var(--background);
+            padding: 16px;
+        }
+    }
 
     .sidebar-content {
         display: flex;
@@ -655,7 +687,7 @@
         padding: 16px 0;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: $tablet) {
         display: none;
     }
 }

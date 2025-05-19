@@ -46,11 +46,13 @@
 
 <div class="home-container">
     <ToastContainer />
-    <LeftSideBar {userData} on:themeChange={handleThemeChange} />
+    <LeftSideBar {userData} />
     <main class="main-content">
         {#if currpage.includes("home")}
             <Feed />
         {:else if currpage.includes("profile")}
+            <ProfilePage />
+        {:else if currpage.includes("notification")}
             <ProfilePage />
         {/if}
     </main>

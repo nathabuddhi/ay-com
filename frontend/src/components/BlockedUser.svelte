@@ -7,7 +7,7 @@
     import type { BlockedUser } from "../types/user";
     import { addToast } from "../stores/toast-wrapper";
 
-    let blockedUsers: BlockedUser[] = [];
+    let blockedUsers = $state<BlockedUser[]>([]);
 
     async function fetchBlockedUsers() {
         const response = await getBlockedUsers();
@@ -70,7 +70,7 @@
                 </div>
                 <button
                     class="unblock-button"
-                    on:click={() => handleUnblock(user.user_id, user.username)}
+                    onclick={() => handleUnblock(user.user_id, user.username)}
                 >
                     Unblock
                 </button>
@@ -79,7 +79,7 @@
     </div>
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/blocked.scss";
 </style>

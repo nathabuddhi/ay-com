@@ -3,10 +3,11 @@
     import Post from "./Post.svelte";
     // import CreatePost from "./CreatePost.svelte";
 
-    const posts: Thread[] = [];
+    const forYouPosts = $state<Thread[]>([]);
+    const followingPosts = $state<Thread[]>([]);
 
     const tabs = ["For you", "Following"];
-    let activeTab = "For you";
+    let activeTab = $state<string>("For you");
 
     function setActiveTab(tab: string) {
         activeTab = tab;
@@ -20,7 +21,7 @@
             {#each tabs as tab}
                 <button
                     class="tab-button {activeTab === tab ? 'active' : ''}"
-                    on:click={() => setActiveTab(tab)}
+                    onclick={() => setActiveTab(tab)}
                 >
                     {tab}
                 </button>
@@ -29,13 +30,24 @@
     </div>
 
     <div class="posts-container">
-        {#each posts as post}
-            <Post {post} />
-        {/each}
-        {#if posts.length === 0}
-            <p class="no-posts-message">No posts yet.</p>
+        {#if activeTab === "For you"}
+            {#each forYouPosts as post}
+                <Post {post} />
+            {/each}
+            {#if forYouPosts.length === 0}
+                <p class="no-posts-message">No posts yet.</p>
+            {:else}
+                <p class="end-posts-message">You have reached the end.</p>
+            {/if}
         {:else}
-            <p class="end-posts-message">You have reached the end.</p>
+            {#each followingPosts as post}
+                <Post {post} />
+            {/each}
+            {#if followingPosts.length === 0}
+                <p class="no-posts-message">No posts yet.</p>
+            {:else}
+                <p class="end-posts-message">You have reached the end.</p>
+            {/if}
         {/if}
     </div>
 </div>

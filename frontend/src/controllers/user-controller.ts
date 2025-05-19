@@ -4,7 +4,8 @@ import type {
     StringPayload,
 } from "../types/api";
 import type { LoginResponse, Settings, UserProfile } from "../types/user";
-import { getToken, setToken } from "./token-controller";
+import { API_URL } from "../env_var";
+import { getToken, setRefreshToken, setToken } from "./token-controller";
 
 function returnDefaultError<T>(error: unknown): ApiResponse<T> {
     return {
@@ -19,7 +20,7 @@ function returnDefaultError<T>(error: unknown): ApiResponse<T> {
 
 export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch("http://localhost:5000/" + user_id, {
+        const response = await fetch(`${API_URL}/${user_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -40,7 +41,7 @@ export async function login(
     password: string
 ): Promise<ApiResponse<LoginResponse>> {
     try {
-        const response = await fetch("http://localhost:5000/user/login", {
+        const response = await fetch(`${API_URL}/user/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -56,18 +57,23 @@ export async function login(
             throw new Error(data.message || "Invalid email or password");
         }
 
-        if (data && data.payload?.token) setToken(data.payload?.token);
+        if (data && data.payload?.token) setToken(data.payload.token);
+        if (data && data.payload?.refresh_token)
+            setRefreshToken(data.payload.refresh_token);
         if (data && data.payload?.user_id) {
-            localStorage.setItem("user_id", data.payload?.user_id);
+            localStorage.setItem("user_id", data.payload.user_id);
         }
         if (data && data.payload?.username) {
-            localStorage.setItem("username", data.payload?.username);
+            localStorage.setItem("username", data.payload.username);
         }
         if (data && data.payload?.name) {
-            localStorage.setItem("name", data.payload?.name);
+            localStorage.setItem("name", data.payload.name);
         }
         if (data && data.payload?.is_verified) {
-            localStorage.setItem("is_verified", "yes");
+            localStorage.setItem(
+                "is_verified",
+                data.payload.is_verified ? "true" : "false"
+            );
         }
         return data;
     } catch (error) {
@@ -103,7 +109,7 @@ export async function register(
         formData.append("avatar", avatar);
         formData.append("banner", banner);
 
-        const response = await fetch("http://localhost:5000/user/register", {
+        const response = await fetch(`${API_URL}/user/register`, {
             method: "POST",
             body: formData,
         });
@@ -121,7 +127,7 @@ export async function validateVerificationCode(
 ): Promise<ApiResponse<null>> {
     try {
         const response = await fetch(
-            "http://localhost:5000/user/validateverificationcode",
+            `${API_URL}/user/validateverificationcode`,
             {
                 method: "POST",
                 headers: {
@@ -146,7 +152,7 @@ export async function requestVerificationCode(
 ): Promise<ApiResponse<null>> {
     try {
         const response = await fetch(
-            "http://localhost:5000/user/requestverificationcode",
+            `${API_URL}/user/requestverificationcode`,
             {
                 method: "POST",
                 headers: {
@@ -169,16 +175,13 @@ export async function getProfile(
     username: string
 ): Promise<ApiResponse<UserProfile>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/getprofile/" + username,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-            }
-        );
+        const response = await fetch(`${API_URL}/user/getprofile/` + username, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+        });
         const data: ApiResponse<UserProfile> = await response.json();
 
         return data;
@@ -189,17 +192,14 @@ export async function getProfile(
 
 export async function getSelfProfile(): Promise<ApiResponse<UserProfile>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/getselfprofile",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({}),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/getselfprofile`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({}),
+        });
         const data: ApiResponse<UserProfile> = await response.json();
 
         return data;
@@ -216,23 +216,20 @@ export async function updateProfile(
     gender: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/updateprofile",
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({
-                    name: name,
-                    username: username,
-                    bio: bio,
-                    date_of_birth: date_of_birth.toISOString().split("T")[0],
-                    gender: gender,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/updateprofile`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                name: name,
+                username: username,
+                bio: bio,
+                date_of_birth: date_of_birth.toISOString().split("T")[0],
+                gender: gender,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -245,18 +242,15 @@ export async function getSecurityQuestion(
     email: string
 ): Promise<ApiResponse<StringPayload>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/getsecurityquestion",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/getsecurityquestion`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+            }),
+        });
         const data: ApiResponse<StringPayload> = await response.json();
 
         return data;
@@ -270,19 +264,16 @@ export async function validateSecurityQuestion(
     answer: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/validatesecurityanswer",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                    answer: answer,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/validatesecurityanswer`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+                answer: answer,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -297,21 +288,18 @@ export async function changePassword(
     new_password: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/changepassword",
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({
-                    email: email,
-                    old_password: old_password,
-                    new_password: new_password,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/changepassword`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                email: email,
+                old_password: old_password,
+                new_password: new_password,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -326,20 +314,17 @@ export async function resetPassword(
     new_password: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/resetpassword",
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                    code: code,
-                    new_password: new_password,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/resetpassword`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+                code: code,
+                new_password: new_password,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -352,19 +337,16 @@ export async function deactivateAccount(
     password: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/deactivateaccount",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({
-                    password: password,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/deactivateaccount`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                password: password,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -375,7 +357,7 @@ export async function deactivateAccount(
 
 export async function getSettings(): Promise<ApiResponse<Settings>> {
     try {
-        const response = await fetch("http://localhost:5000/user/getsettings", {
+        const response = await fetch(`${API_URL}/user/getsettings`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -397,21 +379,18 @@ export async function updateSettings(
     is_private: boolean
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/updatesettings",
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({
-                    font_size: font_size,
-                    font_color: font_color,
-                    private: is_private,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/updatesettings`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                font_size: font_size,
+                font_color: font_color,
+                private: is_private,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -424,17 +403,14 @@ export async function getBlockedUsers(): Promise<
     ApiResponse<BlockedUserResponse>
 > {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/getallblocked",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({}),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/getallblocked`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({}),
+        });
         const data: ApiResponse<BlockedUserResponse> = await response.json();
 
         return data;
@@ -445,7 +421,7 @@ export async function getBlockedUsers(): Promise<
 
 export async function unblockUser(user_id: string): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch("http://localhost:5000/user/unblockuser", {
+        const response = await fetch(`${API_URL}/user/unblockuser`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -465,7 +441,7 @@ export async function unblockUser(user_id: string): Promise<ApiResponse<null>> {
 
 export async function blockUser(user_id: string): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch("http://localhost:5000/user/blockuser", {
+        const response = await fetch(`${API_URL}/user/blockuser`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -485,7 +461,7 @@ export async function blockUser(user_id: string): Promise<ApiResponse<null>> {
 
 export async function followUser(user_id: string): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch("http://localhost:5000/user/followuser", {
+        const response = await fetch(`${API_URL}/user/followuser`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -507,19 +483,16 @@ export async function unfollowUser(
     user_id: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            "http://localhost:5000/user/unfollowuser",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: getToken(),
-                },
-                body: JSON.stringify({
-                    to_unfollow_id: user_id,
-                }),
-            }
-        );
+        const response = await fetch(`${API_URL}/user/unfollowuser`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: getToken(),
+            },
+            body: JSON.stringify({
+                to_unfollow_id: user_id,
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;

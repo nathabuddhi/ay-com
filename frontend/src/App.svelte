@@ -12,6 +12,7 @@
     import ResetPasswordPage from "./pages/ResetPasswordPage.svelte";
     import HomePage from "./pages/HomePage.svelte";
     import SettingsPage from "./pages/SettingsPage.svelte";
+    import ToastContainer from "./components/ToastContainer.svelte";
 
     let route: string = "/";
 
@@ -36,6 +37,7 @@
 </svelte:head>
 
 <Router>
+    <ToastContainer />
     <Route path="/">
         <LandingPage />
     </Route>

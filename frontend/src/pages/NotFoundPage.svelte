@@ -1,17 +1,8 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
     import "../styles/app.scss";
     import { MessageCircleQuestion } from "@lucide/svelte";
-
-    let currentTheme: "light" | "dark" = "dark";
-
-    onMount(() => {
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
-    });
+    import { theme } from "../stores/theme-wrapper";
 
     function goToHome(): void {
         window.location.href = "/";
@@ -22,15 +13,13 @@
     <header>
         <div class="logo-container">
             <img
-                src={currentTheme === "dark"
-                    ? "logo-dark.png"
-                    : "logo-light.png"}
+                src={$theme === "dark" ? "logo-dark.png" : "logo-light.png"}
                 alt="AY Logo"
                 class="logo-img"
             />
         </div>
         <div class="theme-toggle-container">
-            <ToggleTheme bind:theme={currentTheme} />
+            <ToggleTheme />
         </div>
     </header>
 

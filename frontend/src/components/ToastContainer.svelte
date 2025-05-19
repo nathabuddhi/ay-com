@@ -12,7 +12,6 @@
             message={toast.message}
             duration={toast.duration}
             show={true}
-            on:close={() => removeToast(toast.id)}
         />
     {/each}
 </div>

@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import ToggleTheme from "../components/ToggleTheme.svelte";
-    import { isLoggedIn, setToken } from "../controllers/token-controller";
+    import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
     import { login } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import ToastContainer from "../components/ToastContainer.svelte";
+    import { theme } from "../stores/theme-wrapper";
 
-    let currentTheme: "light" | "dark" = "dark";
     let email: string = "";
     let password: string = "";
     let isLoading: boolean = false;
@@ -23,11 +23,6 @@
                 window.location.href = "/home";
             }, 2500);
         }
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
     });
 
     async function onLoginClick(event: Event) {
@@ -52,7 +47,7 @@
     <div class="login-content">
         <div class="logo-section">
             <img
-                src={currentTheme === "dark"
+                src={$theme === "dark"
                     ? "logo-dark.png"
                     : "logo-light.png"}
                 alt="logo"
@@ -62,7 +57,7 @@
 
         <div class="auth-section">
             <div class="theme-toggle-container">
-                <ToggleTheme bind:theme={currentTheme} />
+                <ToggleTheme />
             </div>
 
             <div class="auth-content">
@@ -71,7 +66,7 @@
                 <p class="tagline">Connect, share, engage.</p>
 
                 <form
-                    on:submit|preventDefault={onLoginClick}
+                    onsubmit={onLoginClick}
                     class="login-form"
                 >
                     <div class="form-group">
@@ -112,12 +107,16 @@
                     <a href="/forgot" class="create-account-button">
                         Forgot your account? Recover it
                     </a>
+                    <a href="/" class="create-account-button">
+                        Back to Landing Page
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/login.scss";
 </style>

@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import ToggleTheme from "./ToggleTheme.svelte";
-    import { BadgeCheck } from "@lucide/svelte";
+    import { BadgeCheck, Menu } from "@lucide/svelte";
     import { logout } from "../controllers/token-controller";
     import {
         Mail,
@@ -15,23 +14,38 @@
         Settings,
     } from "@lucide/svelte";
 
-    export let userData: {
-        name: string;
-        username: string;
-        is_verified: boolean;
-        user_id: string;
-    };
+    const { userData } = $props<{
+        userData: {
+            name: string;
+            username: string;
+            is_verified: boolean;
+            user_id: string;
+        };
+    }>();
 
-    let showLogoutMenu = false;
+    let showLogoutMenu = $state(false);
+    let mobileNavOpen = $state(false);
 
     function toggleLogoutMenu(): void {
         showLogoutMenu = !showLogoutMenu;
     }
+
+    function toggleMobileNav(): void {
+        mobileNavOpen = !mobileNavOpen;
+    }
 </script>
 
-<aside class="left-sidebar">
+<aside class="left-sidebar {mobileNavOpen ? 'open' : ''}">
     <div class="sidebar-content">
         <div class="logo">
+            <button
+                class="hamburger"
+                onclick={toggleMobileNav}
+                aria-label="Toggle navigation"
+            >
+                <Menu />
+            </button>
+
             <a href="/home">AY</a>
             <ToggleTheme />
         </div>
@@ -108,7 +122,7 @@
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
         class="user-profile"
-        on:click={toggleLogoutMenu}
+        onclick={toggleLogoutMenu}
         aria-expanded={showLogoutMenu}
     >
         <div class="profile-image">
@@ -129,13 +143,13 @@
 
         {#if showLogoutMenu}
             <div class="logout-menu">
-                <button on:click={logout}>Log out @{userData.username}</button>
+                <button onclick={logout}>Log out @{userData.username}</button>
             </div>
         {/if}
     </div>
 </aside>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>
