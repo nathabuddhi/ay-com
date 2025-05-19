@@ -5,7 +5,7 @@ import type {
 } from "../types/api";
 import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { API_URL } from "../env_var";
-import { getToken, setRefreshToken, setToken } from "./token-controller";
+import { getValidToken, setRefreshToken, setToken } from "./token-controller";
 
 function returnDefaultError<T>(error: unknown): ApiResponse<T> {
     return {
@@ -24,7 +24,7 @@ export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({}),
         });
@@ -179,7 +179,7 @@ export async function getProfile(
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
         });
         const data: ApiResponse<UserProfile> = await response.json();
@@ -196,7 +196,7 @@ export async function getSelfProfile(): Promise<ApiResponse<UserProfile>> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({}),
         });
@@ -220,7 +220,7 @@ export async function updateProfile(
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 name: name,
@@ -292,7 +292,7 @@ export async function changePassword(
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 email: email,
@@ -341,7 +341,7 @@ export async function deactivateAccount(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 password: password,
@@ -361,7 +361,7 @@ export async function getSettings(): Promise<ApiResponse<Settings>> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({}),
         });
@@ -383,7 +383,7 @@ export async function updateSettings(
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 font_size: font_size,
@@ -407,7 +407,7 @@ export async function getBlockedUsers(): Promise<
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({}),
         });
@@ -425,7 +425,7 @@ export async function unblockUser(user_id: string): Promise<ApiResponse<null>> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 to_unblock_id: user_id,
@@ -445,7 +445,7 @@ export async function blockUser(user_id: string): Promise<ApiResponse<null>> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 to_block_id: user_id,
@@ -465,7 +465,7 @@ export async function followUser(user_id: string): Promise<ApiResponse<null>> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 to_follow_id: user_id,
@@ -487,7 +487,7 @@ export async function unfollowUser(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: getToken(),
+                Authorization: await getValidToken(),
             },
             body: JSON.stringify({
                 to_unfollow_id: user_id,

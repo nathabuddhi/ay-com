@@ -37,5 +37,5 @@ type UserVerificationRequest struct {
 
 type RefreshToken struct {
 	UserId string `gorm:"primaryKey"`
-	Token  string
+	Token  string `gorm:"type:text"`
 }

@@ -1,72 +1,116 @@
 import { addToast } from "../stores/toast-wrapper";
-import type { BoolPayload } from "../types/api";
+import type { ApiResponse } from "../types/api";
+import type { RefreshTokenResponse } from "../types/user";
 
-export async function isLoggedIn(): Promise<boolean> {
-    if (!getToken()) return false;
-
-    return await checkTokenValidity();
+function setCookie(name: string, value: string, minutes: number): void {
+    const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Strict`;
 }
 
-export function getToken(): string {
-    return localStorage.getItem("token") || "";
+function getCookie(name: string): string {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+        const [key, val] = cookie.split("=");
+        if (key === name) return decodeURIComponent(val);
+    }
+    return "";
+}
+
+function deleteCookie(name: string): void {
+    document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Strict`;
+}
+
+export async function getToken(): Promise<string> {
+    const token = getCookie("token");
+    return token;
 }
 
 export function setToken(token: string): void {
-    localStorage.setItem("token", token);
+    setCookie("token", token, 20);
+}
+
+export function setRefreshToken(token: string): void {
+    setCookie("refresh_token", token, 60 * 24 * 7);
 }
 
 export function removeToken(): void {
-    localStorage.removeItem("token");
+    deleteCookie("token");
+}
+
+export async function isLoggedIn(): Promise<boolean> {
+    return await checkTokenValidity();
 }
 
 export function logout(): void {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("username");
-    localStorage.removeItem("is_verified");
+    ["token", "refresh_token"].forEach(deleteCookie);
     localStorage.removeItem("user_id");
-
+    localStorage.removeItem("username");
+    localStorage.removeItem("name");
+    localStorage.removeItem("is_verified");
     window.location.href = "/";
 }
 
-async function checkTokenValidity(): Promise<boolean> {
-    if (
-        localStorage.getItem("token_checked") === "true" &&
-        localStorage.getItem("token_checked_expiry")
-    ) {
-        const expiryTime = parseInt(
-            localStorage.getItem("token_checked_expiry") || "0"
-        );
-        if (Date.now() < expiryTime) {
-            return true;
-        } else {
-            localStorage.removeItem("token_checked");
-            localStorage.removeItem("token_checked_expiry");
-        }
-        return true;
-    }
-
-    addToast("info", "Checking user cookie validity...", "Token Check");
-
-    const token = getToken();
-    if (!token) return false;
-    const response = await fetch("http://localhost:5000/user/checktoken", {
+async function refreshToken(refresh_token: string): Promise<string> {
+    const response = await fetch("http://localhost:5000/user/refreshtoken", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: token,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ value: refresh_token }),
     });
-    const data: BoolPayload = await response.json();
-    if (!response.ok || !data.value) {
-        removeToken();
-        return false;
+
+    const data: ApiResponse<RefreshTokenResponse> = await response.json();
+    if (!response.ok || !data.success) {
+        logout();
+        return "";
     } else {
-        const expiryTime = Date.now() + 20 * 60 * 1000;
-        localStorage.setItem("token_checked", "true");
-        localStorage.setItem("token_checked_expiry", expiryTime.toString());
+        if (data.payload?.access_token) {
+            setToken(data.payload.access_token);
+        }
+        if (data.payload?.refresh_token) {
+            setRefreshToken(data.payload.refresh_token);
+        }
+        addToast(
+            "success",
+            "User cookie validity checked successfully!",
+            "Session Re-Validated!"
+        );
+        return data.payload?.access_token ?? "";
+    }
+}
+
+async function checkTokenValidity(): Promise<boolean> {
+    const token = getCookie("token");
+    if (token) {
+        return true;
     }
 
-    return true;
+    const refresh_token = getCookie("refresh_token");
+    if (!refresh_token) {
+        return false;
+    }
+
+    addToast("info", "Refreshing session from cookie...", "Session Expired!");
+
+    const newAccessToken = await refreshToken(refresh_token);
+    if (newAccessToken !== "") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export async function getValidToken(): Promise<string> {
+    let token = getCookie("token");
+    if (token) {
+        return token;
+    }
+
+    const refresh_token = getCookie("refresh_token");
+    if (!refresh_token) {
+        return "";
+    }
+
+    token = await refreshToken(refresh_token);
+    return token;
 }

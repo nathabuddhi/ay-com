@@ -18,10 +18,112 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponseUser, error) {
+func (h *Handlers) CreateAccessToken(userId string) (string, error) {
 	var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
-	var refreshKey = []byte(os.Getenv("JWT_REFRESH_KEY"))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userId,
+		"exp":     time.Now().Add(time.Hour * 2).Unix(),
+	})
+	tokenString, err := token.SignedString(jwtKey)
+	return tokenString, err
+}
 
+func (h *Handlers) CreateRefreshToken(userId string) (string, error) {
+	var jwtKey = []byte(os.Getenv("JWT_REFRESH_KEY"))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userId,
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+	})
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		zap.L().Error("Failed to sign token: " + err.Error())
+		return "", err
+	}
+
+	err = h.DB.Exec(`
+		INSERT INTO refresh_tokens (user_id, token) 
+		VALUES (?, ?) 
+		ON CONFLICT(user_id) DO UPDATE SET token = excluded.token
+	`, userId, tokenString).Error
+
+	return tokenString, err
+}
+
+func (h *Handlers) User_RefreshToken(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	var jwtKey = []byte(os.Getenv("JWT_REFRESH_KEY"))
+
+	token, err := jwt.Parse(req.Value, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Invalid Token.",
+			Data:    nil,
+		}, nil
+	}
+
+	userID := claims["user_id"].(string)
+	var count int64
+	err = h.DB.Table("refresh_tokens").
+		Where("user_id = ? AND token = ?", userID, req.Value).
+		Count(&count).Error
+	if err != nil || count != 1 || !token.Valid {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Invalid Token.",
+			Data:    nil,
+		}, nil
+	}
+
+	var user models.User
+	if err := h.DB.Where("user_id = ?", userID).First(&user).Error; err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Invalid token.",
+		}, nil
+	}
+
+	newAccessToken, err := h.CreateAccessToken(user.UserId)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An Error Occured: " + err.Error(),
+		}, nil
+	}
+
+	newRefreshToken, err := h.CreateRefreshToken(user.UserId)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An Error Occured: " + err.Error(),
+		}, nil
+	}
+
+	refreshTokenResponse := &pb.RefreshTokenResponse{
+		AccessToken:  newAccessToken,
+		RefreshToken: newRefreshToken,
+	}
+	dataReturn, err := anypb.New(refreshTokenResponse)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An Error Occured: " + err.Error(),
+		}, nil
+	}
+
+	zap.L().Info("User " + user.UserId + " refreshed token.")
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Token refreshed successfully.",
+		Data:    dataReturn,
+	}, nil
+}
+
+func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.ApiResponseUser, error) {
 	var user models.User
 
 	if err := h.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
@@ -52,12 +154,7 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		}, nil
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.UserId,
-		"exp":     time.Now().Add(time.Hour * 2).Unix(),
-	})
-
-	tokenString, err := token.SignedString(jwtKey)
+	accessToken, err := h.CreateAccessToken(user.UserId)
 	if err != nil {
 		return &pb.ApiResponseUser{
 			Success: false,
@@ -65,24 +162,7 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		}, nil
 	}
 
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.UserId,
-		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
-	})
-
-	refreshString, err := refreshToken.SignedString(refreshKey)
-	if err != nil {
-		return &pb.ApiResponseUser{
-			Success: false,
-			Message: "An Error Occured: " + err.Error(),
-		}, nil
-	}
-
-	rt := models.RefreshToken{
-		UserId: user.UserId,
-		Token:  refreshString,
-	}
-	err = h.DB.Create(&rt).Error
+	refreshToken, err := h.CreateRefreshToken(user.UserId)
 	if err != nil {
 		return &pb.ApiResponseUser{
 			Success: false,
@@ -95,8 +175,8 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		Username:     user.Username,
 		Name:         user.Name,
 		IsVerified:   user.IsVerified,
-		Token:        tokenString,
-		RefreshToken: refreshString,
+		Token:        accessToken,
+		RefreshToken: refreshToken,
 	}
 	dataReturn, err := anypb.New(loginResponse)
 	if err != nil {
@@ -106,11 +186,11 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		}, nil
 	}
 
-	zap.L().Info("User Logged in. Token is: " + tokenString)
+	zap.L().Info("User " + user.UserId + " Logged in.")
 
 	return &pb.ApiResponseUser{
 		Success: true,
-		Message: "Login successful",
+		Message: "Login successful.",
 		Data:    dataReturn,
 	}, nil
 }

@@ -45,7 +45,7 @@ const (
 	UserService_User_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/User_GetAllVerifyAccountRequest"
 	UserService_User_IsUserPrivate_FullMethodName              = "/user.UserService/User_IsUserPrivate"
 	UserService_User_IsUserFollowing_FullMethodName            = "/user.UserService/User_IsUserFollowing"
-	UserService_User_CheckToken_FullMethodName                 = "/user.UserService/User_CheckToken"
+	UserService_User_RefreshToken_FullMethodName               = "/user.UserService/User_RefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -79,7 +79,7 @@ type UserServiceClient interface {
 	User_GetAllVerifyAccountRequest(ctx context.Context, in *GetAllVerifyAccountRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error)
-	User_CheckToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error)
+	User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 }
 
 type userServiceClient struct {
@@ -350,10 +350,10 @@ func (c *userServiceClient) User_IsUserFollowing(ctx context.Context, in *IsUser
 	return out, nil
 }
 
-func (c *userServiceClient) User_CheckToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error) {
+func (c *userServiceClient) User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BoolUser)
-	err := c.cc.Invoke(ctx, UserService_User_CheckToken_FullMethodName, in, out, cOpts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_RefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -391,7 +391,7 @@ type UserServiceServer interface {
 	User_GetAllVerifyAccountRequest(context.Context, *GetAllVerifyAccountRequest) (*ApiResponseUser, error)
 	User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error)
 	User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error)
-	User_CheckToken(context.Context, *StringUser) (*BoolUser, error)
+	User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -480,8 +480,8 @@ func (UnimplementedUserServiceServer) User_IsUserPrivate(context.Context, *IsAcc
 func (UnimplementedUserServiceServer) User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_IsUserFollowing not implemented")
 }
-func (UnimplementedUserServiceServer) User_CheckToken(context.Context, *StringUser) (*BoolUser, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method User_CheckToken not implemented")
+func (UnimplementedUserServiceServer) User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_RefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -972,20 +972,20 @@ func _UserService_User_IsUserFollowing_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_User_CheckToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_User_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringUser)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).User_CheckToken(ctx, in)
+		return srv.(UserServiceServer).User_RefreshToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_User_CheckToken_FullMethodName,
+		FullMethod: UserService_User_RefreshToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).User_CheckToken(ctx, req.(*StringUser))
+		return srv.(UserServiceServer).User_RefreshToken(ctx, req.(*StringUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1102,8 +1102,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_User_IsUserFollowing_Handler,
 		},
 		{
-			MethodName: "User_CheckToken",
-			Handler:    _UserService_User_CheckToken_Handler,
+			MethodName: "User_RefreshToken",
+			Handler:    _UserService_User_RefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

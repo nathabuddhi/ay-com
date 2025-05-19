@@ -650,34 +650,26 @@ func User_SearchPeople(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
-// User_CheckToken godoc
-// @Summary Check token validity
-// @Description Check if the authenticated user's token is valid
+// User_RefreshToken godoc
+// @Summary Refresh access token with refresh token
+// @Description Check if the authenticated user's refresh token is valid and returns a new access token.
 // @Tags user
 // @Accept json
 // @Produce json
 // @Param checkToken body pb.StringUser true "Token check request"
-// @Success 200 {object} pb.BoolUser
-// @Failure 400 {object} pb.BoolUser
-// @Router /user/checktoken [post]
-func User_CheckToken(w http.ResponseWriter, r *http.Request) {
+// @Success 200 {object} pb.LoginResponse
+// @Failure 400 {object} pb.LoginResponse
+// @Router /user/refreshtoken [post]
+func User_RefreshToken(w http.ResponseWriter, r *http.Request) {
 	req, client := processUserRequest[pb.StringUser](r, w)
-	req.Value = r.Context().Value(middleware.UserIdKey).(string)
 
-	zap.L().Info("Checking Token " + req.Value)
+	zap.L().Info("Checking Refresh Token " + req.Value)
 	ctx, cancel := createContext()
 	defer cancel()
 
-	resp, err := client.User_CheckToken(ctx, req)
+	resp, err := client.User_RefreshToken(ctx, req)
 
-	if err != nil {
-		resp.Value = false
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resp)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	processUserResponseWithPayload[pb.RefreshTokenResponse](resp, err, w)
 }
 
 func User_GetSelfProfile(w http.ResponseWriter, r *http.Request) {

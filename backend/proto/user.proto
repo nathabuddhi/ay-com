@@ -40,7 +40,7 @@ service UserService {
     rpc User_IsUserPrivate (IsAccountPrivateRequest) returns (BoolUser);
     rpc User_IsUserFollowing (IsUserFollowingRequest) returns (BoolUser);
 
-    rpc User_CheckToken(StringUser) returns (BoolUser);
+    rpc User_RefreshToken(StringUser) returns (ApiResponseUser);
 }
 
 message ApiResponseUser {
@@ -251,4 +251,9 @@ message BlockedUser {
 
 message AllBlockedUserResponse {
     repeated BlockedUser blocked = 1;
+}
+
+message RefreshTokenResponse {
+    string refresh_token = 1;
+    string access_token = 2;
 }

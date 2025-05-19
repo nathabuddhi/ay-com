@@ -2134,6 +2134,58 @@ func (x *AllBlockedUserResponse) GetBlocked() []*BlockedUser {
 	return nil
 }
 
+type RefreshTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	AccessToken   string                 `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenResponse) Reset() {
+	*x = RefreshTokenResponse{}
+	mi := &file_user_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResponse) ProtoMessage() {}
+
+func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *RefreshTokenResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *RefreshTokenResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
@@ -2289,7 +2341,10 @@ const file_user_proto_rawDesc = "" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\"E\n" +
 	"\x16AllBlockedUserResponse\x12+\n" +
-	"\ablocked\x18\x01 \x03(\v2\x11.user.BlockedUserR\ablocked2\xc7\x0f\n" +
+	"\ablocked\x18\x01 \x03(\v2\x11.user.BlockedUserR\ablocked\"^\n" +
+	"\x14RefreshTokenResponse\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12!\n" +
+	"\faccess_token\x18\x02 \x01(\tR\vaccessToken2\xd0\x0f\n" +
 	"\vUserService\x12=\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x15.user.ApiResponseUser\x127\n" +
 	"\n" +
@@ -2317,8 +2372,8 @@ const file_user_proto_rawDesc = "" +
 	"\x1fUser_SubmitVerifyAccountRequest\x12 .user.SubmitVerifyAccountRequest\x1a\x15.user.ApiResponseUser\x12Z\n" +
 	"\x1fUser_GetAllVerifyAccountRequest\x12 .user.GetAllVerifyAccountRequest\x1a\x15.user.ApiResponseUser\x12C\n" +
 	"\x12User_IsUserPrivate\x12\x1d.user.IsAccountPrivateRequest\x1a\x0e.user.BoolUser\x12D\n" +
-	"\x14User_IsUserFollowing\x12\x1c.user.IsUserFollowingRequest\x1a\x0e.user.BoolUser\x123\n" +
-	"\x0fUser_CheckToken\x12\x10.user.StringUser\x1a\x0e.user.BoolUserB\aZ\x05user/b\x06proto3"
+	"\x14User_IsUserFollowing\x12\x1c.user.IsUserFollowingRequest\x1a\x0e.user.BoolUser\x12<\n" +
+	"\x11User_RefreshToken\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUserB\aZ\x05user/b\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -2332,7 +2387,7 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_user_proto_goTypes = []any{
 	(*ApiResponseUser)(nil),               // 0: user.ApiResponseUser
 	(*StringUser)(nil),                    // 1: user.StringUser
@@ -2370,10 +2425,11 @@ var file_user_proto_goTypes = []any{
 	(*LoginResponse)(nil),                 // 33: user.LoginResponse
 	(*BlockedUser)(nil),                   // 34: user.BlockedUser
 	(*AllBlockedUserResponse)(nil),        // 35: user.AllBlockedUserResponse
-	(*anypb.Any)(nil),                     // 36: google.protobuf.Any
+	(*RefreshTokenResponse)(nil),          // 36: user.RefreshTokenResponse
+	(*anypb.Any)(nil),                     // 37: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
-	36, // 0: user.ApiResponseUser.data:type_name -> google.protobuf.Any
+	37, // 0: user.ApiResponseUser.data:type_name -> google.protobuf.Any
 	22, // 1: user.GetAllVerifyAccountResponse.requests:type_name -> user.VerifyAccountRequest
 	1,  // 2: user.AllFollowersResponse.followers:type_name -> user.StringUser
 	1,  // 3: user.AllFollowingResponse.following:type_name -> user.StringUser
@@ -2404,7 +2460,7 @@ var file_user_proto_depIdxs = []int32{
 	23, // 28: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
 	30, // 29: user.UserService.User_IsUserPrivate:input_type -> user.IsAccountPrivateRequest
 	31, // 30: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
-	1,  // 31: user.UserService.User_CheckToken:input_type -> user.StringUser
+	1,  // 31: user.UserService.User_RefreshToken:input_type -> user.StringUser
 	0,  // 32: user.UserService.User_Register:output_type -> user.ApiResponseUser
 	0,  // 33: user.UserService.User_Login:output_type -> user.ApiResponseUser
 	0,  // 34: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
@@ -2431,7 +2487,7 @@ var file_user_proto_depIdxs = []int32{
 	0,  // 55: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
 	2,  // 56: user.UserService.User_IsUserPrivate:output_type -> user.BoolUser
 	2,  // 57: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
-	2,  // 58: user.UserService.User_CheckToken:output_type -> user.BoolUser
+	0,  // 58: user.UserService.User_RefreshToken:output_type -> user.ApiResponseUser
 	32, // [32:59] is the sub-list for method output_type
 	5,  // [5:32] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -2450,7 +2506,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   36,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

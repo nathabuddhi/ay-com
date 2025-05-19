@@ -37,12 +37,10 @@ func InitUserRoutes(r *mux.Router) {
 	r.HandleFunc("/user/getsecurityquestion", User_GetSecurityQuestion).Methods("POST")
 	r.HandleFunc("/user/validatesecurityanswer", User_ValidateSecurityAnswer).Methods("POST")
 	r.HandleFunc("/user/resetpassword", User_ResetPassword).Methods("PUT")
-
+	r.HandleFunc("/user/refreshtoken", User_RefreshToken).Methods("POST")
 }
 
 func InitSecuredUserRoutes(secured *mux.Router) {
-	secured.HandleFunc("/user/checktoken", User_CheckToken).Methods("POST")
-
 	secured.HandleFunc("/user/getprofile/{username}", User_GetProfile).Methods("GET")
 	secured.HandleFunc("/user/getselfprofile", User_GetSelfProfile).Methods("POST")
 	secured.HandleFunc("/user/searchpeople", User_SearchPeople).Methods("POST")

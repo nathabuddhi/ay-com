@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"strings"
 
 	"context"
 
@@ -34,9 +33,7 @@ func JwtAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(authHeader, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
 
