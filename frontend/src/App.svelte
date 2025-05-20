@@ -62,6 +62,9 @@
     <Route path="/profile/*">
         <HomePage />
     </Route>
+    <Route path="/notifications">
+        <HomePage />
+    </Route>
     <Route path="/settings">
         <SettingsPage />
     </Route>
