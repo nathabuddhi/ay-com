@@ -7,13 +7,13 @@ import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { API_URL } from "../env_var";
 import { getValidToken, setRefreshToken, setToken } from "./token-controller";
 
-function returnDefaultError<T>(error: unknown): ApiResponse<T> {
+export function returnDefaultError<T>(error: unknown): ApiResponse<T> {
     return {
         success: false,
         message:
             error instanceof Error
                 ? error.message
-                : "An unknown error occurred during login.",
+                : "An unknown error occurred.",
         payload: null,
     };
 }

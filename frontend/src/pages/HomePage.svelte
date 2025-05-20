@@ -7,6 +7,7 @@
     import "../styles/app.scss";
     import ProfilePage from "./ProfilePage.svelte";
     import ToastContainer from "../components/ToastContainer.svelte";
+    import NotificationPage from "./NotificationPage.svelte";
 
     let currentTheme: "light" | "dark" = "dark";
     let userData = {
@@ -52,8 +53,8 @@
             <Feed />
         {:else if currpage.includes("profile")}
             <ProfilePage />
-        {:else if currpage.includes("notification")}
-            <ProfilePage />
+        {:else if currpage.includes("notifications")}
+            <NotificationPage />
         {/if}
     </main>
     <RightBar />

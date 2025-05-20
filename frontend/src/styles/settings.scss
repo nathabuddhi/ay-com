@@ -122,6 +122,19 @@ h1 {
     font-size: 16px;
 }
 
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: space-evenly;
+
+    input {
+        width: 1.5rem;
+        height: 3rem;
+        border-radius: 10px;
+    }
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {

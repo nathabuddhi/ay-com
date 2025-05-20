@@ -15,6 +15,11 @@
     } from "../controllers/user-controller";
     import type { Settings } from "../types/user";
     import BlockedUser from "../components/BlockedUser.svelte";
+    import type { NotificationSettings } from "../types/settings";
+    import {
+        getNotificationSettings,
+        updateNotificationSettings,
+    } from "../controllers/notification-controller";
 
     let activeTab: string = $state("profile");
     let isLoading: boolean = $state(false);
@@ -38,10 +43,19 @@
         password: "",
     });
 
-    let otherSettings: Settings = $state({
+    let otherSettings = $state({
         font_size: "medium",
         font_color: "black",
         private: false,
+    });
+
+    let notificationSettings = $state<NotificationSettings>({
+        notif_like: true,
+        notif_community: true,
+        notif_follow: true,
+        notif_mention: true,
+        notif_newsletter: true,
+        notif_repost: true,
     });
 
     async function setActiveTab(tab: string) {
@@ -57,6 +71,13 @@
                         font_color: response.payload?.font_color || "black",
                         private: response.payload?.private ?? false,
                     };
+                } else {
+                    addToast("error", response.message, "Settings Fetch Error");
+                }
+            } else if (tab === "notification") {
+                const response = await getNotificationSettings();
+                if (response.success && response.payload) {
+                    notificationSettings = response.payload;
                 } else {
                     addToast("error", response.message, "Settings Fetch Error");
                 }
@@ -167,6 +188,25 @@
         }
     }
 
+    async function saveNotificationSettings() {
+        isLoading = true;
+        try {
+            const response =
+                await updateNotificationSettings(notificationSettings);
+            if (response.success) {
+                addToast("success", "Settings saved successfully!", "Success");
+            } else {
+                addToast("error", response.message, "Save Failed");
+            }
+        } catch (error) {
+            addToast("error", "Failed to save settings", "Error");
+            console.error(error);
+        } finally {
+            addToast("info", "Settings saved successfully!", "Settings Saved");
+            isLoading = false;
+        }
+    }
+
     async function saveOtherSettings() {
         isLoading = true;
         try {
@@ -242,6 +282,12 @@
                 onclick={() => setActiveTab("settings")}
             >
                 Other
+            </button>
+            <button
+                class={activeTab === "notification" ? "active" : ""}
+                onclick={() => setActiveTab("notification")}
+            >
+                Notifications
             </button>
             <button
                 class={activeTab === "blocked" ? "active" : ""}
@@ -375,8 +421,8 @@
                     <div class="form-actions">
                         <button
                             type="submit"
-                            class="danger"
                             disabled={isLoading}
+                            style="background-color: darkred;"
                         >
                             {isLoading ? "Processing..." : "Deactivate Account"}
                         </button>
@@ -406,12 +452,65 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="checkbox-group">
                         <label for="private">Private Account</label>
                         <input
                             type="checkbox"
                             id="private"
                             bind:checked={otherSettings.private}
+                        />
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" disabled={isLoading}>
+                            {isLoading ? "Saving..." : "Save Settings"}
+                        </button>
+                    </div>
+                </form>
+            {:else if activeTab === "notification"}
+                <form onsubmit={saveNotificationSettings}>
+                    <div class="checkbox-group">
+                        <label for="notif_like">Like Notifications</label>
+                        <input
+                            type="checkbox"
+                            id="notif_like"
+                            bind:checked={notificationSettings.notif_like}
+                        />
+                    </div>
+                    <div class="checkbox-group">
+                        <label for="notif_community"
+                            >Community Notifications</label
+                        >
+                        <input
+                            type="checkbox"
+                            id="notif_community"
+                            bind:checked={notificationSettings.notif_community}
+                        />
+                    </div>
+                    <div class="checkbox-group">
+                        <label for="notif_repost">Repost Notifications</label>
+                        <input
+                            type="checkbox"
+                            id="notif_repost"
+                            bind:checked={notificationSettings.notif_repost}
+                        />
+                    </div>
+                    <div class="checkbox-group">
+                        <label for="notif_follow">Follow Notifications</label>
+                        <input
+                            type="checkbox"
+                            id="notif_follow"
+                            bind:checked={notificationSettings.notif_follow}
+                        />
+                    </div>
+                    <div class="checkbox-group">
+                        <label for="notif_follow"
+                            >Newsletter Notifications</label
+                        >
+                        <input
+                            type="checkbox"
+                            id="notif_newsletter"
+                            bind:checked={notificationSettings.notif_newsletter}
                         />
                     </div>
 
