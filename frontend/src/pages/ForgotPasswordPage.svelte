@@ -192,18 +192,18 @@
 
                 <div class="button-group">
                     <button
-                        class="back-button"
-                        onclick={() => (currentStep = 1)}
-                        disabled={isSubmitting}
-                    >
-                        Back
-                    </button>
-                    <button
                         class="submit-button"
                         onclick={handleSecurityAnswerSubmit}
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? "Verifying..." : "Submit"}
+                    </button>
+                    <button
+                        class="back-button"
+                        onclick={() => (currentStep = 1)}
+                        disabled={isSubmitting}
+                    >
+                        Back
                     </button>
                 </div>
             {:else}

@@ -6,41 +6,30 @@
     import { isLoggedIn } from "../controllers/token-controller";
     import "../styles/app.scss";
     import { resetPassword } from "../controllers/user-controller";
+    import { theme } from "../stores/theme-wrapper";
 
-    let currentTheme: "light" | "dark" = "dark";
-    let email = "";
-    let code = "";
-    let password = "";
-    let confirmPassword = "";
-    let isSubmitting = false;
-    let passwordStrength = "";
+    let email = $state("");
+    let password = $state("");
+    let confirmPassword = $state("");
+    let code = $state("");
+    let isSubmitting = $state(false);
 
-    let errors = {
+    let errors = $state({
         email: "",
         code: "",
         password: "",
         confirmPassword: "",
-    };
+    });
 
     onMount(async () => {
         if (await isLoggedIn()) {
             window.location.href = "/home";
         }
 
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
-
         const urlParams = new URLSearchParams(window.location.search);
         const emailParam = urlParams.get("email");
         if (emailParam) {
             email = emailParam;
-        }
-
-        const codeParam = urlParams.get("code");
-        if (codeParam) {
-            code = codeParam;
         }
     });
 
@@ -84,32 +73,6 @@
         }
 
         return valid;
-    }
-
-    function checkPasswordStrength(password: string): void {
-        if (!password) {
-            passwordStrength = "";
-            return;
-        }
-
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-        const strength =
-            (hasLowerCase ? 1 : 0) +
-            (hasUpperCase ? 1 : 0) +
-            (hasNumbers ? 1 : 0) +
-            (hasSpecialChars ? 1 : 0);
-
-        if (password.length < 8 || strength <= 1) {
-            passwordStrength = "weak";
-        } else if (strength === 2) {
-            passwordStrength = "medium";
-        } else {
-            passwordStrength = "strong";
-        }
     }
 
     async function handleSubmit(): Promise<void> {
@@ -164,9 +127,7 @@
     <header class="reset-password-header">
         <div class="logo-container">
             <img
-                src={currentTheme === "dark"
-                    ? "logo-dark.png"
-                    : "logo-light.png"}
+                src={$theme === "dark" ? "logo-dark.png" : "logo-light.png"}
                 alt="AY Logo"
                 class="logo-img"
             />
@@ -227,20 +188,9 @@
                     class="form-input"
                     placeholder="Enter your new password"
                     bind:value={password}
-                    on:input={() => checkPasswordStrength(password)}
                     disabled={isSubmitting}
                     required
                 />
-                {#if passwordStrength}
-                    <div class="password-strength">
-                        <span>Password strength: {passwordStrength}</span>
-                        <div class="strength-bar">
-                            <div
-                                class="strength-indicator {passwordStrength}"
-                            ></div>
-                        </div>
-                    </div>
-                {/if}
                 {#if errors.password}
                     <span class="field-error">{errors.password}</span>
                 {/if}
@@ -266,7 +216,7 @@
 
             <button
                 class="submit-button"
-                on:click={handleSubmit}
+                onclick={handleSubmit}
                 disabled={isSubmitting}
             >
                 {isSubmitting ? "Resetting..." : "Reset Password"}
@@ -274,6 +224,8 @@
         </div>
 
         <div class="back-link">
+            <a href="/forgot">Didn't receive an email? Try again here</a>
+            <br />
             <a href="/login">Back to Login</a>
         </div>
     </main>

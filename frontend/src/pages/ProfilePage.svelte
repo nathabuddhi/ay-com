@@ -56,12 +56,15 @@
                     "Error fetching user profile" + error,
                     "Error!"
                 );
+                navigate("/profile");
             });
         }
 
         if (response && response.success && response.payload) {
             user = response.payload;
         } else {
+            navigate("/profile");
+            window.location.reload();
             addToast(
                 "error",
                 "Error fetching user profile: " + response?.message,
@@ -123,6 +126,10 @@
 </script>
 
 {#if user}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div class="profile-container">
         <div class="profile-header">
             <div class="header-info">
@@ -133,11 +140,18 @@
             </div>
         </div>
 
-        <div class="profile-banner">
-            <!-- <img
-                src={import.meta.env.VITE_BANNER_LINK + user?.user_id + ".png"}
-                alt="Banner"
-            /> -->
+        <div
+            class="profile-banner"
+            style="background-image: url({import.meta.env.VITE_BANNER_LINK +
+                user?.user_id}.png);
+                width: 100%;
+                height: 150px;"
+            onclick={() => {
+                openImagePreviewModal(
+                    import.meta.env.VITE_BANNER_LINK + user?.user_id + ".png"
+                );
+            }}
+        >
             <div
                 class="profile-avatar"
                 onclick={() =>

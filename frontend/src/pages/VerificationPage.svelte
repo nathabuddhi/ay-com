@@ -11,12 +11,12 @@
     import { addToast } from "../stores/toast-wrapper";
     import { theme } from "../stores/theme-wrapper";
 
-    let email = "";
-    let code = ["", "", "", "", "", ""];
-    let isSubmitting = false;
-    let errorMessage = "";
-    let successMessage = "";
-    let timeLeft = 0;
+    let email = $state("");
+    let code = $state(["", "", "", "", "", ""]);
+    let isSubmitting = $state(false);
+    let errorMessage = $state("");
+    let successMessage = $state("");
+    let timeLeft = $state(0);
     let timerInterval: number;
 
     onMount(async () => {
@@ -31,9 +31,7 @@
                 "Email not found. Please register first.",
                 "Error"
             );
-            setTimeout(() => {
-                window.location.href = "/register";
-            }, 2000);
+            window.location.href = "/register";
             return;
         }
 
@@ -171,9 +169,7 @@
     <header class="verification-header">
         <div class="logo-container">
             <img
-                src={$theme === "dark"
-                    ? "logo-dark.png"
-                    : "logo-light.png"}
+                src={$theme === "dark" ? "logo-dark.png" : "logo-light.png"}
                 alt="AY Logo"
                 class="logo-img"
             />

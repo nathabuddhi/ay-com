@@ -73,6 +73,8 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		JoinDate:   user.JoinedAt.Format("2006-01-02"),
 	}
 
+	zap.L().Info(user.JoinedAt.Format("2006-01-02"))
+
 	returnData, err := anypb.New(userData)
 	if err != nil {
 		return &pb.ApiResponseUser{
@@ -248,6 +250,7 @@ func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) 
 		Gender:      user.Gender,
 		DateOfBirth: user.DateOfBirth.Format("2006-01-02"),
 		Email:       user.Email,
+		JoinDate:    user.JoinedAt.Format("2006-01-02"),
 	}
 
 	returnData, err := anypb.New(userData)
