@@ -92,10 +92,10 @@ func UploadBanner(userId string, bannerFile io.Reader) error {
 	return nil
 }
 
-func UploadThreadMedia(threadId string, threadFile io.Reader) error {
+func UploadThreadMedia(threadId string, threadFile io.Reader) (string, error) {
 	imageData, err := readFileToBytes(threadFile)
 	if err != nil {
-		return fmt.Errorf("failed to read thread file: %w", err)
+		return "", fmt.Errorf("failed to read thread file: %w", err)
 	}
 
 	conn := getMediaServiceConn()
@@ -104,6 +104,13 @@ func UploadThreadMedia(threadId string, threadFile io.Reader) error {
 	defer cancel()
 
 	fileExtension := "png"
+
+	if file, ok := threadFile.(interface{ Name() string }); ok {
+		fileName := file.Name()
+		if dotIndex := strings.LastIndex(fileName, "."); dotIndex != -1 && dotIndex < len(fileName)-1 {
+			fileExtension = fileName[dotIndex+1:]
+		}
+	}
 	if file, ok := threadFile.(interface{ Name() string }); ok {
 		fileName := file.Name()
 		if dotIndex := strings.LastIndex(fileName, "."); dotIndex != -1 && dotIndex < len(fileName)-1 {
@@ -118,12 +125,13 @@ func UploadThreadMedia(threadId string, threadFile io.Reader) error {
 		ImageType:  fileExtension,
 	}
 
-	if _, err := client.Media_UploadMedia(ctx, bannerReq); err != nil {
+	if resp, err := client.Media_UploadMedia(ctx, bannerReq); err != nil {
 		zap.L().Error("Failed to upload thread media", zap.Error(err))
-		return fmt.Errorf("failed to upload thread media: %w", err)
+		return "", fmt.Errorf("failed to upload thread media: %w", err)
+	} else {
+		return resp.Url, nil
 	}
 
-	return nil
 }
 
 func UploadMessageMedia(messageId string, messageFile io.Reader) error {

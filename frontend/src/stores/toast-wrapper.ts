@@ -29,11 +29,19 @@ export function addToast(
 
     toasts.update((all) => [toast, ...all]);
 
+    if (duration > 0) {
+        setTimeout(() => {
+            removeToast(id);
+        }, duration);
+    }
+
     return id;
 }
 
 export function removeToast(id: string): void {
-    toasts.update((all) => all.filter((t) => t.id !== id));
+    setTimeout(() => {
+        toasts.update((all) => all.filter((t) => t.id !== id));
+    }, 300);
 }
 
 export function clearToasts(): void {

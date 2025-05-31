@@ -669,7 +669,7 @@ func User_RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.User_RefreshToken(ctx, req)
 
-	processUserResponseWithPayload[pb.RefreshTokenResponse](resp, err, w)
+	processUserResponseWithPayload[pb.LoginResponse](resp, err, w)
 }
 
 func User_GetSelfProfile(w http.ResponseWriter, r *http.Request) {
@@ -686,6 +686,16 @@ func User_GetSelfProfile(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithPayload[pb.UserProfile](resp, err, w)
 }
 
+// User_GetAllBlocked godoc
+// @Summary Get All User Blocked by the User.
+// @Description Get All Blocked Users by the User.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param value path string true "value"
+// @Success 200 {object} types.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getallblocked [post]
 func User_GetAllBlocked(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Get All Blocked Request is called.")
 
@@ -698,4 +708,30 @@ func User_GetAllBlocked(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.User_GetAllBlocked(ctx, req)
 
 	processUserResponseWithPayload[pb.AllBlockedUserResponse](resp, err, w)
+}
+
+// User_GetUserId godoc
+// @Summary Get user profile by user id
+// @Description Get the profile of a user by their user id
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user_id path string true "user_id"
+// @Success 200 {object} pb.UserProfile
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getuserid/{user_id} [post]
+func User_GetUserId(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Get User Id is called.")
+
+	req, client := processUserRequest[pb.GetProfileRequest](r, w)
+
+	if !checkRedisData("getprofile/"+req.UserId, w) {
+		req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+		ctx, cancel := createContext()
+		defer cancel()
+
+		resp, err := client.User_GetUserId(ctx, req)
+
+		processUserResponseWithPayload[pb.UserProfile](resp, err, w)
+	}
 }

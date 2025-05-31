@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"io"
 
-	storage_go "github.com/supabase-community/storage-go"
 	"go.uber.org/zap"
 )
 
 func UploadAvatar(userId string, avatarFile io.Reader) (string, error) {
+	zap.L().Info("Uploading Avatar", zap.String("user_id", userId))
+
 	avatarBucket := "avatars"
 
 	avatarPath := fmt.Sprintf("%s.png", userId)
@@ -21,6 +22,8 @@ func UploadAvatar(userId string, avatarFile io.Reader) (string, error) {
 }
 
 func UploadBanner(userId string, bannerFile io.Reader) (string, error) {
+	zap.L().Info("Uploading Banner", zap.String("user_id", userId))
+
 	bannerBucket := "banners"
 
 	bannerPath := fmt.Sprintf("%s.png", userId)
@@ -33,10 +36,12 @@ func UploadBanner(userId string, bannerFile io.Reader) (string, error) {
 }
 
 func UploadThreadMedia(thread_id string, file io.Reader) (string, error) {
+	zap.L().Info("Uploading Thread Media", zap.String("thread_id", thread_id))
+
 	mediaBucket := "threads"
 
 	var mediaPath string
-	suffix := 1
+	suffix := 0
 
 	for {
 		mediaPath = fmt.Sprintf("%s/%d.png", thread_id, suffix)
@@ -46,7 +51,8 @@ func UploadThreadMedia(thread_id string, file io.Reader) (string, error) {
 		suffix++
 	}
 
-	if err := uploadFile(mediaBucket, mediaPath, file); err != nil {
+	err := uploadFile(mediaBucket, mediaPath, file)
+	if err != nil {
 		zap.L().Error("Failed to upload thread media", zap.Error(err))
 		return "", err
 	}
@@ -54,13 +60,13 @@ func UploadThreadMedia(thread_id string, file io.Reader) (string, error) {
 	return mediaPath, nil
 }
 
-func fileExists(bucket, mediaPath string) bool {
-	file, err := Client.ListFiles(bucket, mediaPath, storage_go.FileSearchOptions{})
+func fileExists(bucket, filePath string) bool {
+	_, err := Client.DownloadFile(bucket, filePath)
 	if err != nil {
-		zap.L().Error("Error checking file existence", zap.Error(err))
-		return true
+		zap.L().Debug("File does not exist or download failed", zap.String("filePath", filePath), zap.Error(err))
+		return false
 	}
-	return file != nil
+	return true
 }
 
 func deleteFile(bucket string, mediaPath string) bool {

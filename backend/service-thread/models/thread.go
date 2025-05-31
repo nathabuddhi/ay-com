@@ -20,34 +20,35 @@ type Thread struct {
 	Pinned          bool   `gorm:"default:false"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	DeletedAt       *time.Time `gorm:"index"`
 }
 
 type Media struct {
-	Id        string `gorm:"type:char(36);primaryKey"`
-	ThreadId  string `gorm:"type:char(36);not null;index"`
-	MediaURL  string `gorm:"type:text;not null"`
+	ThreadId  string `gorm:"type:char(36);not null;index;primaryKey"`
+	MediaURL  string `gorm:"type:text;not null;primaryKey"`
 	MediaType string `gorm:"type:varchar(20);not null"`
 }
 
 type PollOption struct {
-	Id        string `gorm:"type:char(36);primaryKey"`
-	ThreadId  string `gorm:"type:char(36);not null;index"`
-	Option    string `gorm:"type:varchar(255);not null"`
+	ThreadId  string `gorm:"type:char(36);not null;primaryKey"`
+	Option    string `gorm:"type:varchar(255);not null;primaryKey"`
 	VoteCount int    `gorm:"default:0"`
 }
 
 type ThreadLike struct {
-	Id        string `gorm:"type:char(36);primaryKey"`
-	UserId    string `gorm:"type:char(36);not null;index"`
-	ThreadId  string `gorm:"type:char(36);not null;index"`
+	UserId    string `gorm:"type:char(36);not null;index;primaryKey"`
+	ThreadId  string `gorm:"type:char(36);not null;index;primaryKey"`
+	CreatedAt time.Time
+}
+
+type ThreadBookmark struct {
+	UserId    string `gorm:"type:char(36);not null;index;primaryKey"`
+	ThreadId  string `gorm:"type:char(36);not null;index;primaryKey"`
 	CreatedAt time.Time
 }
 
 type ThreadRepost struct {
-	Id        string `gorm:"type:char(36);primaryKey"`
-	UserId    string `gorm:"type:char(36);not null;index"`
-	ThreadId  string `gorm:"type:char(36);not null;index"`
+	UserId    string `gorm:"type:char(36);not null;index;primaryKey"`
+	ThreadId  string `gorm:"type:char(36);not null;index;primaryKey"`
 	Text      string `gorm:"type:text"`
 	CreatedAt time.Time
 }

@@ -9,7 +9,23 @@ option go_package = "thread/";
 service ThreadService {
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_DeleteThread (DeleteThreadRequest) returns (ApiResponseThread);
+
+    rpc Thread_CreateThread (PostThread) returns (ApiResponseThread);
+    rpc Thread_PinThread (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_UnPinThread (GeneralThreadRequest) returns (ApiResponseThread);
+
+    rpc Thread_VoteThread (SubmitVote) returns (ApiResponseThread);
+
+    rpc Thread_ToggleLike (GeneralThreadRequest) returns (ApiResponseThread);
+
+    rpc Thread_ToggleBookmark (GeneralThreadRequest) returns (ApiResponseThread);
+
+    rpc Thread_ToggleRepost (RepostRequest) returns (ApiResponseThread);
+
+    rpc Thread_ReplyThread (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_DeleteReply (GeneralThreadRequest) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {
@@ -18,8 +34,30 @@ message ApiResponseThread {
     google.protobuf.Any data = 3;
 }
 
+message SearchThreadRequest {
+    string user_id = 1;
+    string query = 2;
+}
+
 message StringThread {
     string value = 1;
+}
+
+message SubmitVote {
+    string user_id = 1;
+    string thread_id = 2;
+    string content = 3;
+}
+
+message ReplyThread {
+    string user_id = 1;
+    string thread_id = 2;
+    string option_id = 3;
+}
+
+message GeneralThreadRequest {
+    string user_id = 1;
+    string thread_id = 2;
 }
 
 message Thread {
@@ -37,6 +75,9 @@ message Thread {
     int32 reply_count = 12;
     string posted_at = 13; 
     bool is_private = 14; 
+    bool is_liking = 15;
+    bool is_bookmarking = 16;
+    bool is_reposting = 17;
 }
 
 message Media {
@@ -46,7 +87,7 @@ message Media {
 }
 
 message PollOption {
-    string id = 1;
+    string thread_id = 1;
     string option = 2;
     int32 vote_count = 3;
 }
@@ -93,9 +134,12 @@ message PostThread {
     repeated string media_urls = 7;
     bool is_scheduled = 8;
     string scheduled_at = 9;
-    bool is_advertisement = 10;
-    string reply_permission = 11;
+    string reply_permission = 10;
+    bool is_advertisement = 11;
     bool is_private = 12;
+    string content = 13;
+    string title = 14;
+    string category = 15;
 }
 
 message GetThreadsResponse {
@@ -105,4 +149,10 @@ message GetThreadsResponse {
 message DeleteThreadRequest {
     string user_id = 1;
     string thread_id = 2;
+}
+
+message RepostRequest {
+    string user_id = 1;
+    string thread_id = 2;
+    string text = 3;
 }

@@ -1,10 +1,16 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import type { Thread } from "../types/thread";
     import Post from "./Post.svelte";
+    import {
+        getFollowingThreads,
+        getForYouThreads,
+    } from "../controllers/thread-controller";
+    import { addToast } from "../stores/toast-wrapper";
     // import CreatePost from "./CreatePost.svelte";
 
-    const forYouPosts = $state<Thread[]>([]);
-    const followingPosts = $state<Thread[]>([]);
+    let forYouPosts = $state<Thread[]>([]);
+    let followingPosts = $state<Thread[]>([]);
 
     const tabs = ["For you", "Following"];
     let activeTab = $state<string>("For you");
@@ -12,6 +18,32 @@
     function setActiveTab(tab: string) {
         activeTab = tab;
     }
+
+    onMount(async () => {
+        const response = await getForYouThreads();
+
+        if (response.success) {
+            forYouPosts = response.payload?.threads || [];
+        } else {
+            addToast(
+                "error",
+                "Failed to fetch general feed: " + response.message,
+                "Error!"
+            );
+        }
+
+        const response2 = await getFollowingThreads();
+
+        if (response.success) {
+            forYouPosts = response.payload?.threads || [];
+        } else {
+            addToast(
+                "error",
+                "Failed to fetch following feed: " + response.message,
+                "Error!"
+            );
+        }
+    });
 </script>
 
 <div class="feed-container">
@@ -52,7 +84,7 @@
     </div>
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>

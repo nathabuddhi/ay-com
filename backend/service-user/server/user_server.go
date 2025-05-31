@@ -28,7 +28,7 @@ func (s *UserServer) User_Register(ctx context.Context, req *pb.RegisterRequest)
 }
 
 func (s *UserServer) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
-	return s.Handlers.User_GetProfile(ctx, req)
+	return s.Handlers.User_GetProfile(ctx, req, false)
 }
 
 func (s *UserServer) User_RequestVerificationCode(ctx context.Context, req *pb.VerificationRequest) (*pb.ApiResponseUser, error) {
@@ -113,6 +113,10 @@ func (s *UserServer) User_GetSelfProfile(ctx context.Context, req *pb.StringUser
 
 func (s *UserServer) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetAllBlocked(ctx, req)
+}
+
+func (s *UserServer) User_GetUserId(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_GetProfile(ctx, req, true)
 }
 
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {

@@ -361,6 +361,17 @@ $tablet: 768px;
     .posts-container {
         display: flex;
         flex-direction: column;
+
+        .no-posts-message,
+        .end-posts-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 18px;
+            color: var(--secondary);
+            padding: 16px;
+        }
     }
 }
 
@@ -550,6 +561,8 @@ $tablet: 768px;
 
                 .post-user-username,
                 .post-time {
+                    background-color: transparent;
+                    border: none;
                     color: var(--secondary);
                     font-size: 14px;
                 }
@@ -557,6 +570,9 @@ $tablet: 768px;
                 .post-time::before {
                     content: "·";
                     margin: 0 4px;
+                }
+                .post-user-username:hover {
+                    text-decoration: underline;
                 }
             }
 

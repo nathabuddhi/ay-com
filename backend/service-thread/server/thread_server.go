@@ -8,17 +8,57 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserServer struct {
+type ThreadServer struct {
 	pb.UnimplementedThreadServiceServer
 	Handler *handlers.Handler
 }
 
-func NewThreadServer(db *gorm.DB) *UserServer {
-	return &UserServer{
+func NewThreadServer(db *gorm.DB) *ThreadServer {
+	return &ThreadServer{
 		Handler: handlers.NewHandler(db),
 	}
 }
 
-func (s *UserServer) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
+func (s *ThreadServer) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetAllThreads(ctx, req)
 }
+
+func (s *ThreadServer) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_CreateThread(ctx, req)
+}
+
+// func (s *ThreadServer) Thread_SearchThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_SearchThreads(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_DeleteThread(ctx context.Context, req *pb.DeleteThreadRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_DeleteThread(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_PinThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_PinThread(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_VoteThread(ctx context.Context, req *pb.SubmitVote) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_VoteThread(ctx, req)
+// }
+
+func (s *ThreadServer) Thread_ToggleLike(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_ToggleLike(ctx, req)
+}
+
+func (s *ThreadServer) Thread_ToggleBookmark(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_ToggleBookmark(ctx, req)
+}
+
+func (s *ThreadServer) Thread_ToggleRepost(ctx context.Context, req *pb.RepostRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_ToggleRepost(ctx, req)
+}
+
+// func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_ReplyThread(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_DeleteReply(ctx, req)
+// }

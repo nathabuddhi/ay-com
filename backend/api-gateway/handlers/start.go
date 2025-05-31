@@ -42,6 +42,7 @@ func InitUserRoutes(r *mux.Router) {
 
 func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{username}", User_GetProfile).Methods("GET")
+	secured.HandleFunc("/user/getuserid", User_GetUserId).Methods("POST")
 	secured.HandleFunc("/user/getselfprofile", User_GetSelfProfile).Methods("POST")
 	secured.HandleFunc("/user/searchpeople", User_SearchPeople).Methods("POST")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("PATCH")
@@ -79,19 +80,27 @@ func InitSecuredNotificationRoutes(secured *mux.Router) {
 
 func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getallthreads", Thread_GetAllThreads).Methods("POST")
+	secured.HandleFunc("/thread/create", Thread_CreateThread).Methods("POST")
+
+	secured.HandleFunc("/thread/search", Thread_SearchThreads).Methods("POST")
+	secured.HandleFunc("/thread/delete", Thread_DeleteThread).Methods("DELETE")
+
+	secured.HandleFunc("/thread/pin", Thread_PinThread).Methods("POST")
+
+	secured.HandleFunc("/thread/vote", Thread_VoteThread).Methods("POST")
+
+	secured.HandleFunc("/thread/togglelike", Thread_ToggleLike).Methods("POST")
+
+	secured.HandleFunc("/thread/togglebookmark", Thread_ToggleBookmark).Methods("POST")
+
+	secured.HandleFunc("/thread/togglerepost", Thread_ToggleRepost).Methods("POST")
+
+	secured.HandleFunc("/thread/reply", Thread_ReplyThread).Methods("POST")
+	secured.HandleFunc("/thread/deletereply", Thread_DeleteReply).Methods("DELETE")
+
 	// secured.HandleFunc("/thread/getthreadsbyuser", Thread_).Methods("POST")
 	// secured.HandleFunc("/thread/getthreadsbycommunity", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/searchthread", Thread_).Methods("POST")
 	// secured.HandleFunc("/thread/getpopularhashtags", Thread_).Methods("POST")
 	// secured.HandleFunc("/thread/getthreadsbyhashtag", Thread_).Methods("POST")
 	// secured.HandleFunc("/thread/getthreadsbymedia", Thread_).Methods("POST")
-
-	// secured.HandleFunc("/thread/createthread", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/deletethread", Thread_).Methods("DELETE")
-
-	// secured.HandleFunc("/thread/likethread", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/unlikethread", Thread_).Methods("POST")
-
-	// secured.HandleFunc("/thread/replythread", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/deletereply", Thread_).Methods("POST")
 }

@@ -8,6 +8,9 @@
     import { addToast } from "../stores/toast-wrapper";
     import { theme } from "../stores/theme-wrapper";
 
+    const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    let token = $state("");
+
     let email = $state("");
     let fullName = $state("");
     let username = $state("");
@@ -45,14 +48,30 @@
         "What was your childhood nickname?",
     ];
 
-    onMount(async () => {
-        if (await isLoggedIn()) {
-            window.location.href = "/home";
-        }
+    onMount(() => {
+        isLoggedIn().then((loggedIn) => {
+            if (loggedIn) {
+                window.location.href = "/home";
+            }
+        });
 
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
+        // window.grecaptchaReady = function () {
+        //     grecaptcha.ready(() => {
+        //         grecaptcha
+        //             .execute(RECAPTCHA_SITE_KEY, { action: "register" })
+        //             .then((t) => {
+        //                 token = t;
+        //             })
+        //             .catch((err) => {
+        //                 addToast(
+        //                     "error",
+        //                     "Failed to initialize reCAPTCHA. Please try again.",
+        //                     "reCAPTCHA Error"
+        //                 );
+        //                 console.error("reCAPTCHA init error:", err);
+        //             });
+        //     });
+        // };
     });
 
     function validateForm(): boolean {
@@ -184,7 +203,8 @@
         }
     }
 
-    async function handleSubmit(): Promise<void> {
+    async function handleSubmit(event: SubmitEvent): Promise<void> {
+        event.preventDefault();
         if (!validateForm()) {
             addToast(
                 "error",
@@ -236,6 +256,27 @@
         }
     }
 </script>
+
+<svelte:head>
+    <!-- <script
+        src="https://www.google.com/recaptcha/api.js?render={RECAPTCHA_SITE_KEY}"
+        async
+        defer
+    >
+        declare global {
+            interface Window {
+                grecaptchaReady: () => void;
+                grecaptcha: {
+                    ready: (callback: () => void) => void;
+                    execute: (
+                        siteKey: string,
+                        options: { action: string }
+                    ) => Promise<string>;
+                };
+            }
+        }
+    </script> -->
+</svelte:head>
 
 <div class="register-container">
     <header class="register-header">
@@ -351,6 +392,7 @@
             </div>
 
             <div class="form-group">
+                <!-- svelte-ignore a11y_label_has_associated_control -->
                 <label class="form-label">Gender</label>
                 <div class="form-radio-group">
                     <label class="radio-option">
@@ -415,6 +457,7 @@
             </div>
 
             <div class="form-group">
+                <!-- svelte-ignore a11y_label_has_associated_control -->
                 <label class="form-label">Profile Picture</label>
                 <div class="file-input-container">
                     <label for="avatar" class="file-input-label">
@@ -441,6 +484,7 @@
             </div>
 
             <div class="form-group">
+                <!-- svelte-ignore a11y_label_has_associated_control -->
                 <label class="form-label">Banner Image</label>
                 <div class="file-input-container">
                     <label for="banner" class="file-input-label">

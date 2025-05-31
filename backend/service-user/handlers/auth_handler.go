@@ -102,9 +102,13 @@ func (h *Handlers) User_RefreshToken(ctx context.Context, req *pb.StringUser) (*
 		}, nil
 	}
 
-	refreshTokenResponse := &pb.RefreshTokenResponse{
-		AccessToken:  newAccessToken,
+	refreshTokenResponse := &pb.LoginResponse{
+		Token:        newAccessToken,
 		RefreshToken: newRefreshToken,
+		UserId:       user.UserId,
+		Username:     user.Username,
+		Name:         user.Name,
+		IsVerified:   user.IsVerified,
 	}
 	dataReturn, err := anypb.New(refreshTokenResponse)
 	if err != nil {

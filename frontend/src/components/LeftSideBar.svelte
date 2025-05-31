@@ -24,7 +24,7 @@
     }>();
 
     let showLogoutMenu = $state(false);
-    let mobileNavOpen = $state(false);
+    let mobileNavOpen = $state(true);
 
     function toggleLogoutMenu(): void {
         showLogoutMenu = !showLogoutMenu;
@@ -49,10 +49,12 @@
             </button>
 
             <a href="/home">AY</a>
-            <ToggleTheme />
         </div>
 
         <nav class="nav-links">
+            <div class="nav-link">
+                <ToggleTheme />
+            </div>
             <a
                 href="/home"
                 class={"nav-link" + (path === "/home" ? " active" : "")}
@@ -75,7 +77,8 @@
 
             <a
                 href="/notifications"
-                class={"nav-link" + (path === "/notifications" ? " active" : "")}
+                class={"nav-link" +
+                    (path === "/notifications" ? " active" : "")}
             >
                 <span class="icon">
                     <Bell />

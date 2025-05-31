@@ -17,6 +17,7 @@ service UserService {
 
     // protected routes
     rpc User_GetProfile (GetProfileRequest) returns (ApiResponseUser);
+    rpc User_GetUserId (GetProfileRequest) returns (ApiResponseUser);
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
     rpc User_UpdateProfile (UpdateUserProfileRequest) returns (ApiResponseUser);
     rpc User_SearchPeople (SearchPeopleRequest) returns (ApiResponseUser);

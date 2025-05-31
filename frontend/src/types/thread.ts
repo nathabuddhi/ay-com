@@ -6,6 +6,10 @@ export interface Media {
     timestamp: string;
 }
 
+export interface ThreadResponse {
+    threads: Thread[];
+}
+
 export interface Thread {
     thread_id: string;
     user_id: string;
@@ -21,7 +25,9 @@ export interface Thread {
     reply_count: number;
     posted_at: string;
     is_private: boolean;
-    timestamp: Date;
+    is_liking: boolean;
+    is_bookmarking: boolean;
+    is_reposting: boolean;
 }
 
 export interface Media {
@@ -31,7 +37,6 @@ export interface Media {
 }
 
 export interface PollOption {
-    id: string;
     option: string;
     vote_count: number;
 }

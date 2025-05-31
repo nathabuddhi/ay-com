@@ -1,6 +1,6 @@
 import { addToast } from "../stores/toast-wrapper";
 import type { ApiResponse } from "../types/api";
-import type { RefreshTokenResponse } from "../types/user";
+import type { LoginResponse } from "../types/user";
 
 function setCookie(name: string, value: string, minutes: number): void {
     const expires = new Date(Date.now() + minutes * 60 * 1000).toUTCString();
@@ -59,23 +59,38 @@ async function refreshToken(refresh_token: string): Promise<string> {
         body: JSON.stringify({ value: refresh_token }),
     });
 
-    const data: ApiResponse<RefreshTokenResponse> = await response.json();
+    const data: ApiResponse<LoginResponse> = await response.json();
     if (!response.ok || !data.success) {
         logout();
         return "";
     } else {
-        if (data.payload?.access_token) {
-            setToken(data.payload.access_token);
+        if (data.payload?.token) {
+            setToken(data.payload.token);
         }
         if (data.payload?.refresh_token) {
             setRefreshToken(data.payload.refresh_token);
+        }
+        if (data && data.payload?.user_id) {
+            localStorage.setItem("user_id", data.payload.user_id);
+        }
+        if (data && data.payload?.username) {
+            localStorage.setItem("username", data.payload.username);
+        }
+        if (data && data.payload?.name) {
+            localStorage.setItem("name", data.payload.name);
+        }
+        if (data && data.payload?.is_verified) {
+            localStorage.setItem(
+                "is_verified",
+                data.payload.is_verified ? "true" : "false"
+            );
         }
         addToast(
             "success",
             "User cookie validity checked successfully!",
             "Session Re-Validated!"
         );
-        return data.payload?.access_token ?? "";
+        return data.payload?.token ?? "";
     }
 }
 

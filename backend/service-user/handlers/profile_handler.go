@@ -20,13 +20,23 @@ func safeString(s *string) string {
 	return *s
 }
 
-func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.ApiResponseUser, error) {
+func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileRequest, isUserId bool) (*pb.ApiResponseUser, error) {
 	var user models.User
-	if err := h.DB.Where("username = ?", req.UserId).First(&user).Error; err != nil {
-		return &pb.ApiResponseUser{
-			Success: false,
-			Message: "User Not Found.",
-		}, nil
+
+	if isUserId {
+		if err := h.DB.Where("user_id = ?", req.UserId).First(&user).Error; err != nil {
+			return &pb.ApiResponseUser{
+				Success: false,
+				Message: "User Not Found.",
+			}, nil
+		}
+	} else {
+		if err := h.DB.Where("username = ?", req.UserId).First(&user).Error; err != nil {
+			return &pb.ApiResponseUser{
+				Success: false,
+				Message: "User Not Found.",
+			}, nil
+		}
 	}
 
 	var requester models.User

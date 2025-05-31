@@ -64,9 +64,9 @@ func main() {
 	s := grpc.NewServer()
 
 	pb.RegisterMediaServiceServer(s, mediaServer)
-	zap.L().Info("User Service gRPC server started successfully.")
+	zap.L().Info("Media Service gRPC server started successfully.")
 
-	zap.L().Info("User Service Running. Listening on port 5001.")
+	zap.L().Info("Media Service Running. Listening on port 5013.")
 	if err := s.Serve(lis); err != nil {
 		zap.L().Fatal("Failed to serve: " + err.Error())
 	}
