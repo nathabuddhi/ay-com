@@ -251,6 +251,14 @@ func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) 
 	}
 
 	bio := safeString(user.Bio)
+	followers, err := h.GetFollowers(user.UserId)
+	following, err2 := h.GetFollowing(user.UserId)
+
+	if err != nil {
+		followers = 0
+	} else if err2 != nil {
+		following = 0
+	}
 
 	userData := &pb.UserProfile{
 		UserId:      user.UserId,
@@ -262,6 +270,8 @@ func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) 
 		Email:       user.Email,
 		JoinDate:    user.JoinedAt.Format("2006-01-02"),
 		IsVerified:  user.IsVerified,
+		Followers:   int32(followers),
+		Following:   int32(following),
 	}
 
 	returnData, err := anypb.New(userData)
