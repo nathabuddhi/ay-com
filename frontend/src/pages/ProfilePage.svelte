@@ -11,7 +11,7 @@
     } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import { navigate } from "svelte-routing";
-    import { BadgeCheck, Calendar, CrossIcon, X } from "@lucide/svelte";
+    import { BadgeCheck, Calendar, X } from "@lucide/svelte";
     import type { Thread } from "../types/thread";
 
     let user = $state<UserProfile>({
@@ -32,7 +32,7 @@
     let likes = $state<Thread[]>([]);
     let media = $state<Thread[]>([]);
 
-    const tabs = ["Posts", "Replies", "Likes", "Media"];
+    let tabs = $state<string[]>([]);
     let activeTab = $state("Posts");
 
     let showImagePreviewModal = $state(false);
@@ -105,6 +105,11 @@
 
     onMount(async () => {
         await loadProfile();
+        if (user.user_id === localStorage.getItem("user_id")) {
+            tabs = ["Posts", "Replies", "Likes", "Media"];
+        } else {
+            tabs = ["Posts", "Replies", "Media"];
+        }
     });
 
     function setActiveTab(tab: string) {
@@ -121,7 +126,7 @@
     }
 
     function navigateToThread(id: string) {
-        console.log(`Navigating to thread ${id}`);
+        navigate(`/thread/${id}`);
     }
 </script>
 
@@ -211,7 +216,6 @@
                 {#if user?.is_verified || false}
                     <span class="verified-badge">
                         <BadgeCheck />
-                        Get verified
                     </span>
                 {/if}
             </div>

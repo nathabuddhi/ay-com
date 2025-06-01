@@ -1,14 +1,18 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import {
         deleteNotif,
         markNotifAsRead,
     } from "../controllers/notification-controller";
     import { addToast } from "../stores/toast-wrapper";
     import type { Notification } from "../types/notification";
+    import type { UserProfile } from "../types/user";
+    import { getUserById } from "../controllers/user-controller";
 
     let { notification }: { notification: Notification } = $props();
+    let user = $state<UserProfile | null>(null);
 
-    const formattedTime = new Date(notification.timestamp).toLocaleString();
+    const formattedTime = notification.timestamp.toString();
 
     async function handleDelete() {
         const response = await deleteNotif(notification.notification_id);
@@ -32,6 +36,42 @@
         }
     }
 
+    onMount(async () => {
+        if (notification.from === "System") {
+            user = {
+                name: "System",
+                username: "System",
+                is_verified: false,
+                user_id: notification.from,
+                bio: "",
+                followers: 0,
+                following: 0,
+                gender: "",
+                date_of_birth: "",
+                email: "",
+                join_date: "",
+            };
+        }
+        const response = await getUserById(notification.from);
+        if (response) {
+            user = response;
+        } else {
+            user = {
+                name: "Unknown.",
+                username: "Unknown.",
+                is_verified: false,
+                user_id: notification.from,
+                bio: "",
+                followers: 0,
+                following: 0,
+                gender: "",
+                date_of_birth: "",
+                email: "",
+                join_date: "",
+            };
+        }
+    });
+
     function handleRedirect() {}
 </script>
 
@@ -47,9 +87,9 @@
 >
     <div class="notification-content">
         <h3>{notification.title}</h3>
-        <p>{notification.content}</p>
+        <p>{@html notification.content}</p>
         <span class="meta">
-            <strong>{notification.from}</strong> &bull; {formattedTime}
+            <strong>{user?.username}</strong> &bull; {formattedTime}
         </span>
     </div>
 

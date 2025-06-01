@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { toasts, removeToast } from "../stores/toast-wrapper";
+    import { toasts } from "../stores/toast-wrapper";
     import Toast from "./Toast.svelte";
 </script>
 
 <div class="toast-container">
     {#each $toasts as toast (toast.id)}
         <Toast
+            id={toast.id}
             type={toast.type}
             title={toast.title}
             message={toast.message}
-            duration={toast.duration}
-            show={true}
         />
     {/each}
 </div>

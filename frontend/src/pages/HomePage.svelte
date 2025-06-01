@@ -8,46 +8,24 @@
     import ProfilePage from "./ProfilePage.svelte";
     import ToastContainer from "../components/ToastContainer.svelte";
     import NotificationPage from "./NotificationPage.svelte";
-
-    let currentTheme: "light" | "dark" = "dark";
-    let userData = {
-        name: "",
-        username: "",
-        is_verified: false,
-        user_id: "",
-    };
+    import CreatePost from "../components/CreatePost.svelte";
+    import BookmarkPage from "./BookmarkPage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
             window.location.href = "/login";
             return;
         }
-
-        userData.name = localStorage.getItem("name") || "User";
-        userData.username = localStorage.getItem("username") || "user";
-        userData.is_verified = localStorage.getItem("is_verified") === "true";
-        userData.user_id = localStorage.getItem("user_id") || "1";
-
-        const savedTheme =
-            (localStorage.getItem("theme") as "light" | "dark") || "light";
-        currentTheme = savedTheme;
-        document.documentElement.setAttribute("data-theme", savedTheme);
     });
 
-    function handleThemeChange(
-        event: CustomEvent<{ theme: "light" | "dark" }>
-    ): void {
-        currentTheme = event.detail.theme;
-        localStorage.setItem("theme", currentTheme);
-        document.documentElement.setAttribute("data-theme", currentTheme);
-    }
-
     const currpage = window.location.pathname;
+    let isNewPostOpen = false;
 </script>
 
 <div class="home-container">
     <ToastContainer />
-    <LeftSideBar {userData} />
+    <CreatePost bind:isOpen={isNewPostOpen} />
+    <LeftSideBar bind:isNewPostOpen />
     <main class="main-content">
         {#if currpage.includes("home")}
             <Feed />
@@ -55,12 +33,14 @@
             <ProfilePage />
         {:else if currpage.includes("notifications")}
             <NotificationPage />
+        {:else if currpage.includes("bookmarks")}
+            <BookmarkPage />
         {/if}
     </main>
     <RightBar />
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>
