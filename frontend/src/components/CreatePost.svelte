@@ -1,191 +1,253 @@
 <script lang="ts">
-    let postText = "";
-    let selectedFiles: FileList | null = null;
-    let previewImages: string[] = [];
+    import { Image, X, ListPlus } from "@lucide/svelte";
+    import { AVATAR_IMG } from "../env_var";
+    import { addToast } from "../stores/toast-wrapper";
+    import { postThread } from "../controllers/thread-controller";
+
+    let postText: string = $state("");
+    let selectedFiles: FileList | null = $state<FileList | null>(null);
+    let previewImages: string[] = $state<string[]>([]);
+    let pollOptions: string[] = $state([]);
+    let showPoll = $state(false);
+
+    const categories = [
+        "General",
+        "News",
+        "Gaming",
+        "Education",
+        "Technology",
+        "Art",
+    ];
+    let selectedCategory = $state("");
+    const permissions = ["Public", "Followers", "Friends"];
+    let selectedPermission = $state("");
+
+    let { isOpen = $bindable() }: { isOpen: boolean } = $props();
 
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
-        if (input.files) {
-            selectedFiles = input.files;
-            previewImages = [];
+        if (!input.files) return;
 
+        const newFiles = Array.from(input.files);
+
+        const dt = new DataTransfer();
+        if (selectedFiles) {
             for (let i = 0; i < selectedFiles.length; i++) {
-                const file = selectedFiles[i];
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                    if (e.target?.result) {
-                        previewImages = [
-                            ...previewImages,
-                            e.target.result as string,
-                        ];
-                    }
-                };
-
-                reader.readAsDataURL(file);
+                dt.items.add(selectedFiles[i]);
             }
         }
+        newFiles.forEach((file) => dt.items.add(file));
+        selectedFiles = dt.files;
+
+        const newPreviews: Promise<string>[] = newFiles.map(
+            (file) =>
+                new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resolve(e.target?.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                })
+        );
+
+        Promise.all(newPreviews).then((results) => {
+            previewImages = [...previewImages, ...results];
+        });
     }
 
     function removeImage(index: number) {
         previewImages = previewImages.filter((_, i) => i !== index);
-
         if (selectedFiles) {
             const dt = new DataTransfer();
             for (let i = 0; i < selectedFiles.length; i++) {
-                if (i !== index) {
-                    dt.items.add(selectedFiles[i]);
-                }
+                if (i !== index) dt.items.add(selectedFiles[i]);
             }
             selectedFiles = dt.files;
         }
     }
 
-    function handleSubmit() {
-        console.log("Post text:", postText);
-        console.log("Selected files:", selectedFiles);
+    function addPollOption() {
+        if (pollOptions.length < 4) {
+            pollOptions = [...pollOptions, ""];
+        }
+    }
 
-        postText = "";
-        selectedFiles = null;
-        previewImages = [];
+    function removePollOption(index: number) {
+        pollOptions = pollOptions.filter((_, i) => i !== index);
+    }
+
+    async function handleSubmit() {
+        try {
+            if (selectedCategory === "") {
+                addToast("error", "Please select a category.", "Error!");
+                return;
+            }
+
+            if (selectedPermission === "") {
+                addToast(
+                    "error",
+                    "Please select a permission level.",
+                    "Error!"
+                );
+                return;
+            }
+
+            const response = await postThread(
+                postText,
+                selectedCategory,
+                selectedPermission,
+                selectedFiles,
+                pollOptions
+            );
+
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+
+            isOpen = false;
+            addToast("success", "Thread created successfully!", "Success!");
+        } catch (error) {
+            addToast(
+                "error",
+                "Failed to create post: " + (error as Error).message,
+                "Error!"
+            );
+        } finally {
+        }
     }
 </script>
 
-<div class="create-post">
-    <div class="create-post-avatar">
-        <img
-            src={`http://localhost:5000/images/profile/${localStorage.getItem("user_id") || "1"}`}
-            alt="Your avatar"
-        />
-    </div>
-
-    <div class="create-post-content">
-        <textarea placeholder="What's happening?" bind:value={postText} rows="3"
-        ></textarea>
-
-        {#if previewImages.length > 0}
-            <div
-                class="image-previews {previewImages.length > 1
-                    ? 'multiple-images'
-                    : ''}"
-            >
-                {#each previewImages as preview, i}
-                    <div class="preview-container">
-                        <img
-                            src={preview || "/placeholder.svg"}
-                            alt="Preview"
-                        />
-                        <button
-                            class="remove-image"
-                            on:click={() => removeImage(i)}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-                {/each}
-            </div>
-        {/if}
-
-        <div class="create-post-actions">
-            <div class="media-actions">
-                <label class="media-button">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"
-                        ></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        on:change={handleFileChange}
-                    />
-                </label>
-
-                <button class="media-button">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path
-                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                        ></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </button>
-
-                <button class="media-button">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                    </svg>
-                </button>
-
-                <button class="media-button">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                        ></path>
-                    </svg>
-                </button>
-            </div>
-
-            <button
-                class="post-button"
-                disabled={!postText && previewImages.length === 0}
-                on:click={handleSubmit}
-            >
-                Post
+{#if isOpen}
+    <div class="create-post-background">
+        <div class="create-post">
+            <button class="close-button" onclick={() => (isOpen = false)}>
+                <X />
             </button>
+
+            <div class="create-post-avatar">
+                <img
+                    src={`${AVATAR_IMG}/${localStorage.getItem("user_id") || "1"}.png`}
+                    alt="Your avatar"
+                />
+            </div>
+
+            <div class="create-post-content">
+                <textarea placeholder="What's happening?" bind:value={postText}
+                ></textarea>
+
+                {#if previewImages.length > 0}
+                    <div
+                        class="image-previews {previewImages.length > 1
+                            ? 'multiple-images'
+                            : ''}"
+                    >
+                        {#each previewImages as preview, i}
+                            <div class="preview-container">
+                                <img src={preview} alt="Preview" />
+                                <button
+                                    class="remove-image"
+                                    onclick={() => removeImage(i)}
+                                >
+                                    <X />
+                                </button>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+
+                {#if showPoll}
+                    <div class="poll-section">
+                        <h4>Create a Poll</h4>
+                        {#each pollOptions as option, index}
+                            <div class="poll-option">
+                                <input
+                                    type="text"
+                                    bind:value={pollOptions[index]}
+                                    placeholder={`Option ${index + 1}`}
+                                />
+                                {#if pollOptions.length > 0}
+                                    <button
+                                        onclick={() => removePollOption(index)}
+                                        >✕</button
+                                    >
+                                {/if}
+                            </div>
+                        {/each}
+                        {#if pollOptions.length < 4}
+                            <button class="add-option" onclick={addPollOption}
+                                >Add Option</button
+                            >
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="create-post-actions">
+                    <div class="media-actions">
+                        <label class="media-button">
+                            <Image />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onchange={handleFileChange}
+                            />
+                        </label>
+                        <button
+                            class="media-button"
+                            onclick={() => {
+                                showPoll = !showPoll;
+                            }}
+                        >
+                            <ListPlus />
+                        </button>
+                        <div class="category-selector">
+                            <label for="category-select">Category</label>
+                            <select
+                                id="category-select"
+                                bind:value={selectedCategory}
+                            >
+                                <option value="" disabled selected
+                                    >Select a category</option
+                                >
+                                {#each categories as category}
+                                    <option value={category}>{category}</option>
+                                {/each}
+                            </select>
+                        </div>
+                        <div class="category-selector">
+                            <label for="category-select">Permissions</label>
+                            <select
+                                id="category-select"
+                                bind:value={selectedPermission}
+                            >
+                                <option value="" disabled selected
+                                    >Select a permission</option
+                                >
+                                {#each permissions as permission}
+                                    <option value={permission}
+                                        >{permission}</option
+                                    >
+                                {/each}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                        class="post-button"
+                        disabled={!postText &&
+                            previewImages.length === 0 &&
+                            (!showPoll || pollOptions.every((p) => !p.trim()))}
+                        onclick={handleSubmit}
+                    >
+                        Post
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+{/if}
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>
