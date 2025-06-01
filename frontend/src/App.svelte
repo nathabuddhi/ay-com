@@ -59,6 +59,15 @@
     <Route path="/reset-password">
         <ResetPasswordPage />
     </Route>
+    <Route path="/bookmarks">
+        <HomePage />
+    </Route>
+    <Route path="/messages">
+        <HomePage />
+    </Route>
+    <Route path="/premium">
+        <HomePage />
+    </Route>
     <Route path="/profile/*">
         <HomePage />
     </Route>

@@ -13,15 +13,18 @@
     import type { UserProfile } from "../types/user";
     import { onMount } from "svelte";
     import {
-        getThreadOwner,
         toggleBookmark,
         toggleLike,
         toggleRepost,
     } from "../controllers/thread-controller";
     import { AVATAR_IMG, THREAD_IMG } from "../env_var";
     import { addToast } from "../stores/toast-wrapper";
+    import { processContent } from "../controllers/util";
+    import { getUserById } from "../controllers/user-controller";
 
-    let { post } = $props<{ post: Thread }>();
+    let { post }: { post: Thread } = $props<{ post: Thread }>();
+
+    async function handleVoteClick(poll: string) {}
 
     async function handleLikeClick() {
         if (post.is_liking) {
@@ -124,7 +127,7 @@
     });
 
     onMount(async () => {
-        const response = await getThreadOwner(post.user_id);
+        const response = await getUserById(post.user_id);
         console.log("Fetching thread owner with user_id:", post.user_id);
         if (response) {
             user = response;
@@ -153,32 +156,15 @@
         } else return String(num);
     }
 
-    function processContent(content: string): string {
-        let processed = content.replace(
-            /@(\w+)/g,
-            '<span class="mention">@$1</span>'
-        );
-
-        processed = processed.replace(
-            /#(\w+)/g,
-            '<span class="hashtag">#$1</span>'
-        );
-
-        return processed;
-    }
-
     function handleMentionClick(event: MouseEvent) {
         if (user.username == "loading") return;
         event.preventDefault();
         event.stopPropagation();
         window.location.href = `/profile/${user.username}`;
     }
-
-    function handleHashtagClick(hashtag: string) {
-        window.location.href = `/explore?q=%23${hashtag}`;
-    }
 </script>
 
+<p class="repost-text">{post.is_reposting && "You Reposted"}</p>
 <article class="post">
     <div class="post-avatar">
         <img src={`${AVATAR_IMG}/${post.user_id}.png`} alt={post.user_id} />
@@ -199,15 +185,21 @@
                         onclick={handleMentionClick}>@{user.username}</button
                     >
                 </div>
-                <span class="post-time">{post.posted_at}</span>
+                <div>
+                    <span class="post-time">Category: {post.category}</span>
+                    <br />
+                    <span class="post-time">{post.posted_at}</span>
+                </div>
             </div>
 
             <button class="post-more-options">
                 <EllipsisVertical />
             </button>
         </div>
-
-        {#if post.media.length > 0}
+        <div class="post-text">
+            {@html processContent(post.content)}
+        </div>
+        {#if post.media && post.media.length > 0}
             <div
                 class="post-images {post.media.length > 1
                     ? 'multiple-images'
@@ -220,6 +212,21 @@
                             alt="Post image {i + 1}"
                         />
                     </div>
+                {/each}
+            </div>
+        {/if}
+        {#if post.poll_options && post.poll_options.length > 0}
+            <div class="post-polls">
+                {#each post.poll_options as poll, i}
+                    <button
+                        class="poll-container"
+                        onclick={() => handleVoteClick(poll.option)}
+                    >
+                        <span class="poll-option">{poll.option}</span>
+                        <span class="poll-votes"
+                            >{poll.vote_count ?? 0} votes</span
+                        >
+                    </button>
                 {/each}
             </div>
         {/if}

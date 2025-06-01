@@ -55,6 +55,14 @@ func (s *ThreadServer) Thread_ToggleRepost(ctx context.Context, req *pb.RepostRe
 	return s.Handler.Thread_ToggleRepost(ctx, req)
 }
 
+func (s *ThreadServer) Thread_GetBookmarkedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetBookmarkedThreads(ctx, req)
+}
+
+func (s *ThreadServer) Thread_GetRepostedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetRepostedThreads(ctx, req)
+}
+
 // func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 // 	return s.Handler.Thread_ReplyThread(ctx, req)
 // }

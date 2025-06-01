@@ -7,6 +7,28 @@ import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { API_URL } from "../env_var";
 import { getValidToken, setRefreshToken, setToken } from "./token-controller";
 
+export async function getUserById(
+    user_id: string
+): Promise<UserProfile | null> {
+    const response = await fetch(`${API_URL}/user/getuserid`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: await getValidToken(),
+        },
+        body: JSON.stringify({
+            user_id,
+        }),
+    });
+
+    const data: ApiResponse<UserProfile> = await response.json();
+    if (!response.ok || !data) {
+        return null;
+    }
+
+    return data.payload;
+}
+
 export function returnDefaultError<T>(error: unknown): ApiResponse<T> {
     return {
         success: false,

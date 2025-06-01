@@ -198,6 +198,7 @@ func Thread_GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	resp, err := client.Thread_GetAllThreads(ctx, req)
+
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
 
@@ -316,4 +317,30 @@ func Thread_DeleteReply(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.Thread_DeleteReply(ctx, req)
 	processThreadResponseWithoutPayload(resp, err, w)
+}
+
+func Thread_GetBookmarkedThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetBookmarkedThreads) is called.")
+
+	req, client := processThreadRequest[pb.StringThread](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetBookmarkedThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
+func Thread_GetRepostedThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetRepostedThreads) is called.")
+
+	req, client := processThreadRequest[pb.StringThread](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetRepostedThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }

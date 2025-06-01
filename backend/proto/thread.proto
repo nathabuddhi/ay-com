@@ -26,6 +26,14 @@ service ThreadService {
 
     rpc Thread_ReplyThread (GeneralThreadRequest) returns (ApiResponseThread);
     rpc Thread_DeleteReply (GeneralThreadRequest) returns (ApiResponseThread);
+
+    rpc Thread_GetBookmarkedThreads (StringThread) returns (ApiResponseThread);
+    rpc Thread_GetRepostedThreads (StringThread) returns (ApiResponseThread);
+
+    rpc Thread_GetUserThreads (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserLikedThreads (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserReplies (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserMediaThreads (GeneralThreadRequest) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {
