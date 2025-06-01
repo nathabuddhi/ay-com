@@ -5,6 +5,7 @@
     let searchQuery = "";
     let isSearchFocused = false;
     let recentSearches: string[] = [];
+    let debounceTimeout: ReturnType<typeof setTimeout>;
 
     onMount(() => {
         const savedSearches = localStorage.getItem("recentSearches");
@@ -13,22 +14,15 @@
         }
     });
 
-    function handleSearch(event: KeyboardEvent) {
-        if (event.key === "Enter" && searchQuery.trim()) {
-            if (!recentSearches.includes(searchQuery)) {
-                recentSearches = [searchQuery, ...recentSearches.slice(0, 2)];
-                localStorage.setItem(
-                    "recentSearches",
-                    JSON.stringify(recentSearches)
-                );
-            }
-
-            window.location.href = `/explore?q=${encodeURIComponent(searchQuery)}`;
-        }
+    function searchDebouncer() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            handleSearch(new KeyboardEvent("keydown", { key: "Enter" }));
+        }, 300);
     }
 
-    function handleSearchIconClick() {
-        if (searchQuery.trim()) {
+    function handleSearch(event: KeyboardEvent) {
+        if (event.key === "Enter" && searchQuery.trim()) {
             if (!recentSearches.includes(searchQuery)) {
                 recentSearches = [searchQuery, ...recentSearches.slice(0, 2)];
                 localStorage.setItem(
@@ -56,7 +50,7 @@
     <div class="search-input-container">
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="search-icon" onclick={handleSearchIconClick}>
+        <div class="search-icon">
             <SearchIcon />
         </div>
 
@@ -67,6 +61,7 @@
             onfocus={() => (isSearchFocused = true)}
             onblur={() => setTimeout(() => (isSearchFocused = false), 200)}
             onkeydown={handleSearch}
+            oninput={searchDebouncer}
         />
     </div>
 

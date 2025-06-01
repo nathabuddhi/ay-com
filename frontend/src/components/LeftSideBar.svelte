@@ -13,15 +13,25 @@
         CircleUserRound,
         Settings,
     } from "@lucide/svelte";
+    import { onMount } from "svelte";
 
-    const { userData } = $props<{
-        userData: {
-            name: string;
-            username: string;
-            is_verified: boolean;
-            user_id: string;
-        };
+    let { isNewPostOpen = $bindable() } = $props<{
+        isNewPostOpen: boolean;
     }>();
+
+    let userData = $state({
+        name: "",
+        username: "",
+        is_verified: false,
+        user_id: "1",
+    });
+
+    onMount(() => {
+        userData.name = localStorage.getItem("name") || "User";
+        userData.username = localStorage.getItem("username") || "user";
+        userData.is_verified = localStorage.getItem("is_verified") === "true";
+        userData.user_id = localStorage.getItem("user_id") || "1";
+    });
 
     let showLogoutMenu = $state(false);
     let mobileNavOpen = $state(true);
@@ -144,7 +154,16 @@
             </a>
         </nav>
 
-        <button class="post-button">Post</button>
+        <!-- svelte-ignore element_invalid_self_closing_tag -->
+        <button
+            aria-label="createpost"
+            class="post-button"
+            onclick={() => {
+                isNewPostOpen = true;
+                console.log("Setting isNewPostOpen to true");
+                console.log(isNewPostOpen);
+            }}
+        />
     </div>
 
     <!-- svelte-ignore a11y_click_events_have_key_events -->
