@@ -261,6 +261,7 @@ func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) 
 		DateOfBirth: user.DateOfBirth.Format("2006-01-02"),
 		Email:       user.Email,
 		JoinDate:    user.JoinedAt.Format("2006-01-02"),
+		IsVerified:  user.IsVerified,
 	}
 
 	returnData, err := anypb.New(userData)
