@@ -217,27 +217,27 @@ func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.StringThread
 		return &pb.ApiResponseThread{Success: false, Message: "Failed to fetch comments"}, nil
 	}
 
-	var commentResponses []*pb.ThreadReply
-	for _, comment := range comments {
-		commentResponses = append(commentResponses, &pb.ThreadReply{
-			Id:       comment.Id,
-			UserId:   comment.UserID,
-			Content:  comment.Content,
-			IsPinned: false,
-		})
-	}
-
-	getThreadResponse := &pb.GetThreadDetailResponse{
+	getThreadDetailResponse := &pb.GetThreadDetailResponse{
 		Thread:  &threadResponse,
-		Replies: commentResponses,
+		Replies: make([]*pb.ThreadReply, len(comments)),
 	}
 
-	redisData, err := json.Marshal(getThreadResponse)
+	for i, request := range comments {
+		commentResponse := pb.ThreadReply{
+			Id:        request.Id,
+			UserId:    request.UserID,
+			Content:   request.Content,
+			IsPinned:  request.IsPinned,
+			Timestamp: request.CreatedAt.Format("2006-01-02 15:04:05")}
+		getThreadDetailResponse.Replies[i] = &commentResponse
+	}
+
+	redisData, err := json.Marshal(getThreadDetailResponse)
 	if err == nil {
 		rabbitmq.PublishSetRedis("getthread/"+thread.ThreadId, string(redisData))
 	}
 
-	returnData, err := anypb.New(getThreadResponse)
+	returnData, err := anypb.New(getThreadDetailResponse)
 	if err != nil {
 		return &pb.ApiResponseThread{
 			Success: false,

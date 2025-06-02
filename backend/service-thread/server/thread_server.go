@@ -71,9 +71,9 @@ func (s *ThreadServer) Thread_GetRepostedThreads(ctx context.Context, req *pb.St
 	return s.Handler.Thread_GetRepostedThreads(ctx, req)
 }
 
-// func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_ReplyThread(ctx, req)
-// }
+func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.ReplyThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_ReplyThread(ctx, req)
+}
 
 // func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 // 	return s.Handler.Thread_DeleteReply(ctx, req)

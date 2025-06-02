@@ -2,6 +2,7 @@ import { API_URL } from "../env_var";
 import type { ApiResponse } from "../types/api";
 import type {
     ThreadDetailResponse,
+    ThreadReply,
     ThreadResponse,
 } from "../types/thread";
 import { getValidToken } from "./token-controller";
@@ -311,5 +312,29 @@ export async function voteThreadPoll(
         return data;
     } catch (error) {
         return returnDefaultError<ThreadResponse>(error);
+    }
+}
+
+export async function replyToThread(
+    thread_id: string,
+    comment: string
+): Promise<ApiResponse<ThreadReply>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/reply`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                thread_id,
+                content: comment,
+            }),
+        });
+        const data: ApiResponse<ThreadReply> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<ThreadReply>(error);
     }
 }

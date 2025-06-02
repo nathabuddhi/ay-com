@@ -99,7 +99,10 @@ func Thread_GetThreadById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	threadId := vars["id"]
 	if !checkRedisData("getthread/"+threadId, w) {
-		req, client := processThreadRequest[pb.StringThread](r, w)
+		conn := getThreadServiceConn()
+		client := pb.NewThreadServiceClient(conn)
+
+		req := &pb.StringThread{}
 		req.Value = threadId
 		ctx, cancel := createContext()
 		defer cancel()
@@ -311,14 +314,14 @@ func Thread_ToggleRepost(w http.ResponseWriter, r *http.Request) {
 func Thread_ReplyThread(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (ReplyThread) is called.")
 
-	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
+	req, client := processThreadRequest[pb.ReplyThreadRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
 	defer cancel()
 
 	resp, err := client.Thread_ReplyThread(ctx, req)
-	processThreadResponseWithoutPayload(resp, err, w)
+	processThreadResponseWithPayload[pb.ThreadReply](resp, err, w)
 }
 
 func Thread_DeleteReply(w http.ResponseWriter, r *http.Request) {

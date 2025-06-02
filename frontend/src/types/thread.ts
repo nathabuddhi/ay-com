@@ -63,5 +63,5 @@ export interface ThreadReply {
     user_id: string;
     content: string;
     is_pinned: boolean;
-    created_at: string;
+    timestamp: string;
 }

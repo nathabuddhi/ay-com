@@ -71,6 +71,9 @@
     <Route path="/profile/*">
         <HomePage />
     </Route>
+    <Route path="/thread/*">
+        <HomePage />
+    </Route>
     <Route path="/notifications">
         <HomePage />
     </Route>

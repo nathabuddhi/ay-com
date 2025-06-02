@@ -10,6 +10,7 @@
     import NotificationPage from "./NotificationPage.svelte";
     import CreatePost from "../components/CreatePost.svelte";
     import BookmarkPage from "./BookmarkPage.svelte";
+    import ThreadDetailPage from "./ThreadDetailPage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
@@ -35,6 +36,8 @@
             <NotificationPage />
         {:else if currpage.includes("bookmarks")}
             <BookmarkPage />
+        {:else if currpage.includes("thread")}
+            <ThreadDetailPage />
         {/if}
     </main>
     <RightBar />

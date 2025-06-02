@@ -290,66 +290,6 @@ func (x *SubmitVote) GetContent() string {
 	return ""
 }
 
-type ReplyThread struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	ThreadId      string                 `protobuf:"bytes,2,opt,name=thread_id,json=threadId,proto3" json:"thread_id,omitempty"`
-	OptionId      string                 `protobuf:"bytes,3,opt,name=option_id,json=optionId,proto3" json:"option_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReplyThread) Reset() {
-	*x = ReplyThread{}
-	mi := &file_thread_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReplyThread) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReplyThread) ProtoMessage() {}
-
-func (x *ReplyThread) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReplyThread.ProtoReflect.Descriptor instead.
-func (*ReplyThread) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *ReplyThread) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *ReplyThread) GetThreadId() string {
-	if x != nil {
-		return x.ThreadId
-	}
-	return ""
-}
-
-func (x *ReplyThread) GetOptionId() string {
-	if x != nil {
-		return x.OptionId
-	}
-	return ""
-}
-
 type GeneralThreadRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -360,7 +300,7 @@ type GeneralThreadRequest struct {
 
 func (x *GeneralThreadRequest) Reset() {
 	*x = GeneralThreadRequest{}
-	mi := &file_thread_proto_msgTypes[6]
+	mi := &file_thread_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -372,7 +312,7 @@ func (x *GeneralThreadRequest) String() string {
 func (*GeneralThreadRequest) ProtoMessage() {}
 
 func (x *GeneralThreadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[6]
+	mi := &file_thread_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -385,7 +325,7 @@ func (x *GeneralThreadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GeneralThreadRequest.ProtoReflect.Descriptor instead.
 func (*GeneralThreadRequest) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{6}
+	return file_thread_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GeneralThreadRequest) GetUserId() string {
@@ -427,7 +367,7 @@ type Thread struct {
 
 func (x *Thread) Reset() {
 	*x = Thread{}
-	mi := &file_thread_proto_msgTypes[7]
+	mi := &file_thread_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -439,7 +379,7 @@ func (x *Thread) String() string {
 func (*Thread) ProtoMessage() {}
 
 func (x *Thread) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[7]
+	mi := &file_thread_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -452,7 +392,7 @@ func (x *Thread) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Thread.ProtoReflect.Descriptor instead.
 func (*Thread) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{7}
+	return file_thread_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Thread) GetThreadId() string {
@@ -585,7 +525,7 @@ type Media struct {
 
 func (x *Media) Reset() {
 	*x = Media{}
-	mi := &file_thread_proto_msgTypes[8]
+	mi := &file_thread_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -597,7 +537,7 @@ func (x *Media) String() string {
 func (*Media) ProtoMessage() {}
 
 func (x *Media) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[8]
+	mi := &file_thread_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -610,7 +550,7 @@ func (x *Media) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Media.ProtoReflect.Descriptor instead.
 func (*Media) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{8}
+	return file_thread_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Media) GetId() string {
@@ -646,7 +586,7 @@ type PollOption struct {
 
 func (x *PollOption) Reset() {
 	*x = PollOption{}
-	mi := &file_thread_proto_msgTypes[9]
+	mi := &file_thread_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -658,7 +598,7 @@ func (x *PollOption) String() string {
 func (*PollOption) ProtoMessage() {}
 
 func (x *PollOption) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[9]
+	mi := &file_thread_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -671,7 +611,7 @@ func (x *PollOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PollOption.ProtoReflect.Descriptor instead.
 func (*PollOption) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{9}
+	return file_thread_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *PollOption) GetThreadId() string {
@@ -712,7 +652,7 @@ type ThreadLike struct {
 
 func (x *ThreadLike) Reset() {
 	*x = ThreadLike{}
-	mi := &file_thread_proto_msgTypes[10]
+	mi := &file_thread_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -724,7 +664,7 @@ func (x *ThreadLike) String() string {
 func (*ThreadLike) ProtoMessage() {}
 
 func (x *ThreadLike) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[10]
+	mi := &file_thread_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -737,7 +677,7 @@ func (x *ThreadLike) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThreadLike.ProtoReflect.Descriptor instead.
 func (*ThreadLike) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{10}
+	return file_thread_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ThreadLike) GetId() string {
@@ -765,7 +705,7 @@ type ThreadRepost struct {
 
 func (x *ThreadRepost) Reset() {
 	*x = ThreadRepost{}
-	mi := &file_thread_proto_msgTypes[11]
+	mi := &file_thread_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +717,7 @@ func (x *ThreadRepost) String() string {
 func (*ThreadRepost) ProtoMessage() {}
 
 func (x *ThreadRepost) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[11]
+	mi := &file_thread_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +730,7 @@ func (x *ThreadRepost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThreadRepost.ProtoReflect.Descriptor instead.
 func (*ThreadRepost) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{11}
+	return file_thread_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ThreadRepost) GetId() string {
@@ -820,13 +760,14 @@ type ThreadReply struct {
 	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	IsPinned      bool                   `protobuf:"varint,4,opt,name=is_pinned,json=isPinned,proto3" json:"is_pinned,omitempty"`
+	Timestamp     string                 `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ThreadReply) Reset() {
 	*x = ThreadReply{}
-	mi := &file_thread_proto_msgTypes[12]
+	mi := &file_thread_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -838,7 +779,7 @@ func (x *ThreadReply) String() string {
 func (*ThreadReply) ProtoMessage() {}
 
 func (x *ThreadReply) ProtoReflect() protoreflect.Message {
-	mi := &file_thread_proto_msgTypes[12]
+	mi := &file_thread_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -851,7 +792,7 @@ func (x *ThreadReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThreadReply.ProtoReflect.Descriptor instead.
 func (*ThreadReply) Descriptor() ([]byte, []int) {
-	return file_thread_proto_rawDescGZIP(), []int{12}
+	return file_thread_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ThreadReply) GetId() string {
@@ -880,6 +821,73 @@ func (x *ThreadReply) GetIsPinned() bool {
 		return x.IsPinned
 	}
 	return false
+}
+
+func (x *ThreadReply) GetTimestamp() string {
+	if x != nil {
+		return x.Timestamp
+	}
+	return ""
+}
+
+type ReplyThreadRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ThreadId      string                 `protobuf:"bytes,2,opt,name=thread_id,json=threadId,proto3" json:"thread_id,omitempty"`
+	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReplyThreadRequest) Reset() {
+	*x = ReplyThreadRequest{}
+	mi := &file_thread_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReplyThreadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReplyThreadRequest) ProtoMessage() {}
+
+func (x *ReplyThreadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_thread_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReplyThreadRequest.ProtoReflect.Descriptor instead.
+func (*ReplyThreadRequest) Descriptor() ([]byte, []int) {
+	return file_thread_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ReplyThreadRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ReplyThreadRequest) GetThreadId() string {
+	if x != nil {
+		return x.ThreadId
+	}
+	return ""
+}
+
+func (x *ReplyThreadRequest) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
 }
 
 type GetAllThreadsRequest struct {
@@ -1363,11 +1371,7 @@ const file_thread_proto_rawDesc = "" +
 	"SubmitVote\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x18\n" +
-	"\acontent\x18\x03 \x01(\tR\acontent\"`\n" +
-	"\vReplyThread\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
-	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x1b\n" +
-	"\toption_id\x18\x03 \x01(\tR\boptionId\"L\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\"L\n" +
 	"\x14GeneralThreadRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\"\xc4\x04\n" +
@@ -1412,12 +1416,17 @@ const file_thread_proto_rawDesc = "" +
 	"\fThreadRepost\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"m\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\"\x8b\x01\n" +
 	"\vThreadReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12\x1b\n" +
-	"\tis_pinned\x18\x04 \x01(\bR\bisPinned\"/\n" +
+	"\tis_pinned\x18\x04 \x01(\bR\bisPinned\x12\x1c\n" +
+	"\ttimestamp\x18\x05 \x01(\tR\ttimestamp\"d\n" +
+	"\x12ReplyThreadRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x18\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\"/\n" +
 	"\x14GetAllThreadsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"U\n" +
 	"\x17GetThreadsByUserRequest\x12\x17\n" +
@@ -1456,7 +1465,7 @@ const file_thread_proto_rawDesc = "" +
 	"\rRepostRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text2\xbd\f\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text2\xbb\f\n" +
 	"\rThreadService\x12O\n" +
 	"\x14Thread_GetAllThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12U\n" +
 	"\x1aThread_GetFollowingThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12G\n" +
@@ -1469,8 +1478,8 @@ const file_thread_proto_rawDesc = "" +
 	"\x11Thread_VoteThread\x12\x12.thread.SubmitVote\x1a\x19.thread.ApiResponseThread\x12L\n" +
 	"\x11Thread_ToggleLike\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12P\n" +
 	"\x15Thread_ToggleBookmark\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12G\n" +
-	"\x13Thread_ToggleRepost\x12\x15.thread.RepostRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
-	"\x12Thread_ReplyThread\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
+	"\x13Thread_ToggleRepost\x12\x15.thread.RepostRequest\x1a\x19.thread.ApiResponseThread\x12K\n" +
+	"\x12Thread_ReplyThread\x12\x1a.thread.ReplyThreadRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
 	"\x12Thread_DeleteReply\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12N\n" +
 	"\x1bThread_GetBookmarkedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12L\n" +
 	"\x19Thread_GetRepostedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12P\n" +
@@ -1498,14 +1507,14 @@ var file_thread_proto_goTypes = []any{
 	(*GetThreadDetailResponse)(nil),      // 2: thread.GetThreadDetailResponse
 	(*StringThread)(nil),                 // 3: thread.StringThread
 	(*SubmitVote)(nil),                   // 4: thread.SubmitVote
-	(*ReplyThread)(nil),                  // 5: thread.ReplyThread
-	(*GeneralThreadRequest)(nil),         // 6: thread.GeneralThreadRequest
-	(*Thread)(nil),                       // 7: thread.Thread
-	(*Media)(nil),                        // 8: thread.Media
-	(*PollOption)(nil),                   // 9: thread.PollOption
-	(*ThreadLike)(nil),                   // 10: thread.ThreadLike
-	(*ThreadRepost)(nil),                 // 11: thread.ThreadRepost
-	(*ThreadReply)(nil),                  // 12: thread.ThreadReply
+	(*GeneralThreadRequest)(nil),         // 5: thread.GeneralThreadRequest
+	(*Thread)(nil),                       // 6: thread.Thread
+	(*Media)(nil),                        // 7: thread.Media
+	(*PollOption)(nil),                   // 8: thread.PollOption
+	(*ThreadLike)(nil),                   // 9: thread.ThreadLike
+	(*ThreadRepost)(nil),                 // 10: thread.ThreadRepost
+	(*ThreadReply)(nil),                  // 11: thread.ThreadReply
+	(*ReplyThreadRequest)(nil),           // 12: thread.ReplyThreadRequest
 	(*GetAllThreadsRequest)(nil),         // 13: thread.GetAllThreadsRequest
 	(*GetThreadsByUserRequest)(nil),      // 14: thread.GetThreadsByUserRequest
 	(*GetThreadsByCommunityRequest)(nil), // 15: thread.GetThreadsByCommunityRequest
@@ -1517,31 +1526,31 @@ var file_thread_proto_goTypes = []any{
 }
 var file_thread_proto_depIdxs = []int32{
 	20, // 0: thread.ApiResponseThread.data:type_name -> google.protobuf.Any
-	7,  // 1: thread.GetThreadDetailResponse.thread:type_name -> thread.Thread
-	12, // 2: thread.GetThreadDetailResponse.replies:type_name -> thread.ThreadReply
-	8,  // 3: thread.Thread.media:type_name -> thread.Media
-	9,  // 4: thread.Thread.poll_options:type_name -> thread.PollOption
-	7,  // 5: thread.GetThreadsResponse.threads:type_name -> thread.Thread
+	6,  // 1: thread.GetThreadDetailResponse.thread:type_name -> thread.Thread
+	11, // 2: thread.GetThreadDetailResponse.replies:type_name -> thread.ThreadReply
+	7,  // 3: thread.Thread.media:type_name -> thread.Media
+	8,  // 4: thread.Thread.poll_options:type_name -> thread.PollOption
+	6,  // 5: thread.GetThreadsResponse.threads:type_name -> thread.Thread
 	13, // 6: thread.ThreadService.Thread_GetAllThreads:input_type -> thread.GetAllThreadsRequest
 	13, // 7: thread.ThreadService.Thread_GetFollowingThreads:input_type -> thread.GetAllThreadsRequest
 	3,  // 8: thread.ThreadService.Thread_GetThreadById:input_type -> thread.StringThread
 	13, // 9: thread.ThreadService.Thread_SearchThreads:input_type -> thread.GetAllThreadsRequest
 	18, // 10: thread.ThreadService.Thread_DeleteThread:input_type -> thread.DeleteThreadRequest
 	16, // 11: thread.ThreadService.Thread_CreateThread:input_type -> thread.PostThread
-	6,  // 12: thread.ThreadService.Thread_PinThread:input_type -> thread.GeneralThreadRequest
-	6,  // 13: thread.ThreadService.Thread_UnPinThread:input_type -> thread.GeneralThreadRequest
+	5,  // 12: thread.ThreadService.Thread_PinThread:input_type -> thread.GeneralThreadRequest
+	5,  // 13: thread.ThreadService.Thread_UnPinThread:input_type -> thread.GeneralThreadRequest
 	4,  // 14: thread.ThreadService.Thread_VoteThread:input_type -> thread.SubmitVote
-	6,  // 15: thread.ThreadService.Thread_ToggleLike:input_type -> thread.GeneralThreadRequest
-	6,  // 16: thread.ThreadService.Thread_ToggleBookmark:input_type -> thread.GeneralThreadRequest
+	5,  // 15: thread.ThreadService.Thread_ToggleLike:input_type -> thread.GeneralThreadRequest
+	5,  // 16: thread.ThreadService.Thread_ToggleBookmark:input_type -> thread.GeneralThreadRequest
 	19, // 17: thread.ThreadService.Thread_ToggleRepost:input_type -> thread.RepostRequest
-	6,  // 18: thread.ThreadService.Thread_ReplyThread:input_type -> thread.GeneralThreadRequest
-	6,  // 19: thread.ThreadService.Thread_DeleteReply:input_type -> thread.GeneralThreadRequest
+	12, // 18: thread.ThreadService.Thread_ReplyThread:input_type -> thread.ReplyThreadRequest
+	5,  // 19: thread.ThreadService.Thread_DeleteReply:input_type -> thread.GeneralThreadRequest
 	3,  // 20: thread.ThreadService.Thread_GetBookmarkedThreads:input_type -> thread.StringThread
 	3,  // 21: thread.ThreadService.Thread_GetRepostedThreads:input_type -> thread.StringThread
-	6,  // 22: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.GeneralThreadRequest
-	6,  // 23: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.GeneralThreadRequest
-	6,  // 24: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.GeneralThreadRequest
-	6,  // 25: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.GeneralThreadRequest
+	5,  // 22: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.GeneralThreadRequest
+	5,  // 23: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.GeneralThreadRequest
+	5,  // 24: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.GeneralThreadRequest
+	5,  // 25: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.GeneralThreadRequest
 	0,  // 26: thread.ThreadService.Thread_GetAllThreads:output_type -> thread.ApiResponseThread
 	0,  // 27: thread.ThreadService.Thread_GetFollowingThreads:output_type -> thread.ApiResponseThread
 	0,  // 28: thread.ThreadService.Thread_GetThreadById:output_type -> thread.ApiResponseThread

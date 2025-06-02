@@ -58,7 +58,7 @@ type ThreadServiceClient interface {
 	Thread_ToggleLike(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_ToggleBookmark(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_ToggleRepost(ctx context.Context, in *RepostRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_ReplyThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_ReplyThread(ctx context.Context, in *ReplyThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_DeleteReply(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -196,7 +196,7 @@ func (c *threadServiceClient) Thread_ToggleRepost(ctx context.Context, in *Repos
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_ReplyThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_ReplyThread(ctx context.Context, in *ReplyThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_ReplyThread_FullMethodName, in, out, cOpts...)
@@ -293,7 +293,7 @@ type ThreadServiceServer interface {
 	Thread_ToggleLike(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_ToggleBookmark(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_ToggleRepost(context.Context, *RepostRequest) (*ApiResponseThread, error)
-	Thread_ReplyThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
+	Thread_ReplyThread(context.Context, *ReplyThreadRequest) (*ApiResponseThread, error)
 	Thread_DeleteReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
@@ -347,7 +347,7 @@ func (UnimplementedThreadServiceServer) Thread_ToggleBookmark(context.Context, *
 func (UnimplementedThreadServiceServer) Thread_ToggleRepost(context.Context, *RepostRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_ToggleRepost not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_ReplyThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_ReplyThread(context.Context, *ReplyThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_ReplyThread not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_DeleteReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
@@ -609,7 +609,7 @@ func _ThreadService_Thread_ToggleRepost_Handler(srv interface{}, ctx context.Con
 }
 
 func _ThreadService_Thread_ReplyThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GeneralThreadRequest)
+	in := new(ReplyThreadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -621,7 +621,7 @@ func _ThreadService_Thread_ReplyThread_Handler(srv interface{}, ctx context.Cont
 		FullMethod: ThreadService_Thread_ReplyThread_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_ReplyThread(ctx, req.(*GeneralThreadRequest))
+		return srv.(ThreadServiceServer).Thread_ReplyThread(ctx, req.(*ReplyThreadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
