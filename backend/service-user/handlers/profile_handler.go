@@ -71,6 +71,12 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 	}
 
 	bio := safeString(user.Bio)
+	isPrivate := false
+	if user.IsPrivate && req.RequesterId != user.UserId {
+		if !h.IsUserFollowing(ctx, req.RequesterId, user.UserId) {
+			isPrivate = true
+		}
+	}
 
 	userData := &pb.UserProfile{
 		UserId:     user.UserId,
@@ -81,6 +87,7 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		Followers:  int32(followers),
 		Following:  int32(following),
 		JoinDate:   user.JoinedAt.Format("2006-01-02"),
+		IsPrivate:  isPrivate,
 	}
 
 	zap.L().Info(user.JoinedAt.Format("2006-01-02"))

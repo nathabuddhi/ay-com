@@ -183,6 +183,7 @@ type UserProfile struct {
 	Gender        string                 `protobuf:"bytes,9,opt,name=gender,proto3" json:"gender,omitempty"`
 	Email         string                 `protobuf:"bytes,10,opt,name=email,proto3" json:"email,omitempty"`
 	JoinDate      string                 `protobuf:"bytes,11,opt,name=join_date,json=joinDate,proto3" json:"join_date,omitempty"`
+	IsPrivate     bool                   `protobuf:"varint,12,opt,name=is_private,json=isPrivate,proto3" json:"is_private,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -292,6 +293,13 @@ func (x *UserProfile) GetJoinDate() string {
 		return x.JoinDate
 	}
 	return ""
+}
+
+func (x *UserProfile) GetIsPrivate() bool {
+	if x != nil {
+		return x.IsPrivate
+	}
+	return false
 }
 
 type GetProfileRequest struct {
@@ -2200,7 +2208,7 @@ const file_user_proto_rawDesc = "" +
 	"StringUser\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\" \n" +
 	"\bBoolUser\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\bR\x05value\"\xb4\x02\n" +
+	"\x05value\x18\x01 \x01(\bR\x05value\"\xd3\x02\n" +
 	"\vUserProfile\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
@@ -2214,7 +2222,9 @@ const file_user_proto_rawDesc = "" +
 	"\x06gender\x18\t \x01(\tR\x06gender\x12\x14\n" +
 	"\x05email\x18\n" +
 	" \x01(\tR\x05email\x12\x1b\n" +
-	"\tjoin_date\x18\v \x01(\tR\bjoinDate\"O\n" +
+	"\tjoin_date\x18\v \x01(\tR\bjoinDate\x12\x1d\n" +
+	"\n" +
+	"is_private\x18\f \x01(\bR\tisPrivate\"O\n" +
 	"\x11GetProfileRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
 	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"\x97\x03\n" +

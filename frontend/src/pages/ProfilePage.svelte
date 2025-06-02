@@ -11,8 +11,15 @@
     } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import { navigate } from "svelte-routing";
-    import { BadgeCheck, Calendar, X } from "@lucide/svelte";
+    import { BadgeCheck, Calendar, Pin, X } from "@lucide/svelte";
     import type { Thread } from "../types/thread";
+    import {
+        getForYouThreads,
+        getUserLikedThreads,
+        getUserMediaThreads,
+        getUserReplies,
+        getUserThreads,
+    } from "../controllers/thread-controller";
 
     let user = $state<UserProfile>({
         name: "loading",
@@ -26,6 +33,7 @@
         date_of_birth: "",
         email: "",
         join_date: "",
+        is_private: false,
     });
     let posts = $state<Thread[]>([]);
     let replies = $state<Thread[]>([]);
@@ -33,7 +41,7 @@
     let media = $state<Thread[]>([]);
 
     let tabs = $state<string[]>([]);
-    let activeTab = $state("Posts");
+    let activeTab = $state("");
 
     let showImagePreviewModal = $state(false);
     let previewImageUrl = $state("");
@@ -88,6 +96,7 @@
 
         if (response.success) {
             addToast("success", "Unfollowed successfully!", "Success!");
+            window.location.reload();
         } else {
             addToast("error", response.message, "Error!");
         }
@@ -98,8 +107,45 @@
 
         if (response.success) {
             addToast("success", "Followed successfully!", "Success!");
+            window.location.reload();
         } else {
             addToast("error", response.message, "Error!");
+        }
+    }
+
+    async function fetchUserPosts() {
+        const response = await getForYouThreads();
+        if (response.success && response.payload) {
+            posts = response.payload.threads || [];
+        } else {
+            addToast("error", "Error fetching user posts", "Error!");
+        }
+    }
+
+    async function fetchUserReplies() {
+        const response = await getUserReplies(user.user_id);
+        if (response.success && response.payload) {
+            posts = response.payload.threads || [];
+        } else {
+            addToast("error", "Error fetching user replies", "Error!");
+        }
+    }
+
+    async function fetchUserMedia() {
+        const response = await getUserMediaThreads(user.user_id);
+        if (response.success && response.payload) {
+            posts = response.payload.threads || [];
+        } else {
+            addToast("error", "Error fetching user media", "Error!");
+        }
+    }
+
+    async function fetchUserLikes() {
+        const response = await getUserLikedThreads();
+        if (response.success && response.payload) {
+            posts = response.payload.threads || [];
+        } else {
+            addToast("error", "Error fetching user likes", "Error!");
         }
     }
 
@@ -107,8 +153,19 @@
         await loadProfile();
         if (user.user_id === localStorage.getItem("user_id")) {
             tabs = ["Posts", "Replies", "Likes", "Media"];
+            activeTab = "Posts";
+            await fetchUserPosts();
+            await fetchUserReplies();
+            await fetchUserMedia();
+            await fetchUserLikes();
+        } else if (user.is_private) {
+            tabs = [];
         } else {
             tabs = ["Posts", "Replies", "Media"];
+            activeTab = "Posts";
+            await fetchUserPosts();
+            await fetchUserReplies();
+            await fetchUserMedia();
         }
     });
 
@@ -254,8 +311,13 @@
             {/each}
         </div>
 
-        <!-- <div class="profile-content">
-            {#if activeTab === "Posts"}
+        <div class="profile-content">
+            {#if user.is_private}
+                <p class="empty-state">
+                    This account is private, please follow them first to view
+                    their posts.
+                </p>
+            {:else if activeTab === "Posts"}
                 <div class="posts-container">
                     {#if posts.length === 0}
                         <div class="empty-state">No posts yet</div>
@@ -265,53 +327,15 @@
                                 <div class="post-header">
                                     <div class="post-user-info">
                                         <span class="post-pinned">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <path d="M12 2L12 12"></path>
-                                                <path d="M12 22L12 12"></path>
-                                                <path d="M4.93 10.93L19.07 10.93"
-                                                ></path>
-                                                <path d="M4.93 13.07L19.07 13.07"
-                                                ></path>
-                                            </svg>
+                                            <Pin />
                                             Pinned
                                         </span>
-                                    </div>
-                                    <div class="post-actions-dropdown">
-                                        <button class="post-more-options">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <circle cx="12" cy="12" r="1"
-                                                ></circle>
-                                                <circle cx="12" cy="5" r="1"
-                                                ></circle>
-                                                <circle cx="12" cy="19" r="1"
-                                                ></circle>
-                                            </svg>
-                                        </button>
                                     </div>
                                 </div>
                                 <div
                                     class="post-content"
-                                    on:click={() => navigateToThread(post.thread_id)}
+                                    onclick={() =>
+                                        navigateToThread(post.thread_id)}
                                 >
                                     <Post {post} />
                                 </div>
@@ -322,31 +346,10 @@
                             <div class="post-item">
                                 <div
                                     class="post-content"
-                                    on:click={() => navigateToThread(post.thread_id)}
+                                    onclick={() =>
+                                        navigateToThread(post.thread_id)}
                                 >
                                     <Post {post} />
-                                </div>
-                                <div class="post-actions-dropdown">
-                                    <button
-                                        class="post-more-options"
-                                        on:click={() => pinItem("post", post.thread_id)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <circle cx="12" cy="12" r="1"></circle>
-                                            <circle cx="12" cy="5" r="1"></circle>
-                                            <circle cx="12" cy="19" r="1"></circle>
-                                        </svg>
-                                    </button>
                                 </div>
                             </div>
                         {/each}
@@ -355,97 +358,16 @@
             {:else if activeTab === "Replies"}
                 <div class="replies-container">
                     {#if replies.length === 0}
-                        <div class="empty-state">No replies yet</div>
+                        <div class="empty-state">No replies yet.</div>
                     {:else}
-                        {#each replies.filter((reply) => reply.isPinned) as reply (reply.id)}
-                            <div class="reply-item">
-                                <div class="post-header">
-                                    <div class="post-user-info">
-                                        <span class="post-pinned">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <path d="M12 2L12 12"></path>
-                                                <path d="M12 22L12 12"></path>
-                                                <path d="M4.93 10.93L19.07 10.93"
-                                                ></path>
-                                                <path d="M4.93 13.07L19.07 13.07"
-                                                ></path>
-                                            </svg>
-                                            Pinned
-                                        </span>
-                                    </div>
-                                    <div class="post-actions-dropdown">
-                                        <button class="post-more-options">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <circle cx="12" cy="12" r="1"
-                                                ></circle>
-                                                <circle cx="12" cy="5" r="1"
-                                                ></circle>
-                                                <circle cx="12" cy="19" r="1"
-                                                ></circle>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
+                        {#each replies as post (post.thread_id)}
+                            <div class="post-item">
                                 <div
-                                    class="reply-content"
-                                    on:click={() =>
-                                        navigateToThread(reply.parentPostId)}
+                                    class="post-content"
+                                    onclick={() =>
+                                        navigateToThread(post.thread_id)}
                                 >
-                                    <Post post={reply} />
-                                </div>
-                            </div>
-                        {/each}
-
-                        {#each replies.filter((reply) => !reply.isPinned) as reply (reply.id)}
-                            <div class="reply-item">
-                                <div
-                                    class="reply-content"
-                                    on:click={() =>
-                                        navigateToThread(reply.parentPostId)}
-                                >
-                                    <Post post={reply} />
-                                </div>
-                                <div class="post-actions-dropdown">
-                                    <button
-                                        class="post-more-options"
-                                        on:click={() => pinItem("reply", reply.id)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <circle cx="12" cy="12" r="1"></circle>
-                                            <circle cx="12" cy="5" r="1"></circle>
-                                            <circle cx="12" cy="19" r="1"></circle>
-                                        </svg>
-                                    </button>
+                                    <Post {post} />
                                 </div>
                             </div>
                         {/each}
@@ -453,14 +375,15 @@
                 </div>
             {:else if activeTab === "Likes"}
                 <div class="likes-container">
-                    {#if likedPosts.length === 0}
-                        <div class="empty-state">No likes yet</div>
+                    {#if likes.length === 0}
+                        <div class="empty-state">No likes yet.</div>
                     {:else}
-                        {#each likedPosts as post (post.thread_id)}
+                        {#each likes as post (post.thread_id)}
                             <div class="post-item">
                                 <div
                                     class="post-content"
-                                    on:click={() => navigateToThread(post.thread_id)}
+                                    onclick={() =>
+                                        navigateToThread(post.thread_id)}
                                 >
                                     <Post {post} />
                                 </div>
@@ -469,19 +392,21 @@
                     {/if}
                 </div>
             {:else if activeTab === "Media"}
-                <div class="media-container">
-                    {#if mediaItems.length === 0}
+                <!-- <div class="media-container">
+                    {#if media.length === 0}
                         <div class="empty-state">No media yet</div>
                     {:else}
                         <div class="media-grid">
-                            {#each mediaItems as media (media.id)}
+                            {#each media as media (media.thread_id)}
                                 <div
                                     class="media-item"
-                                    on:click={() => navigateToThread(media.postId)}
+                                    onclick={() =>
+                                        navigateToThread(media.thread_id)}
                                 >
                                     {#if media.type === "image" || media.type === "gif"}
                                         <img
-                                            src={media.url || "/placeholder.svg"}
+                                            src={media. ||
+                                                "/placeholder.svg"}
                                             alt="Media content"
                                         />
                                     {:else if media.type === "video"}
@@ -499,7 +424,8 @@
                                                 stroke-linecap="round"
                                                 stroke-linejoin="round"
                                             >
-                                                <polygon points="5 3 19 12 5 21 5 3"
+                                                <polygon
+                                                    points="5 3 19 12 5 21 5 3"
                                                 ></polygon>
                                             </svg>
                                         </div>
@@ -508,9 +434,9 @@
                             {/each}
                         </div>
                     {/if}
-                </div>
+                </div> -->
             {/if}
-        </div> -->
+        </div>
 
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         {#if showImagePreviewModal}

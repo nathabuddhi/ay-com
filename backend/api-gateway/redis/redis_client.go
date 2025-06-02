@@ -37,7 +37,7 @@ func GetCache(key string) interface{} {
 			zap.L().Error("Failed to unmarshal cached JSON", zap.String("key", value), zap.Error(err))
 			return nil
 		}
-		zap.L().Info("User profile fetched from Redis", zap.Any("payload", payload))
+		zap.L().Info("Data fetched from Redis", zap.Any("payload", payload))
 		return payload
 	}
 	return nil

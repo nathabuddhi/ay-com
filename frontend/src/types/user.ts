@@ -24,6 +24,7 @@ export interface UserProfile {
     date_of_birth: string;
     email: string;
     join_date: string;
+    is_private: boolean;
 }
 
 export interface LoginResponse {

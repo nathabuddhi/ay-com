@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { formatDistanceToNow } from "date-fns";
     import {
         BadgeCheck,
-        Share,
         MessageCircleMore,
         Repeat2,
         Heart,
@@ -148,6 +146,12 @@
         }
     });
 
+    function redirectToThreadDetail() {
+        if (window.location.pathname.includes("thread")) return;
+
+        window.location.href = `/thread/${post.thread_id}`;
+    }
+
     function formatNumber(num: number): string {
         if (num >= 1000000) {
             return (num / 1000000).toFixed(1) + "M";
@@ -170,6 +174,8 @@
         <img src={`${AVATAR_IMG}/${post.user_id}.png`} alt={post.user_id} />
     </div>
 
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="post-content">
         <div class="post-header">
             <div class="post-user-info">
@@ -237,7 +243,10 @@
                 <span>{formatNumber(post.like_count ?? 0)}</span>
             </button>
 
-            <button class="post-action comment">
+            <button
+                class="post-action comment"
+                onclick={redirectToThreadDetail}
+            >
                 <MessageCircleMore />
                 <span>{formatNumber(post.reply_count ?? 0)}</span>
             </button>

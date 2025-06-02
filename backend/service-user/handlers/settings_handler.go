@@ -7,6 +7,7 @@ import (
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
+	"gorm.io/gorm"
 )
 
 func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequest) (*pb.ApiResponseUser, error) {
@@ -14,7 +15,7 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 
 	var userSettings models.UserSetting
 	err := h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&userSettings).Error
-	if err != nil && err.Error() == "record not found" {
+	if err != nil && err == gorm.ErrRecordNotFound {
 		userSettings = models.UserSetting{
 			UserId:    req.UserId,
 			FontSize:  "medium",
@@ -30,10 +31,20 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 			}, nil
 		}
 
+		var user models.User
+		err = h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
+		if err != nil {
+			return &pb.ApiResponseUser{
+				Success: false,
+				Message: "An error occurred while creating user settings: " + err.Error(),
+				Data:    nil,
+			}, nil
+		}
+
 		userSettingsReturn := &pb.UserSettings{
-			FontSize:        "medium",
-			FontColor:       "black",
-			Private:       true,
+			FontSize:  "medium",
+			FontColor: "black",
+			Private:   false,
 		}
 
 		returnData, err := anypb.New(userSettingsReturn)
@@ -52,9 +63,19 @@ func (h *Handlers) User_GetSettings(ctx context.Context, req *pb.GetSettingsRequ
 		}, nil
 	}
 
+	var user models.User
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occurred while fetching user settings: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
 	userSettingsReturn := &pb.UserSettings{
 		FontSize:  userSettings.FontSize,
 		FontColor: userSettings.FontColor,
+		Private:   user.IsPrivate,
 	}
 
 	returnData, err := anypb.New(userSettingsReturn)
@@ -105,6 +126,25 @@ func (h *Handlers) User_UpdateSettings(ctx context.Context, req *pb.UpdateSettin
 				Data:    nil,
 			}, nil
 		}
+	}
+
+	var user models.User
+	err = h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occurred while updating user settings: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+	user.IsPrivate = req.Private
+	err = h.DB.WithContext(ctx).Save(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occurred while updating user settings: " + err.Error(),
+			Data:    nil,
+		}, nil
 	}
 
 	return &pb.ApiResponseUser{

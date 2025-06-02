@@ -70,6 +70,7 @@ message UserProfile {
     string gender = 9;
     string email = 10;
     string join_date = 11;
+    bool is_private = 12;
 }
 
 message GetProfileRequest {
