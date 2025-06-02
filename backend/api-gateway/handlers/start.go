@@ -81,6 +81,7 @@ func InitSecuredNotificationRoutes(secured *mux.Router) {
 func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getallthreads", Thread_GetAllThreads).Methods("POST")
 	secured.HandleFunc("/thread/create", Thread_CreateThread).Methods("POST")
+	secured.HandleFunc("/thread/get/{id}", Thread_GetThreadById).Methods("GET")
 
 	secured.HandleFunc("/thread/search", Thread_SearchThreads).Methods("POST")
 	secured.HandleFunc("/thread/delete", Thread_DeleteThread).Methods("DELETE")

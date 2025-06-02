@@ -29,9 +29,14 @@ type Media struct {
 }
 
 type PollOption struct {
-	ThreadId  string `gorm:"type:char(36);not null;primaryKey"`
-	Option    string `gorm:"type:varchar(255);not null;primaryKey"`
-	VoteCount int    `gorm:"default:0"`
+	ThreadId string `gorm:"type:char(36);not null;primaryKey"`
+	Option   string `gorm:"type:varchar(255);not null;primaryKey"`
+}
+
+type PollVote struct {
+	ThreadId string `gorm:"type:char(36);not null;primaryKey"`
+	Option   string `gorm:"type:varchar(255);not null"`
+	UserId   string `gorm:"type:char(36);not null;primaryKey"`
 }
 
 type ThreadLike struct {

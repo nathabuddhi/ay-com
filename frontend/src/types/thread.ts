@@ -10,6 +10,11 @@ export interface ThreadResponse {
     threads: Thread[];
 }
 
+export interface ThreadDetailResponse {
+    thread: Thread;
+    replies: ThreadReply[];
+}
+
 export interface Thread {
     thread_id: string;
     user_id: string;
@@ -39,6 +44,7 @@ export interface Media {
 export interface PollOption {
     option: string;
     vote_count: number;
+    is_voting: boolean;
 }
 
 export interface ThreadLike {
@@ -57,4 +63,5 @@ export interface ThreadReply {
     user_id: string;
     content: string;
     is_pinned: boolean;
+    created_at: string;
 }

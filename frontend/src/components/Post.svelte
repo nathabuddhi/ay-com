@@ -14,6 +14,7 @@
         toggleBookmark,
         toggleLike,
         toggleRepost,
+        voteThreadPoll,
     } from "../controllers/thread-controller";
     import { AVATAR_IMG, THREAD_IMG } from "../env_var";
     import { addToast } from "../stores/toast-wrapper";
@@ -22,7 +23,43 @@
 
     let { post }: { post: Thread } = $props<{ post: Thread }>();
 
-    async function handleVoteClick(poll: string) {}
+    async function handleVoteClick(poll: string) {
+        const response = await voteThreadPoll(post.thread_id, poll);
+
+        if (response.success) {
+            post.poll_options = post.poll_options.map((option) => {
+                if (option.option === poll) {
+                    if (!option.is_voting)
+                        return {
+                            option: option.option,
+                            vote_count: option.vote_count
+                                ? option.vote_count + 1
+                                : 1,
+                            is_voting: true,
+                        };
+                    else
+                        return {
+                            option: option.option,
+                            vote_count: (option.vote_count ?? 0) - 1,
+                            is_voting: false,
+                        };
+                }
+                return {
+                    option: option.option,
+                    vote_count: option.is_voting
+                        ? option.vote_count - 1
+                        : option.vote_count,
+                    is_voting: false,
+                };
+            });
+        } else {
+            addToast(
+                "error",
+                "Failed voting on poll: " + response.message,
+                "Error!"
+            );
+        }
+    }
 
     async function handleLikeClick() {
         if (post.is_liking) {
@@ -122,6 +159,7 @@
         date_of_birth: "",
         email: "",
         join_date: "",
+        is_private: false,
     });
 
     onMount(async () => {
@@ -142,6 +180,7 @@
                 date_of_birth: "",
                 email: "",
                 join_date: "",
+                is_private: false,
             };
         }
     });
@@ -225,10 +264,10 @@
             <div class="post-polls">
                 {#each post.poll_options as poll, i}
                     <button
-                        class="poll-container"
+                        class={`poll-container ${poll.is_voting ? "active" : ""}`}
                         onclick={() => handleVoteClick(poll.option)}
                     >
-                        <span class="poll-option">{poll.option}</span>
+                        <span class={`poll-option`}>{poll.option}</span>
                         <span class="poll-votes"
                             >{poll.vote_count ?? 0} votes</span
                         >

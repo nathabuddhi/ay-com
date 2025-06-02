@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/nathabuddhi/ay-com/backend/service-thread/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-thread/proto/thread"
+	"github.com/nathabuddhi/ay-com/backend/service-thread/rabbitmq"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gorm.io/gorm"
@@ -48,12 +50,12 @@ func (h *Handler) processThreadResponse(ctx context.Context, thread models.Threa
 
 	media, err := h.getMedia(ctx, thread.ThreadId)
 	if err != nil {
-		return pb.Thread{}, fmt.Errorf("Failed to fetch media.")
+		return pb.Thread{}, fmt.Errorf("failed to fetch media")
 	}
 
-	pollOptions, err := h.getPollOptions(ctx, thread.ThreadId)
+	pollOptions, err := h.getPollOptions(ctx, thread.ThreadId, requesterId)
 	if err != nil {
-		return pb.Thread{}, fmt.Errorf("Failed to fetch poll options.")
+		return pb.Thread{}, fmt.Errorf("failed to fetch poll options")
 	}
 
 	isUserLikingThread := h.IsUserLikingThread(thread.ThreadId, requesterId)
@@ -177,9 +179,8 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 
 	for _, opt := range req.PollOptions {
 		poll := models.PollOption{
-			ThreadId:  generatedId,
-			Option:    opt,
-			VoteCount: 0,
+			ThreadId: generatedId,
+			Option:   opt,
 		}
 		h.DB.WithContext(ctx).Create(&poll)
 	}
@@ -187,5 +188,67 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 	return &pb.ApiResponseThread{
 		Success: true,
 		Message: "Thread created successfully",
+	}, nil
+}
+
+func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Getting thread by ID", zap.String("thread_id", req.Value))
+
+	var thread models.Thread
+	err := h.DB.WithContext(ctx).Where("thread_id = ?", req.Value).First(&thread).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: false, Message: "Thread not found."}, nil
+		}
+		return &pb.ApiResponseThread{Success: false, Message: "An error occurred: " + err.Error()}, nil
+	}
+
+	threadResponse, err := h.processThreadResponse(ctx, thread, req.Value)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+		}, nil
+	}
+
+	var comments []models.ThreadReply
+	err = h.DB.WithContext(ctx).Where("thread_id = ?", req.Value).Order("created_at asc").Find(&comments).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return &pb.ApiResponseThread{Success: false, Message: "Failed to fetch comments"}, nil
+	}
+
+	var commentResponses []*pb.ThreadReply
+	for _, comment := range comments {
+		commentResponses = append(commentResponses, &pb.ThreadReply{
+			Id:       comment.Id,
+			UserId:   comment.UserID,
+			Content:  comment.Content,
+			IsPinned: false,
+		})
+	}
+
+	getThreadResponse := &pb.GetThreadDetailResponse{
+		Thread:  &threadResponse,
+		Replies: commentResponses,
+	}
+
+	redisData, err := json.Marshal(getThreadResponse)
+	if err == nil {
+		rabbitmq.PublishSetRedis("getthread/"+thread.ThreadId, string(redisData))
+	}
+
+	returnData, err := anypb.New(getThreadResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get thread by ID successful.",
+		Data:    returnData,
 	}, nil
 }

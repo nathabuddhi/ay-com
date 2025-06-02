@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/thread"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
@@ -91,6 +92,20 @@ func processThreadRequest[T any](r *http.Request, w http.ResponseWriter) (resp *
 		returnErrorResponse(w, "Failed to encode API request: "+err.Error())
 	}
 	return &req, client
+}
+
+func Thread_GetThreadById(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetThreadById) is called.")
+	vars := mux.Vars(r)
+	threadId := vars["id"]
+	if !checkRedisData("getthread/"+threadId, w) {
+		req, client := processThreadRequest[pb.StringThread](r, w)
+		req.Value = threadId
+		ctx, cancel := createContext()
+		defer cancel()
+		resp, err := client.Thread_GetThreadById(ctx, req)
+		processThreadResponseWithPayload[pb.GetThreadDetailResponse](resp, err, w)
+	}
 }
 
 func Thread_CreateThread(w http.ResponseWriter, r *http.Request) {

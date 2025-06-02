@@ -1,6 +1,9 @@
 import { API_URL } from "../env_var";
 import type { ApiResponse } from "../types/api";
-import type { Thread, ThreadResponse } from "../types/thread";
+import type {
+    ThreadDetailResponse,
+    ThreadResponse,
+} from "../types/thread";
 import { getValidToken } from "./token-controller";
 import { returnDefaultError } from "./user-controller";
 
@@ -44,7 +47,7 @@ export async function getFollowingThreads(): Promise<
 
 export async function getThreadById(
     thread_id: string
-): Promise<ApiResponse<Thread>> {
+): Promise<ApiResponse<ThreadDetailResponse>> {
     try {
         const response = await fetch(`${API_URL}/thread/get/${thread_id}`, {
             method: "GET",
@@ -53,11 +56,11 @@ export async function getThreadById(
                 Authorization: await getValidToken(),
             },
         });
-        const data: ApiResponse<Thread> = await response.json();
+        const data: ApiResponse<ThreadDetailResponse> = await response.json();
 
         return data;
     } catch (error) {
-        return returnDefaultError<Thread>(error);
+        return returnDefaultError<ThreadDetailResponse>(error);
     }
 }
 
@@ -300,7 +303,7 @@ export async function voteThreadPoll(
             },
             body: JSON.stringify({
                 thread_id,
-                option,
+                content: option,
             }),
         });
         const data: ApiResponse<ThreadResponse> = await response.json();

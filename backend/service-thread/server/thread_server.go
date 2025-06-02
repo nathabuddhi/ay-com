@@ -23,6 +23,14 @@ func (s *ThreadServer) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllT
 	return s.Handler.Thread_GetAllThreads(ctx, req)
 }
 
+// func (s *ThreadServer) Thread_GetFollowingThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_GetFollowingThreads(ctx, req)
+// }
+
+func (s *ThreadServer) Thread_GetThreadById(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetThreadById(ctx, req)
+}
+
 func (s *ThreadServer) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_CreateThread(ctx, req)
 }
@@ -39,9 +47,9 @@ func (s *ThreadServer) Thread_CreateThread(ctx context.Context, req *pb.PostThre
 // 	return s.Handler.Thread_PinThread(ctx, req)
 // }
 
-// func (s *ThreadServer) Thread_VoteThread(ctx context.Context, req *pb.SubmitVote) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_VoteThread(ctx, req)
-// }
+func (s *ThreadServer) Thread_VoteThread(ctx context.Context, req *pb.SubmitVote) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_VoteThread(ctx, req)
+}
 
 func (s *ThreadServer) Thread_ToggleLike(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_ToggleLike(ctx, req)

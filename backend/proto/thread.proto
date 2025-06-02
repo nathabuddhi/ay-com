@@ -9,6 +9,8 @@ option go_package = "thread/";
 service ThreadService {
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_GetFollowingThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_GetThreadById (StringThread) returns (ApiResponseThread);
     rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_DeleteThread (DeleteThreadRequest) returns (ApiResponseThread);
 
@@ -45,6 +47,11 @@ message ApiResponseThread {
 message SearchThreadRequest {
     string user_id = 1;
     string query = 2;
+}
+
+message GetThreadDetailResponse {
+    Thread thread = 1;
+    repeated ThreadReply replies = 2;
 }
 
 message StringThread {
@@ -98,6 +105,7 @@ message PollOption {
     string thread_id = 1;
     string option = 2;
     int32 vote_count = 3;
+    bool is_voting = 4;
 }
 
 message ThreadLike {
