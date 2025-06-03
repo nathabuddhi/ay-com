@@ -1,0 +1,86 @@
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# Go
+/vendor/
+*.test
+*.exe
+*.go-cache
+
+# Build outputs
+/dist/
+/build/
+/out/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test files and directories
+test/
+tests/
+*_test.go
+
+# Debug and log files
+debug/
+*.log
+
+# Environment and secrets
+.env*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# Documentation and markdown
+docs/
+*.md
+README*
+
+# Docker files
+Dockerfile*
+docker-compose*
+
+# Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+
+# Miscellaneous
+*.sum
+*.mod
+
+# Exclude lock files from ignore (they should be included)
+!package-lock.json
+
+# Exclude Go module files (they should be included)
+!go.mod
+!go.sum
+
+# Exclude proto files (they should be included)
+!*.proto
+
+# Exclude frontend build config (should be included)
+!tsconfig.app.json
+!svelte.config.js
+!eslint.config.js
+
+# Exclude public assets (should be included)
+!public/
+
+# Exclude source code (should be included)
+!src/

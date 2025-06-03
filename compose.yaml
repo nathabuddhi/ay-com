@@ -1,0 +1,155 @@
+services:
+  go-api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: ../api-gatewayDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - redis
+      - go-service-user
+      - go-service-thread
+      - go-service-media
+      - go-service-notification
+    networks:
+      - backend
+    env_file:
+      - ./backend/api-gateway/.env
+    ports:
+      - "5000:5000"  # HTTP API Gateway
+
+  go-service-media:
+    build:
+      context: ./backend/service-media
+      dockerfile: ../service-mediaDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    env_file:
+      - ./backend/service-media/.env
+    ports:
+      - "5013:5013"  # gRPC Media Service
+
+  go-service-notification:
+    build:
+      context: ./backend/service-notification
+      dockerfile: ../service-notificationDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    env_file:
+      - ./backend/service-notification/.env
+    ports:
+      - "5009:5009"  # gRPC Notification Service
+
+  go-service-thread:
+    build:
+      context: ./backend/service-thread
+      dockerfile: ../service-threadDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    env_file:
+      - ./backend/service-thread/.env
+    ports:
+      - "5002:5002"  # gRPC Thread Service
+
+  go-service-user:
+    build:
+      context: ./backend/service-user
+      dockerfile: ../service-userDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    env_file:
+      - ./backend/service-user/.env
+    ports:
+      - "5001:5001"  # gRPC User Service
+
+  go-util-email:
+    build:
+      context: ./backend/util-email
+      dockerfile: ../util-emailDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+    env_file:
+      - ./backend/util-email/.env
+
+  go-util-redis:
+    build:
+      context: ./backend/util-redis
+      dockerfile: ../util-redisDockerfile
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - redis
+    networks:
+      - backend
+    env_file:
+      - ./backend/util-redis/.env
+
+  ts-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../frontendDockerfile
+    restart: unless-stopped
+    init: true
+    networks:
+      - backend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "5173:5173"  # Svelte Vite Preview
+
+  rabbitmq:
+    image: rabbitmq:latest
+    restart: unless-stopped
+    networks:
+      - backend
+    ports:
+      - "5672:5672"    # RabbitMQ AMQP
+      - "15672:15672"  # RabbitMQ Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Uncomment the following to persist RabbitMQ data
+    # volumes:
+    #   - rabbitmq-data:/var/lib/rabbitmq
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    networks:
+      - backend
+    ports:
+      - "6379:6379"  # Redis default port
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Uncomment the following to persist Redis data
+    # volumes:
+    #   - redis-data:/data
+
+# Uncomment the following if you want to persist data for RabbitMQ and Redis
+#volumes:
+#  rabbitmq-data:
+#  redis-data:
+
+networks:
+  backend:
+    driver: bridge
