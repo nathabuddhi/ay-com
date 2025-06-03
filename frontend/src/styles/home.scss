@@ -43,6 +43,33 @@ $tablet: 768px;
         .reply-content {
             flex: 1;
 
+            .reply-text-container {
+                display: flex;
+                justify-content: space-between;
+
+                .reply-text {
+                    margin-top: 0.25rem;
+                    color: var(--text);
+                    font-size: 1rem;
+                }
+
+                .pin-button {
+                    background: var(--primary);
+                    color: var(--text);
+                    border: none;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 10%;
+                }
+
+                .delete-button {
+                    background: red;
+                    color: var(--text);
+                    border: none;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 10%;
+                }
+            }
+
             .reply-header {
                 display: flex;
                 align-items: center;
@@ -70,12 +97,6 @@ $tablet: 768px;
                     height: 16px;
                     color: #3b82f6;
                 }
-            }
-
-            .reply-text {
-                margin-top: 0.25rem;
-                color: var(--text);
-                font-size: 1rem;
             }
         }
     }

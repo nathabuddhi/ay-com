@@ -9,7 +9,7 @@
     import { addToast } from "../stores/toast-wrapper";
     import { AVATAR_IMG } from "../env_var";
     import type { UserProfile } from "../types/user";
-    import { getProfile, getUserById } from "../controllers/user-controller";
+    import { getUserById } from "../controllers/user-controller";
     import { BadgeCheck } from "@lucide/svelte";
 
     let post: Thread = $state<Thread>({
@@ -77,6 +77,28 @@
         addToast("success", "Reply added successfully!", "Reply Success");
         window.location.reload();
     }
+
+    async function handlePinClick(reply: ThreadReply) {
+        const response = await pinReply(replyId);
+
+        if (!response.success) {
+            addToast("error", response.message, "Error pinning reply!");
+            return;
+        }
+        addToast("success", "Reply pinned successfully!", "Pin Success");
+        window.location.reload();
+    }
+
+    async function handleDeleteClick(replyId: string) {
+        const response = await deleteReply(replyId);
+
+        if (!response.success) {
+            addToast("error", response.message, "Error deleting reply!");
+            return;
+        }
+        addToast("success", "Reply deleted successfully!", "Delete Success");
+        window.location.reload();
+    }
 </script>
 
 {#if post.thread_id === ""}
@@ -108,7 +130,27 @@
                         >
                         <span class="reply-time">{reply.timestamp}</span>
                     </div>
-                    <div class="reply-text">{reply.content}</div>
+                    <div class="reply-text-container">
+                        <div class="reply-text">{reply.content}</div>
+                        <div>
+                            {#if localStorage.getItem("user_id") === post.user_id}
+                                <button
+                                    class="pin-button"
+                                    onclick={() => {
+                                        handlePinClick(reply);
+                                    }}
+                                    >{reply.is_pinned ? "Unpin" : "Pin"}</button
+                                >
+                            {/if}
+                            {#if localStorage.getItem("user_id") === post.user_id || localStorage.getItem("user_id") === reply.user_id}
+                                <button
+                                    class="delete-button"
+                                    onclick={() => {
+                                        handleDeleteClick(reply.id);
+                                    }}>Delete</button
+                                >{/if}
+                        </div>
+                    </div>
                 </div>
             </div>
         {/each}
