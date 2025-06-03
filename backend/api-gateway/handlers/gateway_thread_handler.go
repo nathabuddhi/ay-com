@@ -236,7 +236,7 @@ func Thread_SearchThreads(w http.ResponseWriter, r *http.Request) {
 func Thread_DeleteThread(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (DeleteThread) is called.")
 
-	req, client := processThreadRequest[pb.DeleteThreadRequest](r, w)
+	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
@@ -246,7 +246,7 @@ func Thread_DeleteThread(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithoutPayload(resp, err, w)
 }
 
-func Thread_PinThread(w http.ResponseWriter, r *http.Request) {
+func Thread_TogglePinThread(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (PinThread) is called.")
 
 	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
@@ -255,7 +255,20 @@ func Thread_PinThread(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := createContext()
 	defer cancel()
 
-	resp, err := client.Thread_PinThread(ctx, req)
+	resp, err := client.Thread_TogglePinThread(ctx, req)
+	processThreadResponseWithoutPayload(resp, err, w)
+}
+
+func Thread_TogglePinReply(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (PinReply) is called.")
+
+	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_TogglePinReply(ctx, req)
 	processThreadResponseWithoutPayload(resp, err, w)
 }
 

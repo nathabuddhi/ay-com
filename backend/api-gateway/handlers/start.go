@@ -86,7 +86,8 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/search", Thread_SearchThreads).Methods("POST")
 	secured.HandleFunc("/thread/delete", Thread_DeleteThread).Methods("DELETE")
 
-	secured.HandleFunc("/thread/pin", Thread_PinThread).Methods("POST")
+	secured.HandleFunc("/thread/pinthread", Thread_TogglePinThread).Methods("POST")
+	secured.HandleFunc("/thread/pinreply", Thread_TogglePinReply).Methods("POST")
 
 	secured.HandleFunc("/thread/vote", Thread_VoteThread).Methods("POST")
 

@@ -55,7 +55,7 @@ func (h *Handler) Thread_ToggleLike(ctx context.Context, req *pb.GeneralThreadRe
 		return &pb.ApiResponseThread{Success: true, Message: "Thread liked successfully."}, nil
 	}
 
-	return &pb.ApiResponseThread{Success: false, Message: "Unknown error occurred."}, nil
+	return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
 }
 
 func (h *Handler) getLikeCount(ctx context.Context, threadId string) int {

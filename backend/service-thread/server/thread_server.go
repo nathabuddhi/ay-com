@@ -39,13 +39,21 @@ func (s *ThreadServer) Thread_CreateThread(ctx context.Context, req *pb.PostThre
 // 	return s.Handler.Thread_SearchThreads(ctx, req)
 // }
 
-// func (s *ThreadServer) Thread_DeleteThread(ctx context.Context, req *pb.DeleteThreadRequest) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_DeleteThread(ctx, req)
-// }
+func (s *ThreadServer) Thread_DeleteThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_DeleteThread(ctx, req)
+}
 
-// func (s *ThreadServer) Thread_PinThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_PinThread(ctx, req)
-// }
+func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_DeleteThread(ctx, req)
+}
+
+func (s *ThreadServer) Thread_TogglePinThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_TogglePinThread(ctx, req)
+}
+
+func (s *ThreadServer) Thread_TogglePinReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_TogglePinReply(ctx, req)
+}
 
 func (s *ThreadServer) Thread_VoteThread(ctx context.Context, req *pb.SubmitVote) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_VoteThread(ctx, req)
@@ -74,6 +82,22 @@ func (s *ThreadServer) Thread_GetRepostedThreads(ctx context.Context, req *pb.St
 func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.ReplyThreadRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_ReplyThread(ctx, req)
 }
+
+func (s *ThreadServer) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequeqst) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetUserThreads(ctx, req)
+}
+
+// func (s *ThreadServer) Thread_GetUserLikedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_GetUserLikedThreads(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_GetUserMediaThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_GetUserMediaThreads(ctx, req)
+// }
+
+// func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+// 	return s.Handler.Thread_GetUserReplies(ctx, req)
+// }
 
 // func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 // 	return s.Handler.Thread_DeleteReply(ctx, req)

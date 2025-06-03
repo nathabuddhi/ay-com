@@ -12,18 +12,18 @@ service ThreadService {
     rpc Thread_GetFollowingThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_GetThreadById (StringThread) returns (ApiResponseThread);
     rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
-    rpc Thread_DeleteThread (DeleteThreadRequest) returns (ApiResponseThread);
+    rpc Thread_DeleteThread (GeneralThreadRequest) returns (ApiResponseThread);
 
     rpc Thread_CreateThread (PostThread) returns (ApiResponseThread);
-    rpc Thread_PinThread (GeneralThreadRequest) returns (ApiResponseThread);
-    rpc Thread_UnPinThread (GeneralThreadRequest) returns (ApiResponseThread);
-
+    rpc Thread_TogglePinThread (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_TogglePinReply (GeneralThreadRequest) returns (ApiResponseThread);
+    
     rpc Thread_VoteThread (SubmitVote) returns (ApiResponseThread);
-
+    
     rpc Thread_ToggleLike (GeneralThreadRequest) returns (ApiResponseThread);
-
+    
     rpc Thread_ToggleBookmark (GeneralThreadRequest) returns (ApiResponseThread);
-
+    
     rpc Thread_ToggleRepost (RepostRequest) returns (ApiResponseThread);
 
     rpc Thread_ReplyThread (ReplyThreadRequest) returns (ApiResponseThread);
@@ -32,10 +32,10 @@ service ThreadService {
     rpc Thread_GetBookmarkedThreads (StringThread) returns (ApiResponseThread);
     rpc Thread_GetRepostedThreads (StringThread) returns (ApiResponseThread);
 
-    rpc Thread_GetUserThreads (GeneralThreadRequest) returns (ApiResponseThread);
-    rpc Thread_GetUserLikedThreads (GeneralThreadRequest) returns (ApiResponseThread);
-    rpc Thread_GetUserReplies (GeneralThreadRequest) returns (ApiResponseThread);
-    rpc Thread_GetUserMediaThreads (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserThreads (UserToUserRequeqst) returns (ApiResponseThread);
+    rpc Thread_GetUserLikedThreads (UserToUserRequeqst) returns (ApiResponseThread);
+    rpc Thread_GetUserReplies (UserToUserRequeqst) returns (ApiResponseThread);
+    rpc Thread_GetUserMediaThreads (UserToUserRequeqst) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {
@@ -67,6 +67,11 @@ message SubmitVote {
 message GeneralThreadRequest {
     string user_id = 1;
     string thread_id = 2;
+}
+
+message UserToUserRequeqst {
+    string user_id = 1;
+    string requester_id = 2;
 }
 
 message Thread {
@@ -161,11 +166,6 @@ message PostThread {
 
 message GetThreadsResponse {
     repeated Thread threads = 1;
-}
-
-message DeleteThreadRequest {
-    string user_id = 1;
-    string thread_id = 2;
 }
 
 message RepostRequest {
