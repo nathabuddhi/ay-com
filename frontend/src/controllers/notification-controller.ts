@@ -2,7 +2,7 @@ import type { ApiResponse } from "../types/api";
 import { API_URL } from "../env_var";
 import { getValidToken } from "./token-controller";
 import type { GetNotificiationResponse } from "../types/notification";
-import { returnDefaultError } from "./user-controller";
+import { returnDefaultError } from "./util";
 import type { NotificationSettings } from "../types/settings";
 
 export async function getAllNotifications(): Promise<

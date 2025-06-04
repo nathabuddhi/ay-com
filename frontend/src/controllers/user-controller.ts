@@ -6,6 +6,7 @@ import type {
 import type { LoginResponse, Settings, UserProfile } from "../types/user";
 import { API_URL } from "../env_var";
 import { getValidToken, setRefreshToken, setToken } from "./token-controller";
+import { returnDefaultError } from "./util";
 
 export async function getUserById(
     user_id: string
@@ -29,16 +30,7 @@ export async function getUserById(
     return data.payload;
 }
 
-export function returnDefaultError<T>(error: unknown): ApiResponse<T> {
-    return {
-        success: false,
-        message:
-            error instanceof Error
-                ? error.message
-                : "An unknown error occurred.",
-        payload: null,
-    };
-}
+
 
 export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
     try {

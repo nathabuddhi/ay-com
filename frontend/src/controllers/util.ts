@@ -1,3 +1,5 @@
+import type { ApiResponse } from "../types/api";
+
 export function processContent(content: string): string {
     let processed = content.replace(
         /@(\w+)/g,
@@ -10,4 +12,15 @@ export function processContent(content: string): string {
     );
 
     return processed;
+}
+
+export function returnDefaultError<T>(error: unknown): ApiResponse<T> {
+    return {
+        success: false,
+        message:
+            error instanceof Error
+                ? error.message
+                : "An unknown error occurred.",
+        payload: null,
+    };
 }

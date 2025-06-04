@@ -1,12 +1,8 @@
 import { API_URL } from "../env_var";
 import type { ApiResponse } from "../types/api";
-import type {
-    ThreadDetailResponse,
-    ThreadReply,
-    ThreadResponse,
-} from "../types/thread";
+import type { ThreadDetailResponse, ThreadResponse } from "../types/thread";
 import { getValidToken } from "./token-controller";
-import { returnDefaultError } from "./user-controller";
+import { returnDefaultError } from "./util";
 
 export async function getForYouThreads(): Promise<ApiResponse<ThreadResponse>> {
     try {
@@ -177,13 +173,15 @@ export async function postThread(
     category: string,
     reply_permission: string,
     media: FileList | null,
-    poll: string[] | null
+    poll: string[] | null,
+    reply: string
 ): Promise<ApiResponse<ThreadResponse>> {
     try {
         const formData = new FormData();
         formData.append("content", content);
         formData.append("category", category);
         formData.append("reply_permission", reply_permission);
+        formData.append("reply_to", reply || "");
         formData.append("media_count", media?.length.toString() ?? "0");
         if (media) {
             for (let i = 0; i < media.length; i++) {
@@ -318,7 +316,7 @@ export async function voteThreadPoll(
 export async function replyToThread(
     thread_id: string,
     comment: string
-): Promise<ApiResponse<ThreadReply>> {
+): Promise<ApiResponse<null>> {
     try {
         const response = await fetch(`${API_URL}/thread/reply`, {
             method: "POST",
@@ -331,10 +329,10 @@ export async function replyToThread(
                 content: comment,
             }),
         });
-        const data: ApiResponse<ThreadReply> = await response.json();
+        const data: ApiResponse<null> = await response.json();
 
         return data;
     } catch (error) {
-        return returnDefaultError<ThreadReply>(error);
+        return returnDefaultError<null>(error);
     }
 }
