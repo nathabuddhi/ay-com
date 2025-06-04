@@ -174,7 +174,8 @@ export async function postThread(
     reply_permission: string,
     media: FileList | null,
     poll: string[] | null,
-    reply: string
+    reply: string,
+    schedule: string
 ): Promise<ApiResponse<ThreadResponse>> {
     try {
         const formData = new FormData();
@@ -183,6 +184,12 @@ export async function postThread(
         formData.append("reply_permission", reply_permission);
         formData.append("reply_to", reply || "");
         formData.append("media_count", media?.length.toString() ?? "0");
+
+        if (schedule !== "") {
+            formData.append("is_scheduled", "true");
+            formData.append("scheduled_at", schedule);
+        }
+
         if (media) {
             for (let i = 0; i < media.length; i++) {
                 formData.append(`media_${i}`, media[i]);

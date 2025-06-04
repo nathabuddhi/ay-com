@@ -87,16 +87,12 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/delete", Thread_DeleteThread).Methods("DELETE")
 
 	secured.HandleFunc("/thread/pinthread", Thread_TogglePinThread).Methods("POST")
-	secured.HandleFunc("/thread/pinreply", Thread_TogglePinReply).Methods("POST")
 
 	secured.HandleFunc("/thread/vote", Thread_VoteThread).Methods("POST")
 
 	secured.HandleFunc("/thread/togglelike", Thread_ToggleLike).Methods("POST")
 	secured.HandleFunc("/thread/togglebookmark", Thread_ToggleBookmark).Methods("POST")
 	secured.HandleFunc("/thread/togglerepost", Thread_ToggleRepost).Methods("POST")
-
-	secured.HandleFunc("/thread/reply", Thread_ReplyThread).Methods("POST")
-	secured.HandleFunc("/thread/deletereply", Thread_DeleteReply).Methods("DELETE")
 
 	secured.HandleFunc("/thread/getbookmarks", Thread_GetBookmarkedThreads).Methods("POST")
 	secured.HandleFunc("/thread/getreposts", Thread_GetRepostedThreads).Methods("POST")

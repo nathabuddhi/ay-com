@@ -27,7 +27,7 @@ func (s *ThreadServer) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllT
 // 	return s.Handler.Thread_GetFollowingThreads(ctx, req)
 // }
 
-func (s *ThreadServer) Thread_GetThreadById(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+func (s *ThreadServer) Thread_GetThreadById(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetThreadById(ctx, req)
 }
 
@@ -43,16 +43,8 @@ func (s *ThreadServer) Thread_DeleteThread(ctx context.Context, req *pb.GeneralT
 	return s.Handler.Thread_DeleteThread(ctx, req)
 }
 
-func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
-	return s.Handler.Thread_DeleteThread(ctx, req)
-}
-
 func (s *ThreadServer) Thread_TogglePinThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_TogglePinThread(ctx, req)
-}
-
-func (s *ThreadServer) Thread_TogglePinReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
-	return s.Handler.Thread_TogglePinReply(ctx, req)
 }
 
 func (s *ThreadServer) Thread_VoteThread(ctx context.Context, req *pb.SubmitVote) (*pb.ApiResponseThread, error) {
@@ -77,10 +69,6 @@ func (s *ThreadServer) Thread_GetBookmarkedThreads(ctx context.Context, req *pb.
 
 func (s *ThreadServer) Thread_GetRepostedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetRepostedThreads(ctx, req)
-}
-
-func (s *ThreadServer) Thread_ReplyThread(ctx context.Context, req *pb.ReplyThreadRequest) (*pb.ApiResponseThread, error) {
-	return s.Handler.Thread_ReplyThread(ctx, req)
 }
 
 func (s *ThreadServer) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequeqst) (*pb.ApiResponseThread, error) {

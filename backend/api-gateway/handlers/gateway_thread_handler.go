@@ -102,8 +102,9 @@ func Thread_GetThreadById(w http.ResponseWriter, r *http.Request) {
 		conn := getThreadServiceConn()
 		client := pb.NewThreadServiceClient(conn)
 
-		req := &pb.StringThread{}
-		req.Value = threadId
+		req := &pb.GeneralThreadRequest{}
+		req.ThreadId = threadId
+		req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 		ctx, cancel := createContext()
 		defer cancel()
 		resp, err := client.Thread_GetThreadById(ctx, req)
@@ -179,6 +180,7 @@ func Thread_CreateThread(w http.ResponseWriter, r *http.Request) {
 	req.Category = r.FormValue("category")
 	req.CommunityId = r.FormValue("community_id")
 	req.ReplyPermission = r.FormValue("reply_permission")
+	req.ReplyTo = r.FormValue("reply_to")
 
 	if r.FormValue("is_private") == "true" {
 		req.IsPrivate = true
@@ -196,7 +198,7 @@ func Thread_CreateThread(w http.ResponseWriter, r *http.Request) {
 		req.IsScheduled = true
 		req.ScheduledAt = r.FormValue("scheduled_at")
 	} else {
-		req.IsAdvertisement = false
+		req.IsScheduled = false
 	}
 
 	ctx, cancel := createContext()
@@ -259,19 +261,6 @@ func Thread_TogglePinThread(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithoutPayload(resp, err, w)
 }
 
-func Thread_TogglePinReply(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("Thread (PinReply) is called.")
-
-	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
-	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
-	ctx, cancel := createContext()
-	defer cancel()
-
-	resp, err := client.Thread_TogglePinReply(ctx, req)
-	processThreadResponseWithoutPayload(resp, err, w)
-}
-
 func Thread_VoteThread(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (VoteThread) is called.")
 
@@ -321,32 +310,6 @@ func Thread_ToggleRepost(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	resp, err := client.Thread_ToggleRepost(ctx, req)
-	processThreadResponseWithoutPayload(resp, err, w)
-}
-
-func Thread_ReplyThread(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("Thread (ReplyThread) is called.")
-
-	req, client := processThreadRequest[pb.ReplyThreadRequest](r, w)
-	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
-	ctx, cancel := createContext()
-	defer cancel()
-
-	resp, err := client.Thread_ReplyThread(ctx, req)
-	processThreadResponseWithPayload[pb.ThreadReply](resp, err, w)
-}
-
-func Thread_DeleteReply(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("Thread (DeleteReply) is called.")
-
-	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
-	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
-
-	ctx, cancel := createContext()
-	defer cancel()
-
-	resp, err := client.Thread_DeleteReply(ctx, req)
 	processThreadResponseWithoutPayload(resp, err, w)
 }
 

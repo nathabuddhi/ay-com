@@ -1,0 +1,303 @@
+<script lang="ts">
+    import { Image, ListPlus, X } from "@lucide/svelte";
+    import { AVATAR_IMG } from "../env_var";
+    import { addToast } from "../stores/toast-wrapper";
+    import { postThread } from "../controllers/thread-controller";
+
+    let postText: string = $state("");
+    let selectedFiles: FileList | null = $state<FileList | null>(null);
+    let previewImages: string[] = $state<string[]>([]);
+    let pollOptions: string[] = $state([]);
+    let showPoll = $state(false);
+
+    const categories = [
+        "General",
+        "News",
+        "Gaming",
+        "Education",
+        "Technology",
+        "Art",
+    ];
+    let selectedCategory: string = $state("");
+    const permissions: string[] = ["Public", "Followers", "Friends"];
+    let selectedPermission: string = $state("");
+    let isScheduled: boolean = $state(false);
+    let scheduledDate = $state("");
+    let scheduledTime = $state("");
+
+    let scheduledAt = $derived(
+        isScheduled && scheduledDate && scheduledTime
+            ? `${scheduledDate} ${scheduledTime}:00`
+            : ""
+    );
+
+    let {
+        isOpen = $bindable(),
+        mode = "post",
+        threadId = $bindable(),
+    }: {
+        isOpen: boolean;
+        mode: "post" | "comment";
+        threadId?: string;
+    } = $props();
+
+    function handleFileChange(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (!input.files) return;
+
+        const newFiles = Array.from(input.files);
+
+        const dt = new DataTransfer();
+        if (selectedFiles) {
+            for (let i = 0; i < selectedFiles.length; i++) {
+                dt.items.add(selectedFiles[i]);
+            }
+        }
+        newFiles.forEach((file) => dt.items.add(file));
+        selectedFiles = dt.files;
+
+        const newPreviews: Promise<string>[] = newFiles.map(
+            (file) =>
+                new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resolve(e.target?.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                })
+        );
+
+        Promise.all(newPreviews).then((results) => {
+            previewImages = [...previewImages, ...results];
+        });
+    }
+
+    function removeImage(index: number) {
+        previewImages = previewImages.filter((_, i) => i !== index);
+        if (selectedFiles) {
+            const dt = new DataTransfer();
+            for (let i = 0; i < selectedFiles.length; i++) {
+                if (i !== index) dt.items.add(selectedFiles[i]);
+            }
+            selectedFiles = dt.files;
+        }
+    }
+
+    function addPollOption() {
+        if (pollOptions.length < 4) {
+            pollOptions = [...pollOptions, ""];
+        }
+    }
+
+    function removePollOption(index: number) {
+        pollOptions = pollOptions.filter((_, i) => i !== index);
+    }
+
+    async function handleSubmit() {
+        try {
+            console.log(scheduledAt);
+            if (selectedCategory === "") {
+                addToast("error", "Please select a category.", "Error!");
+                return;
+            }
+
+            if (selectedPermission === "") {
+                addToast(
+                    "error",
+                    "Please select a permission level.",
+                    "Error!"
+                );
+                return;
+            }
+            let response;
+            if (mode === "comment" && threadId) {
+                response = await postThread(
+                    postText,
+                    "Reply",
+                    selectedPermission,
+                    selectedFiles,
+                    [],
+                    threadId,
+                    ""
+                );
+            } else if (mode === "post") {
+                response = await postThread(
+                    postText,
+                    selectedCategory,
+                    selectedPermission,
+                    selectedFiles,
+                    pollOptions,
+                    "",
+                    scheduledAt
+                );
+            } else {
+                throw new Error("Invalid mode specified.");
+            }
+
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+
+            addToast(
+                "success",
+                `${mode === "comment" ? "Comment" : "Thread"} created successfully!`,
+                "Success!"
+            );
+
+            isOpen = false;
+            postText = "";
+            selectedFiles = null;
+            previewImages = [];
+            pollOptions = [];
+            showPoll = false;
+            selectedCategory = "";
+            selectedPermission = "";
+        } catch (error) {
+            addToast(
+                "error",
+                `Failed to ${mode === "post" ? "create post" : "post comment"}: ` +
+                    (error as Error).message,
+                "Error!"
+            );
+        }
+    }
+</script>
+
+<div class="create-post-content">
+    <div class="create-post-avatar">
+        <img
+            src={`${AVATAR_IMG}/${localStorage.getItem("user_id") || "1"}.png`}
+            alt="Your avatar"
+        />
+    </div>
+
+    <textarea
+        placeholder={mode === "post"
+            ? "What's happening?"
+            : "Write a comment..."}
+        bind:value={postText}
+    ></textarea>
+
+    {#if previewImages.length > 0}
+        <div
+            class="image-previews {previewImages.length > 1
+                ? 'multiple-images'
+                : ''}"
+        >
+            {#each previewImages as preview, i}
+                <div class="preview-container">
+                    <img src={preview} alt="Preview" />
+                    <button class="remove-image" onclick={() => removeImage(i)}>
+                        <X />
+                    </button>
+                </div>
+            {/each}
+        </div>
+    {/if}
+
+    {#if showPoll && mode === "post"}
+        <div class="poll-section">
+            <h4>Create a Poll</h4>
+            {#each pollOptions as option, index}
+                <div class="poll-option">
+                    <input
+                        type="text"
+                        bind:value={pollOptions[index]}
+                        placeholder={`Option ${index + 1}`}
+                    />
+                    {#if pollOptions.length > 0}
+                        <button onclick={() => removePollOption(index)}
+                            >✕</button
+                        >
+                    {/if}
+                </div>
+            {/each}
+            {#if pollOptions.length < 4}
+                <button class="add-option" onclick={addPollOption}
+                    >Add Option</button
+                >
+            {/if}
+        </div>
+    {/if}
+
+    <div class="create-post-actions">
+        <div>
+            <div class="media-actions">
+                <label class="media-button">
+                    <Image />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onchange={handleFileChange}
+                    />
+                </label>
+                {#if mode === "post"}
+                    <button
+                        class="media-button"
+                        onclick={() => {
+                            showPoll = !showPoll;
+                        }}
+                    >
+                        <ListPlus />
+                    </button>
+                    <div class="category-selector">
+                        <label for="category-select">Category</label>
+                        <select
+                            id="category-select"
+                            bind:value={selectedCategory}
+                        >
+                            <option value="" disabled selected
+                                >Select a category</option
+                            >
+                            {#each categories as category}
+                                <option value={category}>{category}</option>
+                            {/each}
+                        </select>
+                    </div>
+                    <div class="category-selector">
+                        <label for="permission-select">Permissions</label>
+                        <select
+                            id="permission-select"
+                            bind:value={selectedPermission}
+                        >
+                            <option value="" disabled selected
+                                >Select a permission</option
+                            >
+                            {#each permissions as permission}
+                                <option value={permission}>{permission}</option>
+                            {/each}
+                        </select>
+                    </div>
+                {/if}
+            </div>
+            <div class="schedule-selector">
+                <label for="schedule-select">Schedule</label>
+                <input
+                    type="checkbox"
+                    id="schedule-checkbox"
+                    bind:checked={isScheduled}
+                />
+                {#if isScheduled}
+                    <input type="date" bind:value={scheduledDate} />
+                    <input type="time" bind:value={scheduledTime} />
+                {/if}
+            </div>
+        </div>
+
+        <button
+            class="post-button"
+            disabled={!postText &&
+                previewImages.length === 0 &&
+                (!showPoll || pollOptions.every((p) => !p.trim()))}
+            onclick={handleSubmit}
+        >
+            {mode === "post" ? "Post" : "Comment"}
+        </button>
+    </div>
+</div>
+
+<!-- svelte-ignore css_unused_selector -->
+<style lang="scss">
+    @use "../styles/create-post.scss";
+</style>

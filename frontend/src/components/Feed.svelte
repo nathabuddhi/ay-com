@@ -7,6 +7,7 @@
         getForYouThreads,
     } from "../controllers/thread-controller";
     import { addToast } from "../stores/toast-wrapper";
+    import CreatePostForm from "./CreatePostForm.svelte";
     // import CreatePost from "./CreatePost.svelte";
 
     let forYouPosts = $state<Thread[]>([]);
@@ -60,7 +61,7 @@
             {/each}
         </div>
     </div>
-
+    <CreatePostForm isOpen={true} mode={"post"} />
     <div class="posts-container">
         {#if activeTab === "For you"}
             {#each forYouPosts as post}

@@ -15,10 +15,6 @@
     } from "@lucide/svelte";
     import { onMount } from "svelte";
 
-    let { isNewPostOpen = $bindable() } = $props<{
-        isNewPostOpen: boolean;
-    }>();
-
     let userData = $state({
         name: "",
         username: "",
@@ -43,6 +39,8 @@
     function toggleMobileNav(): void {
         mobileNavOpen = !mobileNavOpen;
     }
+
+    let { isOpen = $bindable() } = $props();
 
     const path = $state(window.location.pathname);
 </script>
@@ -159,9 +157,7 @@
             aria-label="createpost"
             class="post-button"
             onclick={() => {
-                isNewPostOpen = true;
-                console.log("Setting isNewPostOpen to true");
-                console.log(isNewPostOpen);
+                isOpen = true;
             }}
         />
     </div>

@@ -59,10 +59,6 @@ type ThreadRepost struct {
 }
 
 type ThreadReply struct {
-	Id        string `gorm:"type:char(36);primaryKey"`
-	ThreadId  string `gorm:"type:char(36);not null;index"`
-	UserID    string `gorm:"type:char(36);not null"`
-	Content   string `gorm:"type:text;not null"`
-	IsPinned  bool   `gorm:"default:false"`
-	CreatedAt time.Time
+	ThreadId  string `gorm:"type:char(36);not null;index;primaryKey"`
+	ReplyToId string `gorm:"type:char(36);not null;index;"`
 }

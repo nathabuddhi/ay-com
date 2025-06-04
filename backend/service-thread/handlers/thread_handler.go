@@ -185,17 +185,25 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 		h.DB.WithContext(ctx).Create(&poll)
 	}
 
+	if req.ReplyTo != "" {
+		err := h.Thread_ReplyThread(ctx, req.ReplyTo, generatedId)
+
+		if err != nil {
+			return &pb.ApiResponseThread{Success: false, Message: "Failed to reply to thread: " + err.Error()}, nil
+		}
+	}
+
 	return &pb.ApiResponseThread{
 		Success: true,
-		Message: "Thread created successfully",
+		Message: "Thread created successfully!",
 	}, nil
 }
 
-func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
-	zap.L().Info("Getting thread by ID", zap.String("thread_id", req.Value))
+func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Getting thread by ID", zap.String("thread_id", req.ThreadId))
 
 	var thread models.Thread
-	err := h.DB.WithContext(ctx).Where("thread_id = ?", req.Value).First(&thread).Error
+	err := h.DB.WithContext(ctx).Where("thread_id = ?", req.ThreadId).First(&thread).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return &pb.ApiResponseThread{Success: false, Message: "Thread not found."}, nil
@@ -203,7 +211,7 @@ func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.StringThread
 		return &pb.ApiResponseThread{Success: false, Message: "An error occurred: " + err.Error()}, nil
 	}
 
-	threadResponse, err := h.processThreadResponse(ctx, thread, req.Value)
+	threadResponse, err := h.processThreadResponse(ctx, thread, req.ThreadId)
 	if err != nil {
 		return &pb.ApiResponseThread{
 			Success: false,
@@ -212,24 +220,31 @@ func (h *Handler) Thread_GetThreadById(ctx context.Context, req *pb.StringThread
 	}
 
 	var comments []models.ThreadReply
-	err = h.DB.WithContext(ctx).Where("thread_id = ?", req.Value).Order("created_at asc").Find(&comments).Error
+	err = h.DB.WithContext(ctx).Where("reply_to_id = ?", req.ThreadId).Find(&comments).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return &pb.ApiResponseThread{Success: false, Message: "Failed to fetch comments"}, nil
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
 	}
 
 	getThreadDetailResponse := &pb.GetThreadDetailResponse{
 		Thread:  &threadResponse,
-		Replies: make([]*pb.ThreadReply, len(comments)),
+		Replies: make([]*pb.Thread, len(comments)),
 	}
 
 	for i, request := range comments {
-		commentResponse := pb.ThreadReply{
-			Id:        request.Id,
-			UserId:    request.UserID,
-			Content:   request.Content,
-			IsPinned:  request.IsPinned,
-			Timestamp: request.CreatedAt.Format("2006-01-02 15:04:05")}
-		getThreadDetailResponse.Replies[i] = &commentResponse
+		var comment models.Thread
+		err := h.DB.WithContext(ctx).Where("thread_id = ?", request.ThreadId).First(&comment).Error
+		if err == nil {
+			commentResponse, err := h.processThreadResponse(ctx, comment, req.UserId)
+			if err == nil {
+				getThreadDetailResponse.Replies[i] = &commentResponse
+			}
+		}
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: "Failed to fetch replies: " + err.Error(),
+			}, nil
+		}
 	}
 
 	redisData, err := json.Marshal(getThreadDetailResponse)

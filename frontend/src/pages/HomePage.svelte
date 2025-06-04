@@ -8,7 +8,7 @@
     import ProfilePage from "./ProfilePage.svelte";
     import ToastContainer from "../components/ToastContainer.svelte";
     import NotificationPage from "./NotificationPage.svelte";
-    import CreatePost from "../components/CreatePost.svelte";
+    import CreatePostDialog from "../components/CreatePostDialog.svelte";
     import BookmarkPage from "./BookmarkPage.svelte";
     import ThreadDetailPage from "./ThreadDetailPage.svelte";
 
@@ -20,13 +20,14 @@
     });
 
     const currpage = window.location.pathname;
-    let isNewPostOpen = false;
+
+    let isOpen = $state(false);
 </script>
 
 <div class="home-container">
     <ToastContainer />
-    <CreatePost bind:isOpen={isNewPostOpen} />
-    <LeftSideBar bind:isNewPostOpen />
+    <CreatePostDialog bind:isOpen />
+    <LeftSideBar bind:isOpen />
     <main class="main-content">
         {#if currpage.includes("home")}
             <Feed />

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { Thread, ThreadReply } from "../types/thread";
+    import type { Thread } from "../types/thread";
     import Post from "../components/Post.svelte";
     import {
         getThreadById,
@@ -11,6 +11,7 @@
     import type { UserProfile } from "../types/user";
     import { getUserById } from "../controllers/user-controller";
     import { BadgeCheck } from "@lucide/svelte";
+    import CreatePostForm from "../components/CreatePostForm.svelte";
 
     let post: Thread = $state<Thread>({
         thread_id: "",
@@ -31,7 +32,7 @@
         is_bookmarking: false,
         is_reposting: false,
     });
-    let replies: ThreadReply[] = $state([]);
+    let replies: Thread[] = $state([]);
     let userProfiles: Record<string, UserProfile> = $state({});
 
     let newReply: string = $state<string>("");
@@ -77,82 +78,16 @@
         addToast("success", "Reply added successfully!", "Reply Success");
         window.location.reload();
     }
-
-    async function handlePinClick(reply: ThreadReply) {
-        const response = await pinReply(replyId);
-
-        if (!response.success) {
-            addToast("error", response.message, "Error pinning reply!");
-            return;
-        }
-        addToast("success", "Reply pinned successfully!", "Pin Success");
-        window.location.reload();
-    }
-
-    async function handleDeleteClick(replyId: string) {
-        const response = await deleteReply(replyId);
-
-        if (!response.success) {
-            addToast("error", response.message, "Error deleting reply!");
-            return;
-        }
-        addToast("success", "Reply deleted successfully!", "Delete Success");
-        window.location.reload();
-    }
 </script>
 
 {#if post.thread_id === ""}
     <div class="loading">Loading thread...</div>
 {:else}
     <Post {post} />
-    <div class="create-reply">
-        <input type="text" placeholder="Write a Reply" bind:value={newReply} />
-        <button class="reply-button" onclick={handleReplyClick}>Reply</button>
-    </div>
+    <CreatePostForm mode="comment" threadId={post.thread_id} isOpen={true} />
     <div class="replies-list">
-        {#each replies as reply}
-            <div class="reply-item">
-                <img
-                    src={`${AVATAR_IMG}/${reply?.user_id}.png`}
-                    alt="Avatar"
-                    class="avatar"
-                />
-                <div class="reply-content">
-                    <div class="reply-header">
-                        <span class="reply-name"
-                            >{userProfiles[reply.user_id]?.name}</span
-                        >
-                        {#if userProfiles[reply.user_id]?.is_verified}
-                            <BadgeCheck />
-                        {/if}
-                        <span class="reply-username"
-                            >@{userProfiles[reply.user_id]?.username}</span
-                        >
-                        <span class="reply-time">{reply.timestamp}</span>
-                    </div>
-                    <div class="reply-text-container">
-                        <div class="reply-text">{reply.content}</div>
-                        <div>
-                            {#if localStorage.getItem("user_id") === post.user_id}
-                                <button
-                                    class="pin-button"
-                                    onclick={() => {
-                                        handlePinClick(reply);
-                                    }}
-                                    >{reply.is_pinned ? "Unpin" : "Pin"}</button
-                                >
-                            {/if}
-                            {#if localStorage.getItem("user_id") === post.user_id || localStorage.getItem("user_id") === reply.user_id}
-                                <button
-                                    class="delete-button"
-                                    onclick={() => {
-                                        handleDeleteClick(reply.id);
-                                    }}>Delete</button
-                                >{/if}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        {#each replies as post}
+            <Post {post} />
         {/each}
     </div>
 {/if}

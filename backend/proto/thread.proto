@@ -10,13 +10,12 @@ service ThreadService {
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_GetFollowingThreads (GetAllThreadsRequest) returns (ApiResponseThread);
-    rpc Thread_GetThreadById (StringThread) returns (ApiResponseThread);
+    rpc Thread_GetThreadById (GeneralThreadRequest) returns (ApiResponseThread);
     rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_DeleteThread (GeneralThreadRequest) returns (ApiResponseThread);
 
     rpc Thread_CreateThread (PostThread) returns (ApiResponseThread);
     rpc Thread_TogglePinThread (GeneralThreadRequest) returns (ApiResponseThread);
-    rpc Thread_TogglePinReply (GeneralThreadRequest) returns (ApiResponseThread);
     
     rpc Thread_VoteThread (SubmitVote) returns (ApiResponseThread);
     
@@ -25,9 +24,6 @@ service ThreadService {
     rpc Thread_ToggleBookmark (GeneralThreadRequest) returns (ApiResponseThread);
     
     rpc Thread_ToggleRepost (RepostRequest) returns (ApiResponseThread);
-
-    rpc Thread_ReplyThread (ReplyThreadRequest) returns (ApiResponseThread);
-    rpc Thread_DeleteReply (GeneralThreadRequest) returns (ApiResponseThread);
 
     rpc Thread_GetBookmarkedThreads (StringThread) returns (ApiResponseThread);
     rpc Thread_GetRepostedThreads (StringThread) returns (ApiResponseThread);
@@ -51,7 +47,7 @@ message SearchThreadRequest {
 
 message GetThreadDetailResponse {
     Thread thread = 1;
-    repeated ThreadReply replies = 2;
+    repeated Thread replies = 2;
 }
 
 message StringThread {
@@ -118,20 +114,6 @@ message ThreadRepost {
     string text = 3;
 }
 
-message ThreadReply {
-    string id = 1;
-    string user_id = 2;
-    string content = 3;
-    bool is_pinned = 4;
-    string timestamp = 5;
-}
-
-message ReplyThreadRequest {
-    string user_id = 1;
-    string thread_id = 2;
-    string content = 3;
-}
-
 message GetAllThreadsRequest {
     string user_id = 1;
 }
@@ -162,6 +144,7 @@ message PostThread {
     string content = 13;
     string title = 14;
     string category = 15;
+    string reply_to = 16;
 }
 
 message GetThreadsResponse {

@@ -12,7 +12,7 @@ export interface ThreadResponse {
 
 export interface ThreadDetailResponse {
     thread: Thread;
-    replies: ThreadReply[];
+    replies: Thread[];
 }
 
 export interface Thread {
@@ -56,12 +56,4 @@ export interface ThreadRepost {
     id: string;
     user_id: string;
     text: string;
-}
-
-export interface ThreadReply {
-    id: string;
-    user_id: string;
-    content: string;
-    is_pinned: boolean;
-    timestamp: string;
 }

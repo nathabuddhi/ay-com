@@ -26,13 +26,10 @@ const (
 	ThreadService_Thread_DeleteThread_FullMethodName         = "/thread.ThreadService/Thread_DeleteThread"
 	ThreadService_Thread_CreateThread_FullMethodName         = "/thread.ThreadService/Thread_CreateThread"
 	ThreadService_Thread_TogglePinThread_FullMethodName      = "/thread.ThreadService/Thread_TogglePinThread"
-	ThreadService_Thread_TogglePinReply_FullMethodName       = "/thread.ThreadService/Thread_TogglePinReply"
 	ThreadService_Thread_VoteThread_FullMethodName           = "/thread.ThreadService/Thread_VoteThread"
 	ThreadService_Thread_ToggleLike_FullMethodName           = "/thread.ThreadService/Thread_ToggleLike"
 	ThreadService_Thread_ToggleBookmark_FullMethodName       = "/thread.ThreadService/Thread_ToggleBookmark"
 	ThreadService_Thread_ToggleRepost_FullMethodName         = "/thread.ThreadService/Thread_ToggleRepost"
-	ThreadService_Thread_ReplyThread_FullMethodName          = "/thread.ThreadService/Thread_ReplyThread"
-	ThreadService_Thread_DeleteReply_FullMethodName          = "/thread.ThreadService/Thread_DeleteReply"
 	ThreadService_Thread_GetBookmarkedThreads_FullMethodName = "/thread.ThreadService/Thread_GetBookmarkedThreads"
 	ThreadService_Thread_GetRepostedThreads_FullMethodName   = "/thread.ThreadService/Thread_GetRepostedThreads"
 	ThreadService_Thread_GetUserThreads_FullMethodName       = "/thread.ThreadService/Thread_GetUserThreads"
@@ -48,18 +45,15 @@ type ThreadServiceClient interface {
 	// Protected Routes
 	Thread_GetAllThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetThreadById(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetThreadById(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_SearchThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_DeleteThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_CreateThread(ctx context.Context, in *PostThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_TogglePinThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_TogglePinReply(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_VoteThread(ctx context.Context, in *SubmitVote, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_ToggleLike(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_ToggleBookmark(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_ToggleRepost(ctx context.Context, in *RepostRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_ReplyThread(ctx context.Context, in *ReplyThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_DeleteReply(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetUserThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -96,7 +90,7 @@ func (c *threadServiceClient) Thread_GetFollowingThreads(ctx context.Context, in
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetThreadById(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetThreadById(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetThreadById_FullMethodName, in, out, cOpts...)
@@ -146,16 +140,6 @@ func (c *threadServiceClient) Thread_TogglePinThread(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_TogglePinReply(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponseThread)
-	err := c.cc.Invoke(ctx, ThreadService_Thread_TogglePinReply_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *threadServiceClient) Thread_VoteThread(ctx context.Context, in *SubmitVote, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
@@ -190,26 +174,6 @@ func (c *threadServiceClient) Thread_ToggleRepost(ctx context.Context, in *Repos
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_ToggleRepost_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *threadServiceClient) Thread_ReplyThread(ctx context.Context, in *ReplyThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponseThread)
-	err := c.cc.Invoke(ctx, ThreadService_Thread_ReplyThread_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *threadServiceClient) Thread_DeleteReply(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponseThread)
-	err := c.cc.Invoke(ctx, ThreadService_Thread_DeleteReply_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -283,18 +247,15 @@ type ThreadServiceServer interface {
 	// Protected Routes
 	Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
-	Thread_GetThreadById(context.Context, *StringThread) (*ApiResponseThread, error)
+	Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_SearchThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_DeleteThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_CreateThread(context.Context, *PostThread) (*ApiResponseThread, error)
 	Thread_TogglePinThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
-	Thread_TogglePinReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_VoteThread(context.Context, *SubmitVote) (*ApiResponseThread, error)
 	Thread_ToggleLike(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_ToggleBookmark(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_ToggleRepost(context.Context, *RepostRequest) (*ApiResponseThread, error)
-	Thread_ReplyThread(context.Context, *ReplyThreadRequest) (*ApiResponseThread, error)
-	Thread_DeleteReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetUserThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error)
@@ -317,7 +278,7 @@ func (UnimplementedThreadServiceServer) Thread_GetAllThreads(context.Context, *G
 func (UnimplementedThreadServiceServer) Thread_GetFollowingThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetFollowingThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetThreadById(context.Context, *StringThread) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetThreadById not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_SearchThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
@@ -332,9 +293,6 @@ func (UnimplementedThreadServiceServer) Thread_CreateThread(context.Context, *Po
 func (UnimplementedThreadServiceServer) Thread_TogglePinThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_TogglePinThread not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_TogglePinReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Thread_TogglePinReply not implemented")
-}
 func (UnimplementedThreadServiceServer) Thread_VoteThread(context.Context, *SubmitVote) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_VoteThread not implemented")
 }
@@ -346,12 +304,6 @@ func (UnimplementedThreadServiceServer) Thread_ToggleBookmark(context.Context, *
 }
 func (UnimplementedThreadServiceServer) Thread_ToggleRepost(context.Context, *RepostRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_ToggleRepost not implemented")
-}
-func (UnimplementedThreadServiceServer) Thread_ReplyThread(context.Context, *ReplyThreadRequest) (*ApiResponseThread, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Thread_ReplyThread not implemented")
-}
-func (UnimplementedThreadServiceServer) Thread_DeleteReply(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Thread_DeleteReply not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_GetBookmarkedThreads(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetBookmarkedThreads not implemented")
@@ -429,7 +381,7 @@ func _ThreadService_Thread_GetFollowingThreads_Handler(srv interface{}, ctx cont
 }
 
 func _ThreadService_Thread_GetThreadById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StringThread)
+	in := new(GeneralThreadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -441,7 +393,7 @@ func _ThreadService_Thread_GetThreadById_Handler(srv interface{}, ctx context.Co
 		FullMethod: ThreadService_Thread_GetThreadById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetThreadById(ctx, req.(*StringThread))
+		return srv.(ThreadServiceServer).Thread_GetThreadById(ctx, req.(*GeneralThreadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -518,24 +470,6 @@ func _ThreadService_Thread_TogglePinThread_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ThreadService_Thread_TogglePinReply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GeneralThreadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThreadServiceServer).Thread_TogglePinReply(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThreadService_Thread_TogglePinReply_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_TogglePinReply(ctx, req.(*GeneralThreadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ThreadService_Thread_VoteThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitVote)
 	if err := dec(in); err != nil {
@@ -604,42 +538,6 @@ func _ThreadService_Thread_ToggleRepost_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ThreadServiceServer).Thread_ToggleRepost(ctx, req.(*RepostRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThreadService_Thread_ReplyThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReplyThreadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThreadServiceServer).Thread_ReplyThread(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThreadService_Thread_ReplyThread_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_ReplyThread(ctx, req.(*ReplyThreadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ThreadService_Thread_DeleteReply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GeneralThreadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ThreadServiceServer).Thread_DeleteReply(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ThreadService_Thread_DeleteReply_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_DeleteReply(ctx, req.(*GeneralThreadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -788,10 +686,6 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ThreadService_Thread_TogglePinThread_Handler,
 		},
 		{
-			MethodName: "Thread_TogglePinReply",
-			Handler:    _ThreadService_Thread_TogglePinReply_Handler,
-		},
-		{
 			MethodName: "Thread_VoteThread",
 			Handler:    _ThreadService_Thread_VoteThread_Handler,
 		},
@@ -806,14 +700,6 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_ToggleRepost",
 			Handler:    _ThreadService_Thread_ToggleRepost_Handler,
-		},
-		{
-			MethodName: "Thread_ReplyThread",
-			Handler:    _ThreadService_Thread_ReplyThread_Handler,
-		},
-		{
-			MethodName: "Thread_DeleteReply",
-			Handler:    _ThreadService_Thread_DeleteReply_Handler,
 		},
 		{
 			MethodName: "Thread_GetBookmarkedThreads",
