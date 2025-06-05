@@ -9,6 +9,7 @@ import (
 	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
+	"gorm.io/gorm"
 )
 
 func (h *Handlers) GetFollowing(user_id string) (int, error) {
@@ -330,4 +331,19 @@ func (h *Handlers) User_GetAllBlocked(ctx context.Context, req *pb.StringUser) (
 		Message: "Get All Blocked successful.",
 		Data:    returnData,
 	}, nil
+}
+
+func (h *Handlers) User_IsUserFollowing(ctx context.Context, req *pb.IsUserFollowingRequest) (*pb.BoolUser, error) {
+	zap.L().Info("User " + req.FollowerId + " is checking if they are following user " + req.FollowingId)
+
+	var userFollowing models.UserFollowing
+	err := h.DB.WithContext(ctx).Where("user_id = ? AND followed_id = ?", req.FollowerId, req.FollowingId).First(&userFollowing).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.BoolUser{Value: false}, nil
+		}
+		return &pb.BoolUser{Value: false}, nil
+	}
+
+	return &pb.BoolUser{Value: true}, nil
 }

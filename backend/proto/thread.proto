@@ -28,10 +28,11 @@ service ThreadService {
     rpc Thread_GetBookmarkedThreads (StringThread) returns (ApiResponseThread);
     rpc Thread_GetRepostedThreads (StringThread) returns (ApiResponseThread);
 
-    rpc Thread_GetUserThreads (UserToUserRequeqst) returns (ApiResponseThread);
-    rpc Thread_GetUserLikedThreads (UserToUserRequeqst) returns (ApiResponseThread);
-    rpc Thread_GetUserReplies (UserToUserRequeqst) returns (ApiResponseThread);
-    rpc Thread_GetUserMediaThreads (UserToUserRequeqst) returns (ApiResponseThread);
+    rpc Thread_GetUserThreads (UserToUserRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserLikedThreads (UserToUserRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserReplies (UserToUserRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserMediaThreads (UserToUserRequest) returns (ApiResponseThread);
+    rpc Thread_GetReplyPermission (StringThread) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {
@@ -65,7 +66,7 @@ message GeneralThreadRequest {
     string thread_id = 2;
 }
 
-message UserToUserRequeqst {
+message UserToUserRequest {
     string user_id = 1;
     string requester_id = 2;
 }

@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/nathabuddhi/ay-com/backend/service-thread/models"
+	pb "github.com/nathabuddhi/ay-com/backend/service-thread/proto/thread"
 	"github.com/nathabuddhi/ay-com/backend/service-thread/rabbitmq"
 	"go.uber.org/zap"
 )
 
 func (h *Handler) getReplyCount(ctx context.Context, threadId string) int {
 	var count int64
-	h.DB.WithContext(ctx).Model(&models.ThreadReply{}).Where("thread_id = ?", threadId).Count(&count)
+	h.DB.WithContext(ctx).Model(&models.ThreadReply{}).Where("reply_to_id = ?", threadId).Count(&count)
 	return int(count)
 }
 
@@ -30,7 +31,32 @@ func (h *Handler) Thread_ReplyThread(ctx context.Context, threadId string, reply
 		return err
 	}
 
-	rabbitmq.PublishDeleteRedis("getthread/" + threadId)
+	rabbitmq.PublishDeleteRedis("getthread/" + replyToId)
 
 	return nil
+}
+
+func (h *Handler) Thread_GetReplyPermission(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	if req.Value == "" {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "No thread ID provided",
+			Data:    nil,
+		}, nil
+	}
+
+	var thread models.Thread
+	if err := h.DB.WithContext(ctx).First(&thread, "id = ?", thread).Error; err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "Thread not found!",
+			Data:    nil,
+		}, nil
+	} else {
+		return &pb.ApiResponseThread{
+			Success: true,
+			Message: thread.ReplyPermission,
+			Data:    nil,
+		}, nil
+	}
 }

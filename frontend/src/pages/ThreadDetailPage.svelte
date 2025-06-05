@@ -67,17 +67,6 @@
             userProfiles = newProfiles;
         }
     });
-
-    async function handleReplyClick() {
-        const response = await replyToThread(post.thread_id, newReply);
-
-        if (!response.success) {
-            addToast("error", response.message, "Error replying to thread!");
-            return;
-        }
-        addToast("success", "Reply added successfully!", "Reply Success");
-        window.location.reload();
-    }
 </script>
 
 {#if post.thread_id === ""}

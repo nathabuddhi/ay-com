@@ -119,6 +119,10 @@ func (s *UserServer) User_GetUserId(ctx context.Context, req *pb.GetProfileReque
 	return s.Handlers.User_GetProfile(ctx, req, true)
 }
 
+func (s *UserServer) User_IsUserFollowing(ctx context.Context, req *pb.IsUserFollowingRequest) (*pb.BoolUser, error) {
+	return s.Handlers.User_IsUserFollowing(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

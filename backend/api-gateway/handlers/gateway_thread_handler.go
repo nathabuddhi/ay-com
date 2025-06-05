@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/thread"
+	userpb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -182,6 +183,81 @@ func Thread_CreateThread(w http.ResponseWriter, r *http.Request) {
 	req.ReplyPermission = r.FormValue("reply_permission")
 	req.ReplyTo = r.FormValue("reply_to")
 
+	if req.ReplyTo != "" {
+		ctx, cancel := createContext()
+		defer cancel()
+
+		getThreadReq := &pb.GeneralThreadRequest{}
+		getThreadReq.ThreadId = req.ReplyTo
+		resp, err := client.Thread_GetThreadById(ctx, getThreadReq)
+		if err != nil || !resp.Success {
+			returnErrorResponse(w, "Failed checking reply permissions: "+resp.Message)
+			return
+		} else {
+			// AMBIL THREAD REPLY PERMISSION
+			decodedObject := new(pb.GetThreadDetailResponse)
+			if _, ok := any(decodedObject).(proto.Message); !ok {
+				zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+				returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+				return
+			}
+
+			if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+				zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+				returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+				return
+			}
+
+			if decodedObject.Thread.UserId == r.Context().Value(middleware.UserIdKey).(string) {
+				// do nothing
+			} else if decodedObject.Thread.ReplyPermission == "Accounts You Follow" {
+				userConn := getUserServiceConn()
+				userClient := userpb.NewUserServiceClient(userConn)
+
+				ctx, cancel := createContext()
+				defer cancel()
+
+				userResp, err := userClient.User_IsUserFollowing(ctx, &userpb.IsUserFollowingRequest{
+					FollowingId: r.Context().Value(middleware.UserIdKey).(string),
+					FollowerId:  decodedObject.Thread.UserId,
+				})
+
+				if err != nil || !userResp.Value {
+					returnErrorResponse(w, "You are not allowed to reply to this thread. You must be followed by the author of this thread to reply.")
+					return
+				}
+
+			} else if decodedObject.Thread.ReplyPermission == "Verified Accounts" {
+				userConn := getUserServiceConn()
+				userClient := userpb.NewUserServiceClient(userConn)
+
+				ctx, cancel := createContext()
+				defer cancel()
+
+				userResp, _ := userClient.User_GetUserId(ctx, &userpb.GetProfileRequest{
+					UserId: r.Context().Value(middleware.UserIdKey).(string),
+				})
+				decodedObject := new(userpb.UserProfile)
+				if _, ok := any(decodedObject).(proto.Message); !ok {
+					zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+					returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+					return
+				}
+
+				if err := proto.Unmarshal(userResp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+					zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+					returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+					return
+				}
+				zap.L().Info("Decoded user profile", zap.String("userId", decodedObject.Username), zap.Bool("isVerified", decodedObject.IsVerified))
+				if !decodedObject.IsVerified {
+					returnErrorResponse(w, "You are not allowed to reply to this thread. You must be a verified account to reply.")
+					return
+				}
+			}
+		}
+	}
+
 	if r.FormValue("is_private") == "true" {
 		req.IsPrivate = true
 	} else {
@@ -270,7 +346,80 @@ func Thread_VoteThread(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := createContext()
 	defer cancel()
 
-	resp, err := client.Thread_VoteThread(ctx, req)
+	getThreadReq := &pb.GeneralThreadRequest{}
+	getThreadReq.ThreadId = req.ThreadId
+	resp, err := client.Thread_GetThreadById(ctx, getThreadReq)
+	if err != nil || !resp.Success {
+		returnErrorResponse(w, "Failed checking voting permissions: "+resp.Message)
+		return
+	} else {
+		// AMBIL THREAD REPLY PERMISSION
+		decodedObject := new(pb.GetThreadDetailResponse)
+		if _, ok := any(decodedObject).(proto.Message); !ok {
+			zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+			returnErrorResponse(w, "Failed to decode response data while checking voting permissions.")
+			return
+		}
+
+		if err := proto.Unmarshal(resp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+			zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+			returnErrorResponse(w, "Failed to decode response data while checking voting permissions.")
+			return
+		}
+
+		if decodedObject.Thread.UserId == r.Context().Value(middleware.UserIdKey).(string) {
+			// do nothing
+		} else if decodedObject.Thread.ReplyPermission == "Accounts You Follow" {
+			userConn := getUserServiceConn()
+			userClient := userpb.NewUserServiceClient(userConn)
+
+			ctx, cancel := createContext()
+			defer cancel()
+
+			userResp, err := userClient.User_IsUserFollowing(ctx, &userpb.IsUserFollowingRequest{
+				FollowingId: r.Context().Value(middleware.UserIdKey).(string),
+				FollowerId:  decodedObject.Thread.UserId,
+			})
+
+			if err != nil || !userResp.Value {
+				returnErrorResponse(w, "You are not allowed to vote on this thread. You must be followed by the author of this thread to reply.")
+				return
+			}
+
+		} else if decodedObject.Thread.ReplyPermission == "Verified Accounts" {
+			userConn := getUserServiceConn()
+			userClient := userpb.NewUserServiceClient(userConn)
+
+			ctx, cancel := createContext()
+			defer cancel()
+
+			userResp, _ := userClient.User_GetUserId(ctx, &userpb.GetProfileRequest{
+				UserId: r.Context().Value(middleware.UserIdKey).(string),
+			})
+			decodedObject := new(userpb.UserProfile)
+			if _, ok := any(decodedObject).(proto.Message); !ok {
+				zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+				returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+				return
+			}
+
+			if err := proto.Unmarshal(userResp.Data.GetValue(), any(decodedObject).(proto.Message)); err != nil {
+				zap.L().Error("Failed to unmarshal protobuf", zap.Error(err))
+				returnErrorResponse(w, "Failed to decode response data while checking reply permissions.")
+				return
+			}
+			zap.L().Info("Decoded user profile", zap.String("userId", decodedObject.Username), zap.Bool("isVerified", decodedObject.IsVerified))
+			if !decodedObject.IsVerified {
+				returnErrorResponse(w, "You are not allowed vote on to this thread. You must be a verified account to reply.")
+				return
+			}
+		}
+	}
+
+	ctx, cancel = createContext()
+	defer cancel()
+
+	resp, err = client.Thread_VoteThread(ctx, req)
 	processThreadResponseWithoutPayload(resp, err, w)
 }
 

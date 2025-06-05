@@ -1860,8 +1860,8 @@ func (x *IsAccountPrivateRequest) GetUserId() string {
 
 type IsUserFollowingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	PrivateId     string                 `protobuf:"bytes,2,opt,name=private_id,json=privateId,proto3" json:"private_id,omitempty"`
+	FollowerId    string                 `protobuf:"bytes,1,opt,name=follower_id,json=followerId,proto3" json:"follower_id,omitempty"`
+	FollowingId   string                 `protobuf:"bytes,2,opt,name=following_id,json=followingId,proto3" json:"following_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1896,16 +1896,16 @@ func (*IsUserFollowingRequest) Descriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{31}
 }
 
-func (x *IsUserFollowingRequest) GetUserId() string {
+func (x *IsUserFollowingRequest) GetFollowerId() string {
 	if x != nil {
-		return x.UserId
+		return x.FollowerId
 	}
 	return ""
 }
 
-func (x *IsUserFollowingRequest) GetPrivateId() string {
+func (x *IsUserFollowingRequest) GetFollowingId() string {
 	if x != nil {
-		return x.PrivateId
+		return x.FollowingId
 	}
 	return ""
 }
@@ -2331,11 +2331,11 @@ const file_user_proto_rawDesc = "" +
 	"\x06gender\x18\x05 \x01(\tR\x06gender\x12\"\n" +
 	"\rdate_of_birth\x18\x06 \x01(\tR\vdateOfBirth\"2\n" +
 	"\x17IsAccountPrivateRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"P\n" +
-	"\x16IsUserFollowingRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
-	"\n" +
-	"private_id\x18\x02 \x01(\tR\tprivateId\"/\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\\\n" +
+	"\x16IsUserFollowingRequest\x12\x1f\n" +
+	"\vfollower_id\x18\x01 \x01(\tR\n" +
+	"followerId\x12!\n" +
+	"\ffollowing_id\x18\x02 \x01(\tR\vfollowingId\"/\n" +
 	"\x13SearchPeopleRequest\x12\x18\n" +
 	"\akeyword\x18\x01 \x01(\tR\akeyword\"\xb4\x01\n" +
 	"\rLoginResponse\x12\x14\n" +

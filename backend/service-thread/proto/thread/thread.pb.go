@@ -342,7 +342,7 @@ func (x *GeneralThreadRequest) GetThreadId() string {
 	return ""
 }
 
-type UserToUserRequeqst struct {
+type UserToUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	RequesterId   string                 `protobuf:"bytes,2,opt,name=requester_id,json=requesterId,proto3" json:"requester_id,omitempty"`
@@ -350,20 +350,20 @@ type UserToUserRequeqst struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UserToUserRequeqst) Reset() {
-	*x = UserToUserRequeqst{}
+func (x *UserToUserRequest) Reset() {
+	*x = UserToUserRequest{}
 	mi := &file_thread_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserToUserRequeqst) String() string {
+func (x *UserToUserRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserToUserRequeqst) ProtoMessage() {}
+func (*UserToUserRequest) ProtoMessage() {}
 
-func (x *UserToUserRequeqst) ProtoReflect() protoreflect.Message {
+func (x *UserToUserRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_thread_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -375,19 +375,19 @@ func (x *UserToUserRequeqst) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserToUserRequeqst.ProtoReflect.Descriptor instead.
-func (*UserToUserRequeqst) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserToUserRequest.ProtoReflect.Descriptor instead.
+func (*UserToUserRequest) Descriptor() ([]byte, []int) {
 	return file_thread_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UserToUserRequeqst) GetUserId() string {
+func (x *UserToUserRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *UserToUserRequeqst) GetRequesterId() string {
+func (x *UserToUserRequest) GetRequesterId() string {
 	if x != nil {
 		return x.RequesterId
 	}
@@ -1246,8 +1246,8 @@ const file_thread_proto_rawDesc = "" +
 	"\acontent\x18\x03 \x01(\tR\acontent\"L\n" +
 	"\x14GeneralThreadRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
-	"\tthread_id\x18\x02 \x01(\tR\bthreadId\"P\n" +
-	"\x12UserToUserRequeqst\x12\x17\n" +
+	"\tthread_id\x18\x02 \x01(\tR\bthreadId\"O\n" +
+	"\x11UserToUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
 	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"\xc4\x04\n" +
 	"\x06Thread\x12\x1b\n" +
@@ -1328,8 +1328,7 @@ const file_thread_proto_rawDesc = "" +
 	"\rRepostRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text2\xd7\n" +
-	"\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text2\xa1\v\n" +
 	"\rThreadService\x12O\n" +
 	"\x14Thread_GetAllThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12U\n" +
 	"\x1aThread_GetFollowingThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12O\n" +
@@ -1343,11 +1342,12 @@ const file_thread_proto_rawDesc = "" +
 	"\x15Thread_ToggleBookmark\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12G\n" +
 	"\x13Thread_ToggleRepost\x12\x15.thread.RepostRequest\x1a\x19.thread.ApiResponseThread\x12N\n" +
 	"\x1bThread_GetBookmarkedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12L\n" +
-	"\x19Thread_GetRepostedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12N\n" +
-	"\x15Thread_GetUserThreads\x12\x1a.thread.UserToUserRequeqst\x1a\x19.thread.ApiResponseThread\x12S\n" +
-	"\x1aThread_GetUserLikedThreads\x12\x1a.thread.UserToUserRequeqst\x1a\x19.thread.ApiResponseThread\x12N\n" +
-	"\x15Thread_GetUserReplies\x12\x1a.thread.UserToUserRequeqst\x1a\x19.thread.ApiResponseThread\x12S\n" +
-	"\x1aThread_GetUserMediaThreads\x12\x1a.thread.UserToUserRequeqst\x1a\x19.thread.ApiResponseThreadB\tZ\athread/b\x06proto3"
+	"\x19Thread_GetRepostedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12M\n" +
+	"\x15Thread_GetUserThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12R\n" +
+	"\x1aThread_GetUserLikedThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
+	"\x15Thread_GetUserReplies\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12R\n" +
+	"\x1aThread_GetUserMediaThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12L\n" +
+	"\x19Thread_GetReplyPermission\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThreadB\tZ\athread/b\x06proto3"
 
 var (
 	file_thread_proto_rawDescOnce sync.Once
@@ -1369,7 +1369,7 @@ var file_thread_proto_goTypes = []any{
 	(*StringThread)(nil),                 // 3: thread.StringThread
 	(*SubmitVote)(nil),                   // 4: thread.SubmitVote
 	(*GeneralThreadRequest)(nil),         // 5: thread.GeneralThreadRequest
-	(*UserToUserRequeqst)(nil),           // 6: thread.UserToUserRequeqst
+	(*UserToUserRequest)(nil),            // 6: thread.UserToUserRequest
 	(*Thread)(nil),                       // 7: thread.Thread
 	(*Media)(nil),                        // 8: thread.Media
 	(*PollOption)(nil),                   // 9: thread.PollOption
@@ -1403,29 +1403,31 @@ var file_thread_proto_depIdxs = []int32{
 	17, // 16: thread.ThreadService.Thread_ToggleRepost:input_type -> thread.RepostRequest
 	3,  // 17: thread.ThreadService.Thread_GetBookmarkedThreads:input_type -> thread.StringThread
 	3,  // 18: thread.ThreadService.Thread_GetRepostedThreads:input_type -> thread.StringThread
-	6,  // 19: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.UserToUserRequeqst
-	6,  // 20: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.UserToUserRequeqst
-	6,  // 21: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.UserToUserRequeqst
-	6,  // 22: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.UserToUserRequeqst
-	0,  // 23: thread.ThreadService.Thread_GetAllThreads:output_type -> thread.ApiResponseThread
-	0,  // 24: thread.ThreadService.Thread_GetFollowingThreads:output_type -> thread.ApiResponseThread
-	0,  // 25: thread.ThreadService.Thread_GetThreadById:output_type -> thread.ApiResponseThread
-	0,  // 26: thread.ThreadService.Thread_SearchThreads:output_type -> thread.ApiResponseThread
-	0,  // 27: thread.ThreadService.Thread_DeleteThread:output_type -> thread.ApiResponseThread
-	0,  // 28: thread.ThreadService.Thread_CreateThread:output_type -> thread.ApiResponseThread
-	0,  // 29: thread.ThreadService.Thread_TogglePinThread:output_type -> thread.ApiResponseThread
-	0,  // 30: thread.ThreadService.Thread_VoteThread:output_type -> thread.ApiResponseThread
-	0,  // 31: thread.ThreadService.Thread_ToggleLike:output_type -> thread.ApiResponseThread
-	0,  // 32: thread.ThreadService.Thread_ToggleBookmark:output_type -> thread.ApiResponseThread
-	0,  // 33: thread.ThreadService.Thread_ToggleRepost:output_type -> thread.ApiResponseThread
-	0,  // 34: thread.ThreadService.Thread_GetBookmarkedThreads:output_type -> thread.ApiResponseThread
-	0,  // 35: thread.ThreadService.Thread_GetRepostedThreads:output_type -> thread.ApiResponseThread
-	0,  // 36: thread.ThreadService.Thread_GetUserThreads:output_type -> thread.ApiResponseThread
-	0,  // 37: thread.ThreadService.Thread_GetUserLikedThreads:output_type -> thread.ApiResponseThread
-	0,  // 38: thread.ThreadService.Thread_GetUserReplies:output_type -> thread.ApiResponseThread
-	0,  // 39: thread.ThreadService.Thread_GetUserMediaThreads:output_type -> thread.ApiResponseThread
-	23, // [23:40] is the sub-list for method output_type
-	6,  // [6:23] is the sub-list for method input_type
+	6,  // 19: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.UserToUserRequest
+	6,  // 20: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.UserToUserRequest
+	6,  // 21: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.UserToUserRequest
+	6,  // 22: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.UserToUserRequest
+	3,  // 23: thread.ThreadService.Thread_GetReplyPermission:input_type -> thread.StringThread
+	0,  // 24: thread.ThreadService.Thread_GetAllThreads:output_type -> thread.ApiResponseThread
+	0,  // 25: thread.ThreadService.Thread_GetFollowingThreads:output_type -> thread.ApiResponseThread
+	0,  // 26: thread.ThreadService.Thread_GetThreadById:output_type -> thread.ApiResponseThread
+	0,  // 27: thread.ThreadService.Thread_SearchThreads:output_type -> thread.ApiResponseThread
+	0,  // 28: thread.ThreadService.Thread_DeleteThread:output_type -> thread.ApiResponseThread
+	0,  // 29: thread.ThreadService.Thread_CreateThread:output_type -> thread.ApiResponseThread
+	0,  // 30: thread.ThreadService.Thread_TogglePinThread:output_type -> thread.ApiResponseThread
+	0,  // 31: thread.ThreadService.Thread_VoteThread:output_type -> thread.ApiResponseThread
+	0,  // 32: thread.ThreadService.Thread_ToggleLike:output_type -> thread.ApiResponseThread
+	0,  // 33: thread.ThreadService.Thread_ToggleBookmark:output_type -> thread.ApiResponseThread
+	0,  // 34: thread.ThreadService.Thread_ToggleRepost:output_type -> thread.ApiResponseThread
+	0,  // 35: thread.ThreadService.Thread_GetBookmarkedThreads:output_type -> thread.ApiResponseThread
+	0,  // 36: thread.ThreadService.Thread_GetRepostedThreads:output_type -> thread.ApiResponseThread
+	0,  // 37: thread.ThreadService.Thread_GetUserThreads:output_type -> thread.ApiResponseThread
+	0,  // 38: thread.ThreadService.Thread_GetUserLikedThreads:output_type -> thread.ApiResponseThread
+	0,  // 39: thread.ThreadService.Thread_GetUserReplies:output_type -> thread.ApiResponseThread
+	0,  // 40: thread.ThreadService.Thread_GetUserMediaThreads:output_type -> thread.ApiResponseThread
+	0,  // 41: thread.ThreadService.Thread_GetReplyPermission:output_type -> thread.ApiResponseThread
+	24, // [24:42] is the sub-list for method output_type
+	6,  // [6:24] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name

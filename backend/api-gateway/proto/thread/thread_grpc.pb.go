@@ -36,6 +36,7 @@ const (
 	ThreadService_Thread_GetUserLikedThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserLikedThreads"
 	ThreadService_Thread_GetUserReplies_FullMethodName       = "/thread.ThreadService/Thread_GetUserReplies"
 	ThreadService_Thread_GetUserMediaThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserMediaThreads"
+	ThreadService_Thread_GetReplyPermission_FullMethodName   = "/thread.ThreadService/Thread_GetReplyPermission"
 )
 
 // ThreadServiceClient is the client API for ThreadService service.
@@ -56,10 +57,11 @@ type ThreadServiceClient interface {
 	Thread_ToggleRepost(ctx context.Context, in *RepostRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetUserThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetUserReplies(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetUserThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetUserReplies(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 }
 
 type threadServiceClient struct {
@@ -200,7 +202,7 @@ func (c *threadServiceClient) Thread_GetRepostedThreads(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetUserThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetUserThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetUserThreads_FullMethodName, in, out, cOpts...)
@@ -210,7 +212,7 @@ func (c *threadServiceClient) Thread_GetUserThreads(ctx context.Context, in *Use
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetUserLikedThreads_FullMethodName, in, out, cOpts...)
@@ -220,7 +222,7 @@ func (c *threadServiceClient) Thread_GetUserLikedThreads(ctx context.Context, in
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetUserReplies(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetUserReplies(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetUserReplies_FullMethodName, in, out, cOpts...)
@@ -230,10 +232,20 @@ func (c *threadServiceClient) Thread_GetUserReplies(ctx context.Context, in *Use
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequeqst, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetUserMediaThreads_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *threadServiceClient) Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Thread_GetReplyPermission_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,10 +270,11 @@ type ThreadServiceServer interface {
 	Thread_ToggleRepost(context.Context, *RepostRequest) (*ApiResponseThread, error)
 	Thread_GetBookmarkedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
-	Thread_GetUserThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error)
-	Thread_GetUserLikedThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error)
-	Thread_GetUserReplies(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error)
-	Thread_GetUserMediaThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error)
+	Thread_GetUserThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
+	Thread_GetUserLikedThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
+	Thread_GetUserReplies(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
+	Thread_GetUserMediaThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
+	Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error)
 	mustEmbedUnimplementedThreadServiceServer()
 }
 
@@ -311,17 +324,20 @@ func (UnimplementedThreadServiceServer) Thread_GetBookmarkedThreads(context.Cont
 func (UnimplementedThreadServiceServer) Thread_GetRepostedThreads(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetRepostedThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetUserThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetUserThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetUserLikedThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetUserLikedThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserLikedThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetUserReplies(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetUserReplies(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserReplies not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetUserMediaThreads(context.Context, *UserToUserRequeqst) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetUserMediaThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserMediaThreads not implemented")
+}
+func (UnimplementedThreadServiceServer) Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetReplyPermission not implemented")
 }
 func (UnimplementedThreadServiceServer) mustEmbedUnimplementedThreadServiceServer() {}
 func (UnimplementedThreadServiceServer) testEmbeddedByValue()                       {}
@@ -579,7 +595,7 @@ func _ThreadService_Thread_GetRepostedThreads_Handler(srv interface{}, ctx conte
 }
 
 func _ThreadService_Thread_GetUserThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserToUserRequeqst)
+	in := new(UserToUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -591,13 +607,13 @@ func _ThreadService_Thread_GetUserThreads_Handler(srv interface{}, ctx context.C
 		FullMethod: ThreadService_Thread_GetUserThreads_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetUserThreads(ctx, req.(*UserToUserRequeqst))
+		return srv.(ThreadServiceServer).Thread_GetUserThreads(ctx, req.(*UserToUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ThreadService_Thread_GetUserLikedThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserToUserRequeqst)
+	in := new(UserToUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -609,13 +625,13 @@ func _ThreadService_Thread_GetUserLikedThreads_Handler(srv interface{}, ctx cont
 		FullMethod: ThreadService_Thread_GetUserLikedThreads_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetUserLikedThreads(ctx, req.(*UserToUserRequeqst))
+		return srv.(ThreadServiceServer).Thread_GetUserLikedThreads(ctx, req.(*UserToUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ThreadService_Thread_GetUserReplies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserToUserRequeqst)
+	in := new(UserToUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -627,13 +643,13 @@ func _ThreadService_Thread_GetUserReplies_Handler(srv interface{}, ctx context.C
 		FullMethod: ThreadService_Thread_GetUserReplies_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetUserReplies(ctx, req.(*UserToUserRequeqst))
+		return srv.(ThreadServiceServer).Thread_GetUserReplies(ctx, req.(*UserToUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ThreadService_Thread_GetUserMediaThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserToUserRequeqst)
+	in := new(UserToUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -645,7 +661,25 @@ func _ThreadService_Thread_GetUserMediaThreads_Handler(srv interface{}, ctx cont
 		FullMethod: ThreadService_Thread_GetUserMediaThreads_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetUserMediaThreads(ctx, req.(*UserToUserRequeqst))
+		return srv.(ThreadServiceServer).Thread_GetUserMediaThreads(ctx, req.(*UserToUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThreadService_Thread_GetReplyPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringThread)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Thread_GetReplyPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Thread_GetReplyPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Thread_GetReplyPermission(ctx, req.(*StringThread))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -724,6 +758,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetUserMediaThreads",
 			Handler:    _ThreadService_Thread_GetUserMediaThreads_Handler,
+		},
+		{
+			MethodName: "Thread_GetReplyPermission",
+			Handler:    _ThreadService_Thread_GetReplyPermission_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

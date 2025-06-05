@@ -39,13 +39,13 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		}
 	}
 
-	var requester models.User
-	if err := h.DB.Where("user_id = ?", req.RequesterId).First(&requester).Error; err != nil {
-		return &pb.ApiResponseUser{
-			Success: false,
-			Message: "Requester Not Found.",
-		}, nil
-	}
+	// var requester models.User
+	// if err := h.DB.Where("user_id = ?", req.RequesterId).First(&requester).Error; err != nil {
+	// 	return &pb.ApiResponseUser{
+	// 		Success: false,
+	// 		Message: "Requester Not Found.",
+	// 	}, nil
+	// }
 
 	if user.IsDeactivated || user.IsBanned {
 		return &pb.ApiResponseUser{
@@ -54,12 +54,12 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		}, nil
 	}
 
-	if requester.IsDeactivated || requester.IsBanned {
-		return &pb.ApiResponseUser{
-			Success: false,
-			Message: "Your account is inactive or currently banned.",
-		}, nil
-	}
+	// if requester.IsDeactivated || requester.IsBanned {
+	// 	return &pb.ApiResponseUser{
+	// 		Success: false,
+	// 		Message: "Your account is inactive or currently banned.",
+	// 	}, nil
+	// }
 
 	followers, err := h.GetFollowers(user.UserId)
 	following, err2 := h.GetFollowing(user.UserId)

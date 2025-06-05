@@ -19,7 +19,11 @@
         "Art",
     ];
     let selectedCategory: string = $state("");
-    const permissions: string[] = ["Public", "Followers", "Friends"];
+    const permissions: string[] = [
+        "Everyone",
+        "Accounts You Follow",
+        "Verified Accounts",
+    ];
     let selectedPermission: string = $state("");
     let isScheduled: boolean = $state(false);
     let scheduledDate = $state("");
@@ -96,25 +100,27 @@
     async function handleSubmit() {
         try {
             console.log(scheduledAt);
-            if (selectedCategory === "") {
-                addToast("error", "Please select a category.", "Error!");
-                return;
-            }
+            if (mode === "post") {
+                if (selectedCategory === "") {
+                    addToast("error", "Please select a category.", "Error!");
+                    return;
+                }
 
-            if (selectedPermission === "") {
-                addToast(
-                    "error",
-                    "Please select a permission level.",
-                    "Error!"
-                );
-                return;
+                if (selectedPermission === "") {
+                    addToast(
+                        "error",
+                        "Please select a permission level.",
+                        "Error!"
+                    );
+                    return;
+                }
             }
             let response;
             if (mode === "comment" && threadId) {
                 response = await postThread(
                     postText,
                     "Reply",
-                    selectedPermission,
+                    "Public",
                     selectedFiles,
                     [],
                     threadId,
@@ -152,6 +158,7 @@
             showPoll = false;
             selectedCategory = "";
             selectedPermission = "";
+            window.location.reload();
         } catch (error) {
             addToast(
                 "error",
@@ -271,18 +278,20 @@
                     </div>
                 {/if}
             </div>
-            <div class="schedule-selector">
-                <label for="schedule-select">Schedule</label>
-                <input
-                    type="checkbox"
-                    id="schedule-checkbox"
-                    bind:checked={isScheduled}
-                />
-                {#if isScheduled}
-                    <input type="date" bind:value={scheduledDate} />
-                    <input type="time" bind:value={scheduledTime} />
-                {/if}
-            </div>
+            {#if mode === "post"}
+                <div class="schedule-selector">
+                    <label for="schedule-select">Schedule</label>
+                    <input
+                        type="checkbox"
+                        id="schedule-checkbox"
+                        bind:checked={isScheduled}
+                    />
+                    {#if isScheduled}
+                        <input type="date" bind:value={scheduledDate} />
+                        <input type="time" bind:value={scheduledTime} />
+                    {/if}
+                </div>
+            {/if}
         </div>
 
         <button

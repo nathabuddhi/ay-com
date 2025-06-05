@@ -133,7 +133,7 @@ func (h *Handler) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllThread
 func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (*pb.ApiResponseThread, error) {
 	zap.L().Info("Creating new thread", zap.String("user_id", req.UserId))
 
-	if req.Content == "" || req.Category == "" || req.PollCount < 0 || req.MediaCount < 0 || req.ReplyPermission == "" {
+	if req.Content == "" || req.PollCount < 0 || req.MediaCount < 0 || req.ReplyPermission == "" {
 		return &pb.ApiResponseThread{Success: false, Message: "Invalid request parameters."}, nil
 	}
 
@@ -186,7 +186,7 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 	}
 
 	if req.ReplyTo != "" {
-		err := h.Thread_ReplyThread(ctx, req.ReplyTo, generatedId)
+		err := h.Thread_ReplyThread(ctx, generatedId, req.ReplyTo)
 
 		if err != nil {
 			return &pb.ApiResponseThread{Success: false, Message: "Failed to reply to thread: " + err.Error()}, nil
@@ -315,7 +315,7 @@ func (h *Handler) Thread_DeleteThread(ctx context.Context, req *pb.GeneralThread
 	}
 }
 
-func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequeqst) (*pb.ApiResponseThread, error) {
+func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
 	zap.L().Info("Getting user threads ", zap.String("user_id", req.UserId))
 
 	var threads []models.Thread

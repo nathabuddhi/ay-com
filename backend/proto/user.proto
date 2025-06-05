@@ -228,8 +228,8 @@ message IsAccountPrivateRequest {
 }
 
 message IsUserFollowingRequest {
-    string user_id = 1;
-    string private_id = 2;
+    string follower_id = 1;
+    string following_id = 2;
 }
 
 message SearchPeopleRequest {
