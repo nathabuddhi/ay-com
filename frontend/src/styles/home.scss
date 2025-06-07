@@ -555,26 +555,52 @@ $tablet: 768px;
                 }
             }
 
-            .post-more-options {
+            .post-more-options-container {
+                position: relative;
+                display: inline-block;
                 background: none;
-                border: none;
-                color: var(--secondary);
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
+                .post-more-options {
+                    background: none;
+                    border: none;
+                    color: var(--secondary);
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
 
-                &:hover {
-                    background-color: var(--hover);
-                    color: var(--primary);
+                    &:hover {
+                        background-color: var(--hover);
+                        color: var(--primary);
+                    }
                 }
+                .popover {
+                    position: absolute;
+                    right: 0;
+                    margin-top: 0.5rem;
+                    background: var(--background);
+                    border: 1px solid #808080;
+                    border-radius: 0.25rem;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 0.5rem;
+                    z-index: 10;
 
-                svg {
-                    width: 18px;
-                    height: 18px;
+                    button {
+                        color: var(--text);
+                        display: block;
+                        width: 100%;
+                        padding: 0.5rem;
+                        background: none;
+                        border: none;
+                        text-align: left;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: var(--secondary);
+                        }
+                    }
                 }
             }
         }

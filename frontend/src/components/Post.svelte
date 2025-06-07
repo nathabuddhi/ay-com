@@ -11,6 +11,7 @@
     import type { UserProfile } from "../types/user";
     import { onMount } from "svelte";
     import {
+        deleteThread,
         toggleBookmark,
         toggleLike,
         toggleRepost,
@@ -22,6 +23,68 @@
     import { getUserById } from "../controllers/user-controller";
 
     let { post }: { post: Thread } = $props<{ post: Thread }>();
+    let isMoreOptionsOpen: boolean = $state<boolean>(false);
+
+    let user = $state<UserProfile>({
+        name: "loading",
+        username: "loading",
+        is_verified: false,
+        user_id: post.user_id,
+        bio: "",
+        followers: 0,
+        following: 0,
+        gender: "",
+        date_of_birth: "",
+        email: "",
+        join_date: "",
+        is_private: false,
+    });
+
+    onMount(async () => {
+        const response = await getUserById(post.user_id);
+        console.log("Fetching thread owner with user_id:", post.user_id);
+        if (response) {
+            user = response;
+        } else {
+            user = {
+                name: "Unknown.",
+                username: "Unknown.",
+                is_verified: false,
+                user_id: post.user_id,
+                bio: "",
+                followers: 0,
+                following: 0,
+                gender: "",
+                date_of_birth: "",
+                email: "",
+                join_date: "",
+                is_private: false,
+            };
+        }
+    });
+
+    function togglePopover() {
+        isMoreOptionsOpen = !isMoreOptionsOpen;
+    }
+
+    async function handleDeleteClick() {
+        const response = await deleteThread(post.thread_id);
+
+        if (response.success) {
+            addToast("success", "Post deleted successfully!", "Success!");
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        } else {
+            addToast(
+                "error",
+                "Failed voting on poll: " + response.message,
+                "Error!"
+            );
+        }
+    }
+
+    async function handleShareClick() {}
 
     async function handleVoteClick(poll: string) {
         const response = await voteThreadPoll(post.thread_id, poll);
@@ -147,44 +210,6 @@
         }
     }
 
-    let user = $state<UserProfile>({
-        name: "loading",
-        username: "loading",
-        is_verified: false,
-        user_id: post.user_id,
-        bio: "",
-        followers: 0,
-        following: 0,
-        gender: "",
-        date_of_birth: "",
-        email: "",
-        join_date: "",
-        is_private: false,
-    });
-
-    onMount(async () => {
-        const response = await getUserById(post.user_id);
-        console.log("Fetching thread owner with user_id:", post.user_id);
-        if (response) {
-            user = response;
-        } else {
-            user = {
-                name: "Unknown.",
-                username: "Unknown.",
-                is_verified: false,
-                user_id: post.user_id,
-                bio: "",
-                followers: 0,
-                following: 0,
-                gender: "",
-                date_of_birth: "",
-                email: "",
-                join_date: "",
-                is_private: false,
-            };
-        }
-    });
-
     function redirectToThreadDetail() {
         if (window.location.pathname.includes("thread")) return;
 
@@ -237,9 +262,20 @@
                 </div>
             </div>
 
-            <button class="post-more-options">
-                <EllipsisVertical />
-            </button>
+            <div class="post-more-options-container">
+                <button class="post-more-options" onclick={togglePopover}>
+                    <EllipsisVertical />
+                </button>
+
+                {#if isMoreOptionsOpen}
+                    <div class="popover" role="menu">
+                        {#if post.user_id === localStorage.getItem("user_id")}
+                            <button onclick={handleDeleteClick}>Delete</button>
+                        {/if}
+                        <button onclick={handleShareClick}>Share</button>
+                    </div>
+                {/if}
+            </div>
         </div>
         <div class="post-text">
             {@html processContent(post.content)}

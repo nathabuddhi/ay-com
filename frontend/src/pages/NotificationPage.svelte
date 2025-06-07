@@ -33,7 +33,9 @@
                 "Notifications cleared successfully",
                 "Success"
             );
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             addToast("error", response.message, "Error");
         }

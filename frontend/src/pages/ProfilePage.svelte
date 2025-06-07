@@ -72,12 +72,14 @@
             user = response.payload;
         } else {
             navigate("/profile");
-            window.location.reload();
             addToast(
                 "error",
                 "Error fetching user profile: " + response?.message,
                 "Error!"
             );
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         }
     }
 
@@ -96,7 +98,9 @@
 
         if (response.success) {
             addToast("success", "Unfollowed successfully!", "Success!");
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             addToast("error", response.message, "Error!");
         }
@@ -107,7 +111,9 @@
 
         if (response.success) {
             addToast("success", "Followed successfully!", "Success!");
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             addToast("error", response.message, "Error!");
         }

@@ -158,7 +158,9 @@
             showPoll = false;
             selectedCategory = "";
             selectedPermission = "";
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } catch (error) {
             addToast(
                 "error",

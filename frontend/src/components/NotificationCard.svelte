@@ -19,7 +19,9 @@
 
         if (response.success) {
             addToast("success", "Notification deleted successfully", "Success");
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             addToast("error", response.message, "Error");
         }
@@ -30,7 +32,9 @@
 
         if (response.success) {
             addToast("success", "Notification deleted successfully", "Success");
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             addToast("error", response.message, "Error");
         }
@@ -50,6 +54,7 @@
                 date_of_birth: "",
                 email: "",
                 join_date: "",
+                is_private: false,
             };
         }
         const response = await getUserById(notification.from);
@@ -68,6 +73,7 @@
                 date_of_birth: "",
                 email: "",
                 join_date: "",
+                is_private: false,
             };
         }
     });
