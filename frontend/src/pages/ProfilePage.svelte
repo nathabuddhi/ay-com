@@ -380,7 +380,27 @@
                     {#if replies.length === 0}
                         <div class="empty-state">No replies yet.</div>
                     {:else}
-                        {#each replies as post (post.thread_id)}
+                        {#each replies.filter((post) => post.pinned) as post (post.thread_id)}
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="post-user-info">
+                                        <span class="post-pinned">
+                                            <Pin />
+                                            Pinned
+                                        </span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="post-content"
+                                    onclick={() =>
+                                        navigateToThread(post.thread_id)}
+                                >
+                                    <Post {post} />
+                                </div>
+                            </div>
+                        {/each}
+
+                        {#each replies.filter((post) => !post.pinned) as post (post.thread_id)}
                             <div class="post-item">
                                 <div
                                     class="post-content"

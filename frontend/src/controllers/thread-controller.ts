@@ -365,3 +365,23 @@ export async function deleteThread(
         return returnDefaultError<null>(error);
     }
 }
+
+export async function pinThread(thread_id: string): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/pinthread`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                thread_id,
+            }),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}

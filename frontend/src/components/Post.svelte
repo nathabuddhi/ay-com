@@ -12,6 +12,7 @@
     import { onMount } from "svelte";
     import {
         deleteThread,
+        pinThread,
         toggleBookmark,
         toggleLike,
         toggleRepost,
@@ -82,6 +83,23 @@
             addToast(
                 "error",
                 "Failed voting on poll: " + response.message,
+                "Error!"
+            );
+        }
+    }
+
+    async function handlePinClick() {
+        const response = await pinThread(post.thread_id);
+
+        if (response.success) {
+            addToast("success", "Post pinned successfully!", "Success!");
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        } else {
+            addToast(
+                "error",
+                "Failed pinning thread: " + response.message,
                 "Error!"
             );
         }
@@ -321,9 +339,12 @@
                     {#if isMoreOptionsOpen}
                         <div class="popover" role="menu">
                             {#if post.user_id === localStorage.getItem("user_id")}
-                                <button onclick={handleDeleteClick}
-                                    >Delete</button
-                                >
+                                <button onclick={handleDeleteClick}>
+                                    Delete
+                                </button>
+                                <button onclick={handlePinClick}>
+                                    {post.pinned ? "Pin" : "Unpin"}
+                                </button>
                             {/if}
                             <button onclick={handleShareClick}>Share</button>
                         </div>

@@ -91,7 +91,7 @@ func (h *Handler) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllThread
 	var threads []models.Thread
 	err := h.DB.WithContext(ctx).
 		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
-		Where("category != 'Reply'").
+		Where("category != ?", "Reply").
 		Order("created_at desc").
 		Find(&threads).Error
 	if err != nil {
@@ -290,9 +290,9 @@ func (h *Handler) Thread_TogglePinThread(ctx context.Context, req *pb.GeneralThr
 	var thread models.Thread
 	err := h.DB.WithContext(ctx).Where("thread_id = ? AND user_id = ?", req.ThreadId, req.UserId).First(&thread).Error
 	if err == nil {
-		err := h.DB.WithContext(ctx).Model(&thread).Update("is_pinned", !thread.Pinned).Error
+		err := h.DB.WithContext(ctx).Model(&thread).Update("pinned", !thread.Pinned).Error
 		if err != nil {
-			return &pb.ApiResponseThread{Success: false, Message: "Failed to toggle pin status."}, nil
+			return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
 		}
 		rabbitmq.PublishDeleteRedis("getthread/" + thread.ThreadId)
 		return &pb.ApiResponseThread{Success: true, Message: "Pin status toggled successfully."}, nil
@@ -357,7 +357,7 @@ func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserR
 	var threads []models.Thread
 	err := h.DB.WithContext(ctx).
 		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
-		Where("user_id = ?", req.UserId).
+		Where("user_id = ? AND category != ?", req.UserId, "Reply").
 		Order("pinned desc, created_at desc").
 		Find(&threads).Error
 	if err != nil {
