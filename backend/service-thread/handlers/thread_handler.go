@@ -291,6 +291,30 @@ func (h *Handler) Thread_TogglePinThread(ctx context.Context, req *pb.GeneralThr
 	}
 }
 
+func (h *Handler) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Admin is deleting thread", zap.String("thread_id", req.Value))
+
+	if req.Value == "" {
+		return &pb.ApiResponseThread{Success: false, Message: "Invalid request parameters."}, nil
+	}
+
+	var thread models.Thread
+	err := h.DB.WithContext(ctx).Where("thread_id = ?", req.Value).First(&thread).Error
+	if err == nil {
+		err := h.DB.WithContext(ctx).Delete(&thread).Error
+		if err != nil {
+			return &pb.ApiResponseThread{Success: false, Message: "Failed to delete thread."}, nil
+		}
+		rabbitmq.PublishDeleteRedis("getthread/" + thread.ThreadId)
+		return &pb.ApiResponseThread{Success: true, Message: "Thread deleted successfully."}, nil
+	} else {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "Thread not found.",
+		}, nil
+	}
+}
+
 func (h *Handler) Thread_DeleteThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 	zap.L().Info("User "+req.UserId+" is deleting thread", zap.String("thread_id", req.ThreadId))
 

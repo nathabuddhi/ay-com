@@ -90,7 +90,3 @@ func (s *ThreadServer) Thread_GetReplyPermission(ctx context.Context, req *pb.St
 // func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 // 	return s.Handler.Thread_GetUserReplies(ctx, req)
 // }
-
-// func (s *ThreadServer) Thread_DeleteReply(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_DeleteReply(ctx, req)
-// }
