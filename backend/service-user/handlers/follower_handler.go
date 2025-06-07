@@ -6,7 +6,7 @@ import (
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
-	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
+	rabbitmq "github.com/nathabuddhi/ay-com/backend/service-user/rabbitmqsend"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gorm.io/gorm"

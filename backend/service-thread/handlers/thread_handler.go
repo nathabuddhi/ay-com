@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -190,6 +192,15 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 
 		if err != nil {
 			return &pb.ApiResponseThread{Success: false, Message: "Failed to reply to thread: " + err.Error()}, nil
+		}
+	}
+
+	re := regexp.MustCompile(`@(\S+)`)
+	matches := re.FindAllStringSubmatch(req.Content, -1)
+	for _, match := range matches {
+		username := strings.TrimSpace(match[1])
+		if username != "" {
+			rabbitmq.PublishSendMention(username, req.UserId)
 		}
 	}
 

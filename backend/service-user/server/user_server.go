@@ -5,7 +5,6 @@ import (
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/handlers"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
-	"gorm.io/gorm"
 )
 
 type UserServer struct {
@@ -13,9 +12,9 @@ type UserServer struct {
 	Handlers *handlers.Handlers
 }
 
-func NewUserServer(db *gorm.DB) *UserServer {
+func NewUserServer(newHandler *handlers.Handlers) *UserServer {
 	return &UserServer{
-		Handlers: handlers.NewHandlers(db),
+		Handlers: newHandler,
 	}
 }
 

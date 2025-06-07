@@ -6,7 +6,6 @@ import (
 
 	"github.com/nathabuddhi/ay-com/backend/service-thread/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-thread/proto/thread"
-	"github.com/nathabuddhi/ay-com/backend/service-thread/rabbitmq"
 	"go.uber.org/zap"
 )
 
@@ -30,8 +29,6 @@ func (h *Handler) Thread_ReplyThread(ctx context.Context, threadId string, reply
 	if err := h.DB.WithContext(ctx).Create(reply).Error; err != nil {
 		return err
 	}
-
-	rabbitmq.PublishDeleteRedis("getthread/" + replyToId)
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/nathabuddhi/ay-com/backend/service-thread/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-thread/proto/thread"
+	"github.com/nathabuddhi/ay-com/backend/service-thread/rabbitmq"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gorm.io/gorm"
@@ -66,6 +67,9 @@ func (h *Handler) Thread_ToggleRepost(ctx context.Context, req *pb.RepostRequest
 		if err := h.DB.WithContext(ctx).Create(&newRepost).Error; err != nil {
 			return &pb.ApiResponseThread{Success: false, Message: "Failed to repost thread."}, nil
 		}
+
+		rabbitmq.PublishSendRepost(req.UserId, req.ThreadId, thread.UserId)
+
 		return &pb.ApiResponseThread{Success: true, Message: "Thread reposted successfully."}, nil
 	}
 

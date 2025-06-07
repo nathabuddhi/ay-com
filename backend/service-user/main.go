@@ -6,8 +6,10 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/nathabuddhi/ay-com/backend/service-user/database"
+	"github.com/nathabuddhi/ay-com/backend/service-user/handlers"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
-	"github.com/nathabuddhi/ay-com/backend/service-user/rabbitmq"
+	rabbitmqreceive "github.com/nathabuddhi/ay-com/backend/service-user/rabbitmqreceive"
+	rabbitmq "github.com/nathabuddhi/ay-com/backend/service-user/rabbitmqsend"
 	"github.com/nathabuddhi/ay-com/backend/service-user/server"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -54,6 +56,7 @@ func main() {
 	}
 
 	db := database.InitDB()
+	handler := handlers.NewHandlers(db)
 	rabbitmq.InitRabbitMQ()
 
 	lis, err := net.Listen("tcp", ":5001")
@@ -61,7 +64,7 @@ func main() {
 		zap.L().Fatal("Failed to listen: " + err.Error())
 	}
 
-	userServer := server.NewUserServer(db)
+	userServer := server.NewUserServer(handler)
 
 	s := grpc.NewServer()
 
@@ -69,6 +72,7 @@ func main() {
 	zap.L().Info("User Service gRPC server started successfully.")
 
 	zap.L().Info("User Service Running. Listening on port 5001.")
+	go rabbitmqreceive.InitHandler(handler)
 	if err := s.Serve(lis); err != nil {
 		zap.L().Fatal("Failed to serve: " + err.Error())
 	}
