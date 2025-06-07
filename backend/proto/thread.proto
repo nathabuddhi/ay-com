@@ -29,7 +29,7 @@ service ThreadService {
     rpc Thread_GetRepostedThreads (StringThread) returns (ApiResponseThread);
 
     rpc Thread_GetUserThreads (UserToUserRequest) returns (ApiResponseThread);
-    rpc Thread_GetUserLikedThreads (UserToUserRequest) returns (ApiResponseThread);
+    rpc Thread_GetUserLikedThreads (StringThread) returns (ApiResponseThread);
     rpc Thread_GetUserReplies (UserToUserRequest) returns (ApiResponseThread);
     rpc Thread_GetUserMediaThreads (UserToUserRequest) returns (ApiResponseThread);
     rpc Thread_GetReplyPermission (StringThread) returns (ApiResponseThread);

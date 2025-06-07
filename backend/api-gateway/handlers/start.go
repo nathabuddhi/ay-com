@@ -97,10 +97,10 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getbookmarks", Thread_GetBookmarkedThreads).Methods("POST")
 	secured.HandleFunc("/thread/getreposts", Thread_GetRepostedThreads).Methods("POST")
 
-	// secured.HandleFunc("/thread/getuserthreads", Thread_GetUserThreads).Methods("POST")
-	// secured.HandleFunc("/thread/getuserlikedthreads", Thread_GetUserLikedThreads).Methods("POST")
-	// secured.HandleFunc("/thread/getuserreplies", Thread_GetUserReplies).Methods("POST")
-	// secured.HandleFunc("/thread/getusermediathreads", Thread_GetUserMediaThreads).Methods("POST")
+	secured.HandleFunc("/thread/getuserthreads", Thread_GetUserThreads).Methods("POST")
+	secured.HandleFunc("/thread/getuserlikedthreads", Thread_GetUserLikedThreads).Methods("POST")
+	secured.HandleFunc("/thread/getuserreplies", Thread_GetUserReplies).Methods("POST")
+	secured.HandleFunc("/thread/getusermediathreads", Thread_GetUserMediaThreads).Methods("POST")
 
 	// secured.HandleFunc("/thread/getthreadsbyuser", Thread_).Methods("POST")
 	// secured.HandleFunc("/thread/getthreadsbycommunity", Thread_).Methods("POST")

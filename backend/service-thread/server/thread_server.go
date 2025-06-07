@@ -71,22 +71,22 @@ func (s *ThreadServer) Thread_GetRepostedThreads(ctx context.Context, req *pb.St
 	return s.Handler.Thread_GetRepostedThreads(ctx, req)
 }
 
-func (s *ThreadServer) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
-	return s.Handler.Thread_GetUserThreads(ctx, req)
-}
-
 func (s *ThreadServer) Thread_GetReplyPermission(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetReplyPermission(ctx, req)
 }
 
-// func (s *ThreadServer) Thread_GetUserLikedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_GetUserLikedThreads(ctx, req)
-// }
+func (s *ThreadServer) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetUserThreads(ctx, req)
+}
 
-// func (s *ThreadServer) Thread_GetUserMediaThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_GetUserMediaThreads(ctx, req)
-// }
+func (s *ThreadServer) Thread_GetUserLikedThreads(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetUserLikedThreads(ctx, req)
+}
 
-// func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
-// 	return s.Handler.Thread_GetUserReplies(ctx, req)
-// }
+func (s *ThreadServer) Thread_GetUserMediaThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetUserMediaThreads(ctx, req)
+}
+
+func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetUserReplies(ctx, req)
+}

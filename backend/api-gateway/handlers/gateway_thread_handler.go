@@ -487,3 +487,55 @@ func Thread_GetRepostedThreads(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Thread_GetRepostedThreads(ctx, req)
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
+
+func Thread_GetUserThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetUserThreads) is called.")
+
+	req, client := processThreadRequest[pb.UserToUserRequest](r, w)
+	req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetUserThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
+func Thread_GetUserLikedThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetUserLikedThreads) is called.")
+
+	req, client := processThreadRequest[pb.StringThread](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetUserLikedThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
+func Thread_GetUserReplies(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetUserReplies) is called.")
+
+	req, client := processThreadRequest[pb.UserToUserRequest](r, w)
+	req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetUserReplies(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
+func Thread_GetUserMediaThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetUserMediaThreads) is called.")
+
+	req, client := processThreadRequest[pb.UserToUserRequest](r, w)
+	req.RequesterId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetUserMediaThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}

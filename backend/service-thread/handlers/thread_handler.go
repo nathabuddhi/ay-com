@@ -91,6 +91,7 @@ func (h *Handler) Thread_GetAllThreads(ctx context.Context, req *pb.GetAllThread
 	var threads []models.Thread
 	err := h.DB.WithContext(ctx).
 		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("category != 'Reply'").
 		Order("created_at desc").
 		Find(&threads).Error
 	if err != nil {
@@ -355,7 +356,53 @@ func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserR
 
 	var threads []models.Thread
 	err := h.DB.WithContext(ctx).
-		Where("(is_scheduled = false OR scheduled_at < ?) AND user_id = ?", time.Now(), req.UserId).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("user_id = ?", req.UserId).
+		Order("pinned desc, created_at desc").
+		Find(&threads).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: true, Message: "No threads found."}, nil
+		}
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	getAllThreadResponse := &pb.GetThreadsResponse{
+		Threads: make([]*pb.Thread, len(threads)),
+	}
+
+	for i, request := range threads {
+		threadResponse, err := h.processThreadResponse(ctx, request, req.RequesterId)
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: err.Error(),
+			}, nil
+		}
+		getAllThreadResponse.Threads[i] = &threadResponse
+	}
+
+	returnData, err := anypb.New(getAllThreadResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get threads successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handler) Thread_GetUserMediaThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
+	var threads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("user_id = ? AND has_media = ?", req.UserId, true).
 		Order("created_at desc").
 		Find(&threads).Error
 	if err != nil {
@@ -377,7 +424,6 @@ func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserR
 				Message: err.Error(),
 			}, nil
 		}
-
 		getAllThreadResponse.Threads[i] = &threadResponse
 	}
 

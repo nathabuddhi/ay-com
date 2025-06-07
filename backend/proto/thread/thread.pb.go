@@ -1328,7 +1328,7 @@ const file_thread_proto_rawDesc = "" +
 	"\rRepostRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text2\xa1\v\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text2\x9c\v\n" +
 	"\rThreadService\x12O\n" +
 	"\x14Thread_GetAllThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12U\n" +
 	"\x1aThread_GetFollowingThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12O\n" +
@@ -1343,8 +1343,8 @@ const file_thread_proto_rawDesc = "" +
 	"\x13Thread_ToggleRepost\x12\x15.thread.RepostRequest\x1a\x19.thread.ApiResponseThread\x12N\n" +
 	"\x1bThread_GetBookmarkedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12L\n" +
 	"\x19Thread_GetRepostedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12M\n" +
-	"\x15Thread_GetUserThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12R\n" +
-	"\x1aThread_GetUserLikedThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
+	"\x15Thread_GetUserThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12M\n" +
+	"\x1aThread_GetUserLikedThreads\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12M\n" +
 	"\x15Thread_GetUserReplies\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12R\n" +
 	"\x1aThread_GetUserMediaThreads\x12\x19.thread.UserToUserRequest\x1a\x19.thread.ApiResponseThread\x12L\n" +
 	"\x19Thread_GetReplyPermission\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThreadB\tZ\athread/b\x06proto3"
@@ -1404,7 +1404,7 @@ var file_thread_proto_depIdxs = []int32{
 	3,  // 17: thread.ThreadService.Thread_GetBookmarkedThreads:input_type -> thread.StringThread
 	3,  // 18: thread.ThreadService.Thread_GetRepostedThreads:input_type -> thread.StringThread
 	6,  // 19: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.UserToUserRequest
-	6,  // 20: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.UserToUserRequest
+	3,  // 20: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.StringThread
 	6,  // 21: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.UserToUserRequest
 	6,  // 22: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.UserToUserRequest
 	3,  // 23: thread.ThreadService.Thread_GetReplyPermission:input_type -> thread.StringThread

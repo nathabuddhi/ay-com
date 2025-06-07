@@ -14,12 +14,12 @@
     import { BadgeCheck, Calendar, Pin, X } from "@lucide/svelte";
     import type { Thread } from "../types/thread";
     import {
-        getForYouThreads,
         getUserLikedThreads,
         getUserMediaThreads,
         getUserReplies,
         getUserThreads,
     } from "../controllers/thread-controller";
+    import { THREAD_IMG } from "../env_var";
 
     let user = $state<UserProfile>({
         name: "loading",
@@ -120,9 +120,9 @@
     }
 
     async function fetchUserPosts() {
-        const response = await getForYouThreads();
-        if (response.success && response.payload) {
-            posts = response.payload.threads || [];
+        const response = await getUserThreads(user.user_id);
+        if (response.success) {
+            if (response.payload) posts = response?.payload.threads || [];
         } else {
             addToast("error", "Error fetching user posts", "Error!");
         }
@@ -130,8 +130,8 @@
 
     async function fetchUserReplies() {
         const response = await getUserReplies(user.user_id);
-        if (response.success && response.payload) {
-            posts = response.payload.threads || [];
+        if (response.success) {
+            if (response.payload) replies = response?.payload.threads || [];
         } else {
             addToast("error", "Error fetching user replies", "Error!");
         }
@@ -139,8 +139,8 @@
 
     async function fetchUserMedia() {
         const response = await getUserMediaThreads(user.user_id);
-        if (response.success && response.payload) {
-            posts = response.payload.threads || [];
+        if (response.success) {
+            if (response.payload) media = response?.payload.threads || [];
         } else {
             addToast("error", "Error fetching user media", "Error!");
         }
@@ -148,10 +148,10 @@
 
     async function fetchUserLikes() {
         const response = await getUserLikedThreads();
-        if (response.success && response.payload) {
-            posts = response.payload.threads || [];
+        if (response.success) {
+            if (response.payload) likes = response?.payload.threads || [];
         } else {
-            addToast("error", "Error fetching user likes", "Error!");
+            addToast("error", response.message, "Error fetching user likes!");
         }
     }
 
@@ -175,8 +175,22 @@
         }
     });
 
-    function setActiveTab(tab: string) {
+    async function loadTabData(tab: string) {
         activeTab = tab;
+        switch (tab) {
+            case "Posts":
+                await fetchUserPosts();
+                break;
+            case "Replies":
+                await fetchUserReplies();
+                break;
+            case "Likes":
+                await fetchUserLikes();
+                break;
+            case "Media":
+                await fetchUserMedia();
+                break;
+        }
     }
 
     function openImagePreviewModal(imageUrl: string) {
@@ -310,7 +324,7 @@
             {#each tabs as tab}
                 <button
                     class="tab-button {activeTab === tab ? 'active' : ''}"
-                    onclick={() => setActiveTab(tab)}
+                    onclick={() => loadTabData(tab)}
                 >
                     {tab}
                 </button>
@@ -398,49 +412,56 @@
                     {/if}
                 </div>
             {:else if activeTab === "Media"}
-                <!-- <div class="media-container">
+                <div class="media-container">
                     {#if media.length === 0}
                         <div class="empty-state">No media yet</div>
                     {:else}
                         <div class="media-grid">
-                            {#each media as media (media.thread_id)}
-                                <div
-                                    class="media-item"
-                                    onclick={() =>
-                                        navigateToThread(media.thread_id)}
-                                >
-                                    {#if media.type === "image" || media.type === "gif"}
-                                        <img
-                                            src={media. ||
-                                                "/placeholder.svg"}
-                                            alt="Media content"
-                                        />
-                                    {:else if media.type === "video"}
-                                        <video src={media.url} controls={false}
-                                        ></video>
-                                        <div class="video-overlay">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="white"
-                                                stroke="white"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                            >
-                                                <polygon
-                                                    points="5 3 19 12 5 21 5 3"
-                                                ></polygon>
-                                            </svg>
-                                        </div>
-                                    {/if}
-                                </div>
+                            {#each media as mediaPost}
+                                {#each mediaPost.media as media (media.media_url)}
+                                    <div
+                                        class="media-item"
+                                        onclick={() =>
+                                            navigateToThread(
+                                                mediaPost.thread_id
+                                            )}
+                                    >
+                                        {#if media.media_type === "image" || media.type === "gif"}
+                                            <img
+                                                src={`${THREAD_IMG}/${media.media_url}` ||
+                                                    "/placeholder.svg"}
+                                                alt="Media content"
+                                            />
+                                        {:else if media.type === "video"}
+                                            <!-- svelte-ignore a11y_media_has_caption -->
+                                            <video
+                                                src={media.media_url}
+                                                controls={false}
+                                            ></video>
+                                            <div class="video-overlay">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    fill="white"
+                                                    stroke="white"
+                                                    stroke-width="2"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <polygon
+                                                        points="5 3 19 12 5 21 5 3"
+                                                    ></polygon>
+                                                </svg>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                {/each}
                             {/each}
                         </div>
                     {/if}
-                </div> -->
+                </div>
             {/if}
         </div>
 

@@ -58,7 +58,7 @@ type ThreadServiceClient interface {
 	Thread_GetBookmarkedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetUserThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetUserLikedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetUserReplies(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -212,7 +212,7 @@ func (c *threadServiceClient) Thread_GetUserThreads(ctx context.Context, in *Use
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetUserLikedThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetUserLikedThreads(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetUserLikedThreads_FullMethodName, in, out, cOpts...)
@@ -271,7 +271,7 @@ type ThreadServiceServer interface {
 	Thread_GetBookmarkedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetRepostedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetUserThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
-	Thread_GetUserLikedThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
+	Thread_GetUserLikedThreads(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetUserReplies(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
 	Thread_GetUserMediaThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error)
@@ -327,7 +327,7 @@ func (UnimplementedThreadServiceServer) Thread_GetRepostedThreads(context.Contex
 func (UnimplementedThreadServiceServer) Thread_GetUserThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetUserLikedThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetUserLikedThreads(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetUserLikedThreads not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_GetUserReplies(context.Context, *UserToUserRequest) (*ApiResponseThread, error) {
@@ -613,7 +613,7 @@ func _ThreadService_Thread_GetUserThreads_Handler(srv interface{}, ctx context.C
 }
 
 func _ThreadService_Thread_GetUserLikedThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserToUserRequest)
+	in := new(StringThread)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -625,7 +625,7 @@ func _ThreadService_Thread_GetUserLikedThreads_Handler(srv interface{}, ctx cont
 		FullMethod: ThreadService_Thread_GetUserLikedThreads_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetUserLikedThreads(ctx, req.(*UserToUserRequest))
+		return srv.(ThreadServiceServer).Thread_GetUserLikedThreads(ctx, req.(*StringThread))
 	}
 	return interceptor(ctx, in, info, handler)
 }
