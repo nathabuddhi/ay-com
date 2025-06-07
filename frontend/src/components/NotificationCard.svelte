@@ -31,7 +31,11 @@
         const response = await markNotifAsRead(notification.notification_id);
 
         if (response.success) {
-            addToast("success", "Notification deleted successfully", "Success");
+            addToast(
+                "success",
+                "Notification marked as read successfully",
+                "Success"
+            );
             setTimeout(() => {
                 window.location.reload();
             }, 500);

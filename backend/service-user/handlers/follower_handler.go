@@ -66,7 +66,7 @@ func (h *Handlers) User_FollowUser(ctx context.Context, req *pb.FollowUserReques
 	var follower models.User
 	h.DB.WithContext(ctx).Where("user_id = ?", req.ToFollowId).First(&user)
 	h.DB.WithContext(ctx).Where("user_id = ?", req.UserId).First(&follower)
-	rabbitmq.PublishSendNotification("follow", user.UserId, user.Email, "New Follower", follower.Username+" is now following you.", follower.UserId)
+	rabbitmq.PublishSendNotification("follow", user.UserId, user.Email, "New Follower", "<a href='/profile/"+follower.Username+"'>"+follower.Username+"</a> is now following you.", follower.UserId)
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.ToFollowId)
 	rabbitmq.PublishDeleteRedis("getprofile/" + req.UserId)
 	rabbitmq.PublishDeleteRedis("getallfollowers/" + req.ToFollowId)
