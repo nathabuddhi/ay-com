@@ -23,6 +23,7 @@
     import { getUserById } from "../controllers/user-controller";
 
     let { post }: { post: Thread } = $props<{ post: Thread }>();
+    let isLoading: boolean = $state<boolean>(true);
     let isMoreOptionsOpen: boolean = $state<boolean>(false);
 
     let user = $state<UserProfile>({
@@ -61,6 +62,8 @@
                 is_private: false,
             };
         }
+
+        isLoading = false;
     });
 
     function togglePopover() {
@@ -233,110 +236,164 @@
 </script>
 
 <p class="repost-text">{post.is_reposting && "You Reposted"}</p>
-<article class="post">
-    <div class="post-avatar">
-        <img src={`${AVATAR_IMG}/${post.user_id}.png`} alt={post.user_id} />
-    </div>
+{#if isLoading}
+    <article class="post loading-skeleton">
+        <div class="post-avatar">
+            <div class="skeleton skeleton-avatar"></div>
+        </div>
 
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="post-content">
-        <div class="post-header">
-            <div class="post-user-info">
-                <div>
-                    <span class="post-user-name">
-                        {user.name}
-                        {#if user.is_verified}
-                            <BadgeCheck />
-                        {/if}
-                    </span>
-                    <button
-                        class="post-user-username"
-                        onclick={handleMentionClick}>@{user.username}</button
-                    >
+        <div class="post-content">
+            <div class="post-header">
+                <div class="post-user-info">
+                    <div>
+                        <div class="skeleton skeleton-name"></div>
+                        <div class="skeleton skeleton-username"></div>
+                    </div>
+                    <div>
+                        <div class="skeleton skeleton-category"></div>
+                        <div class="skeleton skeleton-timestamp"></div>
+                    </div>
                 </div>
-                <div>
-                    <span class="post-time">Category: {post.category}</span>
-                    <br />
-                    <span class="post-time">{post.posted_at}</span>
+                <div class="post-more-options-container">
+                    <div class="skeleton skeleton-ellipsis"></div>
                 </div>
             </div>
 
-            <div class="post-more-options-container">
-                <button class="post-more-options" onclick={togglePopover}>
-                    <EllipsisVertical />
+            <div class="post-text">
+                <div class="skeleton skeleton-text-line"></div>
+                <div class="skeleton skeleton-text-line short"></div>
+            </div>
+
+            <div class="post-images multiple-images">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton skeleton-image"></div>
+            </div>
+
+            <div class="post-polls">
+                <div class="skeleton skeleton-poll"></div>
+                <div class="skeleton skeleton-poll"></div>
+            </div>
+
+            <div class="post-actions">
+                <div class="skeleton skeleton-action"></div>
+                <div class="skeleton skeleton-action"></div>
+                <div class="skeleton skeleton-action"></div>
+                <div class="skeleton skeleton-action"></div>
+            </div>
+        </div>
+    </article>
+{:else}
+    <article class="post">
+        <div class="post-avatar">
+            <img src={`${AVATAR_IMG}/${post.user_id}.png`} alt={post.user_id} />
+        </div>
+
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="post-content">
+            <div class="post-header">
+                <div class="post-user-info">
+                    <div>
+                        <span class="post-user-name">
+                            {user.name}
+                            {#if user.is_verified}
+                                <BadgeCheck />
+                            {/if}
+                        </span>
+                        <button
+                            class="post-user-username"
+                            onclick={handleMentionClick}
+                            >@{user.username}</button
+                        >
+                    </div>
+                    <div>
+                        <span class="post-time">Category: {post.category}</span>
+                        <br />
+                        <span class="post-time">{post.posted_at}</span>
+                    </div>
+                </div>
+
+                <div class="post-more-options-container">
+                    <button class="post-more-options" onclick={togglePopover}>
+                        <EllipsisVertical />
+                    </button>
+
+                    {#if isMoreOptionsOpen}
+                        <div class="popover" role="menu">
+                            {#if post.user_id === localStorage.getItem("user_id")}
+                                <button onclick={handleDeleteClick}
+                                    >Delete</button
+                                >
+                            {/if}
+                            <button onclick={handleShareClick}>Share</button>
+                        </div>
+                    {/if}
+                </div>
+            </div>
+            <div class="post-text">
+                {@html processContent(post.content)}
+            </div>
+            {#if post.media && post.media.length > 0}
+                <div
+                    class="post-images {post.media.length > 1
+                        ? 'multiple-images'
+                        : ''}"
+                >
+                    {#each post.media as image, i}
+                        <div class="image-container">
+                            <img
+                                src={`${THREAD_IMG}/${image.media_url}`}
+                                alt="Post image {i + 1}"
+                            />
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+            {#if post.poll_options && post.poll_options.length > 0}
+                <div class="post-polls">
+                    {#each post.poll_options as poll, i}
+                        <button
+                            class={`poll-container ${poll.is_voting ? "active" : ""}`}
+                            onclick={() => handleVoteClick(poll.option)}
+                        >
+                            <span class={`poll-option`}>{poll.option}</span>
+                            <span class="poll-votes"
+                                >{poll.vote_count ?? 0} votes</span
+                            >
+                        </button>
+                    {/each}
+                </div>
+            {/if}
+
+            <div class="post-actions">
+                <button class="post-action like" onclick={handleLikeClick}>
+                    <Heart fill={post.is_liking ? "red" : ""} />
+                    <span>{formatNumber(post.like_count ?? 0)}</span>
                 </button>
 
-                {#if isMoreOptionsOpen}
-                    <div class="popover" role="menu">
-                        {#if post.user_id === localStorage.getItem("user_id")}
-                            <button onclick={handleDeleteClick}>Delete</button>
-                        {/if}
-                        <button onclick={handleShareClick}>Share</button>
-                    </div>
-                {/if}
+                <button
+                    class="post-action comment"
+                    onclick={redirectToThreadDetail}
+                >
+                    <MessageCircleMore />
+                    <span>{formatNumber(post.reply_count ?? 0)}</span>
+                </button>
+
+                <button class="post-action repost" onclick={handleRepostClick}>
+                    <Repeat2 fill={post.is_reposting ? "green" : ""} />
+                    <span>{formatNumber(post.repost_count ?? 0)}</span>
+                </button>
+
+                <button
+                    class="post-action bookmark"
+                    onclick={handleBookmarkClick}
+                >
+                    <Bookmark fill={post.is_bookmarking ? "gold" : ""} />
+                </button>
             </div>
         </div>
-        <div class="post-text">
-            {@html processContent(post.content)}
-        </div>
-        {#if post.media && post.media.length > 0}
-            <div
-                class="post-images {post.media.length > 1
-                    ? 'multiple-images'
-                    : ''}"
-            >
-                {#each post.media as image, i}
-                    <div class="image-container">
-                        <img
-                            src={`${THREAD_IMG}/${image.media_url}`}
-                            alt="Post image {i + 1}"
-                        />
-                    </div>
-                {/each}
-            </div>
-        {/if}
-        {#if post.poll_options && post.poll_options.length > 0}
-            <div class="post-polls">
-                {#each post.poll_options as poll, i}
-                    <button
-                        class={`poll-container ${poll.is_voting ? "active" : ""}`}
-                        onclick={() => handleVoteClick(poll.option)}
-                    >
-                        <span class={`poll-option`}>{poll.option}</span>
-                        <span class="poll-votes"
-                            >{poll.vote_count ?? 0} votes</span
-                        >
-                    </button>
-                {/each}
-            </div>
-        {/if}
-
-        <div class="post-actions">
-            <button class="post-action like" onclick={handleLikeClick}>
-                <Heart fill={post.is_liking ? "red" : ""} />
-                <span>{formatNumber(post.like_count ?? 0)}</span>
-            </button>
-
-            <button
-                class="post-action comment"
-                onclick={redirectToThreadDetail}
-            >
-                <MessageCircleMore />
-                <span>{formatNumber(post.reply_count ?? 0)}</span>
-            </button>
-
-            <button class="post-action repost" onclick={handleRepostClick}>
-                <Repeat2 fill={post.is_reposting ? "green" : ""} />
-                <span>{formatNumber(post.repost_count ?? 0)}</span>
-            </button>
-
-            <button class="post-action bookmark" onclick={handleBookmarkClick}>
-                <Bookmark fill={post.is_bookmarking ? "gold" : ""} />
-            </button>
-        </div>
-    </div>
-</article>
+    </article>
+{/if}
 
 <!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
