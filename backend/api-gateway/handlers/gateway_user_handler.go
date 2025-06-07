@@ -160,6 +160,7 @@ func User_Register(w http.ResponseWriter, r *http.Request) {
 	req.DateOfBirth = r.FormValue("date_of_birth")
 	req.SecurityQuestion = r.FormValue("security_question")
 	req.SecurityAnswer = r.FormValue("security_answer")
+	req.WantsNewsletter = r.FormValue("wants_newsletter") == "true"
 
 	ctx, cancel := createContext()
 	defer cancel()

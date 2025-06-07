@@ -22,6 +22,7 @@
     let securityAnswer = $state("");
     let avatar: File | null = $state(null);
     let banner: File | null = $state(null);
+    let subscribedToNewsletter = $state(false);
 
     let errors = $state({
         email: "",
@@ -508,6 +509,17 @@
                 {#if errors.banner}
                     <span class="error-message">{errors.banner}</span>
                 {/if}
+            </div>
+            <div class="form-group newsletter-checkbox">
+                <label for="newsletter" class="form-label"
+                    >Subscribe to our newsletter</label
+                >
+                <input
+                    type="checkbox"
+                    id="newsletter"
+                    class="form-checkbox"
+                    bind:checked={subscribedToNewsletter}
+                />
             </div>
 
             <button

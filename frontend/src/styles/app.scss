@@ -52,3 +52,8 @@ a:hover {
 button {
     cursor: pointer;
 }
+
+input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
