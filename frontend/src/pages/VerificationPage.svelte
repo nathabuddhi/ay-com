@@ -31,7 +31,9 @@
                 "Email not found. Please register first.",
                 "Error"
             );
-            window.location.href = "/register";
+            setTimeout(() => {
+                window.location.href = "/register";
+            }, 1000);
             return;
         }
 
@@ -234,6 +236,12 @@
                         Resend verification code
                     </button>
                 {/if}
+                <button
+                    class="resend-button"
+                    onclick={() => {
+                        window.location.href = "/register";
+                    }}>Back to Register</button
+                >
             </div>
         </div>
     </main>
