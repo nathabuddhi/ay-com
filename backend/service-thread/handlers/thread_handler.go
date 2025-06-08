@@ -336,20 +336,45 @@ func (h *Handler) Thread_DeleteThread(ctx context.Context, req *pb.GeneralThread
 	}
 
 	var thread models.Thread
-	err := h.DB.WithContext(ctx).Where("thread_id = ? AND user_id = ?", req.ThreadId, req.UserId).First(&thread).Error
-	if err == nil {
+	err := h.DB.WithContext(ctx).Where("thread_id = ?", req.ThreadId).First(&thread).Error
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "Thread not found or you do not have permission to delete this thread.",
+		}, nil
+	}
+
+	if thread.UserId == req.UserId {
 		err := h.DB.WithContext(ctx).Delete(&thread).Error
 		if err != nil {
 			return &pb.ApiResponseThread{Success: false, Message: "Failed to delete thread."}, nil
 		}
 		rabbitmq.PublishDeleteRedis("getthread/" + thread.ThreadId)
 		return &pb.ApiResponseThread{Success: true, Message: "Thread deleted successfully."}, nil
-	} else {
-		return &pb.ApiResponseThread{
-			Success: false,
-			Message: "Thread not found or you do not have permission to delete this thread.",
-		}, nil
 	}
+
+	if thread.Category == "Reply" {
+		var reply models.ThreadReply
+		err := h.DB.WithContext(ctx).Where("thread_id = ?", thread.ThreadId).First(&reply).Error
+		if err == nil && reply.ReplyToId != "" {
+			var parentThread models.Thread
+			err := h.DB.WithContext(ctx).Where("thread_id = ?", reply.ReplyToId).First(&parentThread).Error
+			if err == nil && parentThread.UserId == req.UserId {
+				err := h.DB.WithContext(ctx).Delete(&thread).Error
+				if err != nil {
+					return &pb.ApiResponseThread{Success: false, Message: "Failed to delete thread."}, nil
+				}
+				rabbitmq.PublishDeleteRedis("getthread/" + thread.ThreadId)
+				rabbitmq.PublishDeleteRedis("getthread/" + reply.ReplyToId)
+				return &pb.ApiResponseThread{Success: true, Message: "Thread deleted successfully."}, nil
+			}
+		}
+	}
+
+	return &pb.ApiResponseThread{
+		Success: false,
+		Message: "Thread not found or you do not have permission to delete this thread.",
+	}, nil
 }
 
 func (h *Handler) Thread_GetUserThreads(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {

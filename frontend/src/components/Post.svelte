@@ -82,7 +82,7 @@
         } else {
             addToast(
                 "error",
-                "Failed voting on poll: " + response.message,
+                "Failed deleting thread: " + response.message,
                 "Error!"
             );
         }
@@ -342,8 +342,14 @@
                                 <button onclick={handleDeleteClick}>
                                     Delete
                                 </button>
-                                <button onclick={handlePinClick}>
-                                    {post.pinned ? "Pin" : "Unpin"}
+                                {#if window.location.pathname.includes("profile")}
+                                    <button onclick={handlePinClick}>
+                                        {post.pinned ? "Pin" : "Unpin"}
+                                    </button>
+                                {/if}
+                            {:else if window.location.pathname.includes("thread")}
+                                <button onclick={handleDeleteClick}>
+                                    Delete
                                 </button>
                             {/if}
                             <button onclick={handleShareClick}>Share</button>
