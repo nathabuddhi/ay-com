@@ -160,6 +160,7 @@ func (h *Handlers) User_DeactivateAccount(ctx context.Context, req *pb.Deactivat
 		"AY.com Account Deactivation",
 		"Your account has been deactivated. If this was a mistake, please head to the activation page or contact support.",
 	)
+	rabbitmq.PublishDeleteRedis("getprofile/" + user.UserId)
 
 	return &pb.ApiResponseUser{
 		Success: true,
@@ -234,6 +235,8 @@ func (h *Handlers) User_UpdateProfile(ctx context.Context, req *pb.UpdateUserPro
 			Message: "Failed to update user profile: " + err.Error(),
 		}, nil
 	}
+
+	rabbitmq.PublishDeleteRedis("getprofile/" + user.UserId)
 
 	return &pb.ApiResponseUser{
 		Success: true,
