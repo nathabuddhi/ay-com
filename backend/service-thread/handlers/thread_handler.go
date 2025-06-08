@@ -534,3 +534,82 @@ func (h *Handler) Thread_GetTrendingHashtags(ctx context.Context, req *pb.String
 		Data:    data,
 	}, nil
 }
+
+func (h *Handler) Thread_GetFollowingThreads(ctx context.Context, req *pb.GetFollowingThreadRequest) (*pb.ApiResponseThread, error) {
+	zap.L().Info("User getting following threads", zap.String("user_id", req.UserId))
+
+	if len(req.FollowedIds) == 0 {
+		return &pb.ApiResponseThread{Success: true, Message: "No followed users."}, nil
+	}
+
+	var userThreads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("user_id IN ?", req.FollowedIds).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("category != ?", "Reply").
+		Find(&userThreads).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	var reposts []models.ThreadRepost
+	err = h.DB.WithContext(ctx).
+		Where("user_id IN ?", req.FollowedIds).
+		Find(&reposts).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	repostedThreadIDs := make([]string, 0, len(reposts))
+	repostMap := make(map[string]models.ThreadRepost)
+	for _, repost := range reposts {
+		repostedThreadIDs = append(repostedThreadIDs, repost.ThreadId)
+		repostMap[repost.ThreadId] = repost
+	}
+
+	var repostThreads []models.Thread
+	if len(repostedThreadIDs) > 0 {
+		err = h.DB.WithContext(ctx).
+			Where("thread_id IN ? AND user_id != ?", repostedThreadIDs, req.UserId).
+			Find(&repostThreads).Error
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+		}
+	}
+
+	allThreads := append(userThreads, repostThreads...)
+
+	sort.Slice(allThreads, func(i, j int) bool {
+		return allThreads[i].CreatedAt.After(allThreads[j].CreatedAt)
+	})
+
+	getThreadsResponse := &pb.GetThreadsResponse{
+		Threads: make([]*pb.Thread, 0, len(allThreads)),
+	}
+
+	for _, thread := range allThreads {
+		threadResp, err := h.processThreadResponse(ctx, thread, req.UserId)
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: "Failed to process thread: " + err.Error(),
+			}, nil
+		}
+
+		getThreadsResponse.Threads = append(getThreadsResponse.Threads, &threadResp)
+	}
+
+	returnData, err := anypb.New(getThreadsResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get following threads successful.",
+		Data:    returnData,
+	}, nil
+}

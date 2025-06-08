@@ -47,7 +47,7 @@ type ThreadServiceClient interface {
 	Thread_GetTrendingHashtags(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	// Protected Routes
 	Thread_GetAllThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
-	Thread_GetFollowingThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetFollowingThreads(ctx context.Context, in *GetFollowingThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetThreadById(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_SearchThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_DeleteThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -94,7 +94,7 @@ func (c *threadServiceClient) Thread_GetAllThreads(ctx context.Context, in *GetA
 	return out, nil
 }
 
-func (c *threadServiceClient) Thread_GetFollowingThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+func (c *threadServiceClient) Thread_GetFollowingThreads(ctx context.Context, in *GetFollowingThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetFollowingThreads_FullMethodName, in, out, cOpts...)
@@ -271,7 +271,7 @@ type ThreadServiceServer interface {
 	Thread_GetTrendingHashtags(context.Context, *StringThread) (*ApiResponseThread, error)
 	// Protected Routes
 	Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
-	Thread_GetFollowingThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
+	Thread_GetFollowingThreads(context.Context, *GetFollowingThreadRequest) (*ApiResponseThread, error)
 	Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_SearchThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_DeleteThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
@@ -304,7 +304,7 @@ func (UnimplementedThreadServiceServer) Thread_GetTrendingHashtags(context.Conte
 func (UnimplementedThreadServiceServer) Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetAllThreads not implemented")
 }
-func (UnimplementedThreadServiceServer) Thread_GetFollowingThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
+func (UnimplementedThreadServiceServer) Thread_GetFollowingThreads(context.Context, *GetFollowingThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetFollowingThreads not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
@@ -413,7 +413,7 @@ func _ThreadService_Thread_GetAllThreads_Handler(srv interface{}, ctx context.Co
 }
 
 func _ThreadService_Thread_GetFollowingThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllThreadsRequest)
+	in := new(GetFollowingThreadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -425,7 +425,7 @@ func _ThreadService_Thread_GetFollowingThreads_Handler(srv interface{}, ctx cont
 		FullMethod: ThreadService_Thread_GetFollowingThreads_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ThreadServiceServer).Thread_GetFollowingThreads(ctx, req.(*GetAllThreadsRequest))
+		return srv.(ThreadServiceServer).Thread_GetFollowingThreads(ctx, req.(*GetFollowingThreadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

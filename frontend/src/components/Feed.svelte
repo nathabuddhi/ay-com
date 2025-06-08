@@ -35,8 +35,8 @@
 
         const response2 = await getFollowingThreads();
 
-        if (response.success) {
-            forYouPosts = response.payload?.threads || [];
+        if (response2.success) {
+            followingPosts = response2.payload?.threads || [];
         } else {
             addToast(
                 "error",

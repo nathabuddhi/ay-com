@@ -298,6 +298,53 @@ func Thread_GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
 
+func Thread_GetFollowingThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetFollowingThreads) is called.")
+
+	var req pb.GetFollowingThreadRequest
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	req2, client2 := processUserRequest[userpb.GetAllFollowingRequest](r, w)
+	req2.RequesterId = req.UserId
+	req2.UserId = req.UserId
+	ctx2, cancel2 := createContext()
+	defer cancel2()
+	resp2, err2 := client2.User_GetAllFollowing(ctx2, req2)
+
+	if err2 != nil {
+		zap.L().Error("Failed to get following list", zap.Error(err2))
+		returnErrorResponse(w, "Failed to get following list: "+err2.Error())
+		return
+	}
+
+	decodedObject := new(userpb.AllFollowingResponse)
+	if _, ok := any(decodedObject).(proto.Message); !ok {
+		zap.L().Error("Type does not implement proto.Message", zap.String("type", fmt.Sprintf("%T", decodedObject)))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	if err2 := proto.Unmarshal(resp2.Data.GetValue(), any(decodedObject).(proto.Message)); err2 != nil {
+		zap.L().Error("Failed to unmarshal protobuf", zap.Error(err2))
+		returnErrorResponse(w, "Failed to decode response data.")
+		return
+	}
+
+	for _, v := range decodedObject.Following {
+		req.FollowedIds = append(req.FollowedIds, v.Value)
+	}
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	conn := getThreadServiceConn()
+	client := pb.NewThreadServiceClient(conn)
+
+	resp, err := client.Thread_GetFollowingThreads(ctx, &req)
+
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
 func Thread_SearchThreads(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (SearchThreads) is called.")
 

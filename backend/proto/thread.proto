@@ -11,7 +11,7 @@ service ThreadService {
 
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
-    rpc Thread_GetFollowingThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_GetFollowingThreads (GetFollowingThreadRequest) returns (ApiResponseThread);
     rpc Thread_GetThreadById (GeneralThreadRequest) returns (ApiResponseThread);
     rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_DeleteThread (GeneralThreadRequest) returns (ApiResponseThread);
@@ -60,6 +60,11 @@ message SearchThreadRequest {
 message GetThreadDetailResponse {
     Thread thread = 1;
     repeated Thread replies = 2;
+}
+
+message GetFollowingThreadRequest {
+    string user_id = 1;
+    repeated string followed_ids = 2;
 }
 
 message StringThread {
