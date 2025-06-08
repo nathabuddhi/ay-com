@@ -26,6 +26,7 @@ const (
 	UserService_User_GetSecurityQuestion_FullMethodName        = "/user.UserService/User_GetSecurityQuestion"
 	UserService_User_ValidateSecurityAnswer_FullMethodName     = "/user.UserService/User_ValidateSecurityAnswer"
 	UserService_User_ResetPassword_FullMethodName              = "/user.UserService/User_ResetPassword"
+	UserService_User_GetFollowRecommendations_FullMethodName   = "/user.UserService/User_GetFollowRecommendations"
 	UserService_User_GetProfile_FullMethodName                 = "/user.UserService/User_GetProfile"
 	UserService_User_GetUserId_FullMethodName                  = "/user.UserService/User_GetUserId"
 	UserService_User_ChangePassword_FullMethodName             = "/user.UserService/User_ChangePassword"
@@ -60,6 +61,7 @@ type UserServiceClient interface {
 	User_GetSecurityQuestion(ctx context.Context, in *GetSecurityQuestionRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_ValidateSecurityAnswer(ctx context.Context, in *ValidateSecurityAnswerRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_GetFollowRecommendations(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	// protected routes
 	User_GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetUserId(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
@@ -156,6 +158,16 @@ func (c *userServiceClient) User_ResetPassword(ctx context.Context, in *ResetPas
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_ResetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) User_GetFollowRecommendations(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_GetFollowRecommendations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -383,6 +395,7 @@ type UserServiceServer interface {
 	User_GetSecurityQuestion(context.Context, *GetSecurityQuestionRequest) (*ApiResponseUser, error)
 	User_ValidateSecurityAnswer(context.Context, *ValidateSecurityAnswerRequest) (*ApiResponseUser, error)
 	User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponseUser, error)
+	User_GetFollowRecommendations(context.Context, *StringUser) (*ApiResponseUser, error)
 	// protected routes
 	User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponseUser, error)
 	User_GetUserId(context.Context, *GetProfileRequest) (*ApiResponseUser, error)
@@ -435,6 +448,9 @@ func (UnimplementedUserServiceServer) User_ValidateSecurityAnswer(context.Contex
 }
 func (UnimplementedUserServiceServer) User_ResetPassword(context.Context, *ResetPasswordRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_ResetPassword not implemented")
+}
+func (UnimplementedUserServiceServer) User_GetFollowRecommendations(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_GetFollowRecommendations not implemented")
 }
 func (UnimplementedUserServiceServer) User_GetProfile(context.Context, *GetProfileRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetProfile not implemented")
@@ -642,6 +658,24 @@ func _UserService_User_ResetPassword_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).User_ResetPassword(ctx, req.(*ResetPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_User_GetFollowRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_GetFollowRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_GetFollowRecommendations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_GetFollowRecommendations(ctx, req.(*StringUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1058,6 +1092,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_ResetPassword",
 			Handler:    _UserService_User_ResetPassword_Handler,
+		},
+		{
+			MethodName: "User_GetFollowRecommendations",
+			Handler:    _UserService_User_GetFollowRecommendations_Handler,
 		},
 		{
 			MethodName: "User_GetProfile",

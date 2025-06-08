@@ -3,7 +3,12 @@ import type {
     BlockedUserResponse,
     StringPayload,
 } from "../types/api";
-import type { LoginResponse, Settings, UserProfile } from "../types/user";
+import type {
+    GetFollowRecommendationsResponse,
+    LoginResponse,
+    Settings,
+    UserProfile,
+} from "../types/user";
 import { API_URL } from "../env_var";
 import { getValidToken, setRefreshToken, setToken } from "./token-controller";
 import { returnDefaultError } from "./util";
@@ -29,8 +34,6 @@ export async function getUserById(
 
     return data.payload;
 }
-
-
 
 export async function tEMPLATE(user_id: string): Promise<ApiResponse<null>> {
     try {
@@ -512,5 +515,28 @@ export async function unfollowUser(
         return data;
     } catch (error) {
         return returnDefaultError<null>(error);
+    }
+}
+
+export async function getFollowRecommendations(): Promise<
+    ApiResponse<GetFollowRecommendationsResponse>
+> {
+    try {
+        const response = await fetch(
+            `${API_URL}/user/getfollowrecommendations`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: await getValidToken(),
+                },
+            }
+        );
+        const data: ApiResponse<GetFollowRecommendationsResponse> =
+            await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<GetFollowRecommendationsResponse>(error);
     }
 }

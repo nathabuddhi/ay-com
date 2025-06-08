@@ -52,3 +52,7 @@ export interface RefreshTokenResponse {
     access_token: string;
     refresh_token: string;
 }
+
+export interface GetFollowRecommendationsResponse {
+    user_ids: string[];
+}

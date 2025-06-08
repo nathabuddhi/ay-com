@@ -14,6 +14,7 @@ service UserService {
     rpc User_GetSecurityQuestion (GetSecurityQuestionRequest) returns (ApiResponseUser);
     rpc User_ValidateSecurityAnswer (ValidateSecurityAnswerRequest) returns (ApiResponseUser);
     rpc User_ResetPassword (ResetPasswordRequest) returns (ApiResponseUser);
+    rpc User_GetFollowRecommendations (StringUser) returns (ApiResponseUser);
 
     // protected routes
     rpc User_GetProfile (GetProfileRequest) returns (ApiResponseUser);
@@ -48,6 +49,10 @@ message ApiResponseUser {
     bool success = 1;
     string message = 2;
     google.protobuf.Any data = 3;
+}
+
+message GetFollowRecommendationsResponse {
+    repeated string user_ids = 1;
 }
 
 message StringUser {

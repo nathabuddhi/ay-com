@@ -122,6 +122,10 @@ func (s *UserServer) User_IsUserFollowing(ctx context.Context, req *pb.IsUserFol
 	return s.Handlers.User_IsUserFollowing(ctx, req)
 }
 
+func (s *UserServer) User_GetFollowRecommendations(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_GetFollowRecommendations(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

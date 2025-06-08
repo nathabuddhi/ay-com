@@ -67,6 +67,8 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/changebanner", User_ChangeBanner).Methods("POST")
 
 	secured.HandleFunc("/user/deactivateaccount", User_DeactivateAccount).Methods("POST")
+
+	secured.HandleFunc("/user/getfollowrecommendations", User_GetFollowRecommendations).Methods("GET")
 }
 
 func InitSecuredNotificationRoutes(secured *mux.Router) {

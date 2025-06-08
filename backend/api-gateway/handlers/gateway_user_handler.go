@@ -736,3 +736,33 @@ func User_GetUserId(w http.ResponseWriter, r *http.Request) {
 		processUserResponseWithPayload[pb.UserProfile](resp, err, w)
 	}
 }
+
+// User_GetFollowRecommendations godoc
+// @Summary Get Follow Recommendations Based On Current user
+// @Description Get Follow Recommendations Based On Current user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user_id path string true "StringUser"
+// @Success 200 {object} pb.ApiResponse
+// @Failure 400 {object} types.ApiResponse
+// @Router /user/getfollowrecommendations [get]
+func User_GetFollowRecommendations(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User GetFollowRecommendations is called.")
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
+
+	var req pb.StringUser
+
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	if !checkRedisData("getfollowrecommendations/"+req.Value, w) {
+		ctx, cancel := createContext()
+		defer cancel()
+
+		resp, err := client.User_GetFollowRecommendations(ctx, &req)
+
+		processUserResponseWithPayload[pb.GetFollowRecommendationsResponse](resp, err, w)
+	}
+}

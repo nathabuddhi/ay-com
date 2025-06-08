@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"sort"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-user/proto/user"
@@ -28,6 +29,70 @@ func (h *Handlers) GetFollowers(user_id string) (int, error) {
 		return 0, err
 	}
 	return int(count), nil
+}
+
+func (h *Handlers) User_GetFollowRecommendations(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("User " + req.Value + " is getting follow recommendations")
+
+	var users []models.User
+	err := h.DB.WithContext(ctx).
+		Where("user_id != ? AND is_banned = ? AND is_deactivated = ?", req.Value, false, false).
+		Find(&users).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get users."}, nil
+	}
+
+	var alreadyFollowing []models.UserFollowing
+	err = h.DB.WithContext(ctx).
+		Where("user_id = ?", req.Value).
+		Find(&alreadyFollowing).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get following list."}, nil
+	}
+	followedMap := make(map[string]bool)
+	for _, f := range alreadyFollowing {
+		followedMap[f.FollowedId] = true
+	}
+
+	type userWithFollowers struct {
+		UserId    string
+		Followers int
+	}
+	var candidates []userWithFollowers
+	for _, u := range users {
+		if followedMap[u.UserId] {
+			continue
+		}
+		var count int64
+		h.DB.Model(&models.UserFollowing{}).Where("followed_id = ?", u.UserId).Count(&count)
+		candidates = append(candidates, userWithFollowers{UserId: u.UserId, Followers: int(count)})
+	}
+
+	sort.Slice(candidates, func(i, j int) bool {
+		return candidates[i].Followers > candidates[j].Followers
+	})
+
+	top := 3
+	if len(candidates) < 3 {
+		top = len(candidates)
+	}
+	var ids []string
+	for i := 0; i < top; i++ {
+		ids = append(ids, candidates[i].UserId)
+	}
+
+	resp := &pb.GetFollowRecommendationsResponse{
+		UserIds: ids,
+	}
+	data, err := anypb.New(resp)
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to marshal response."}, nil
+	}
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Successsfully fetched follow recommendations.",
+		Data:    data,
+	}, nil
 }
 
 func (h *Handlers) User_FollowUser(ctx context.Context, req *pb.FollowUserRequest) (*pb.ApiResponseUser, error) {
