@@ -57,3 +57,12 @@ export interface ThreadRepost {
     user_id: string;
     text: string;
 }
+
+export interface Hashtag {
+    hashtag: string;
+    thread_count: number;
+}
+
+export interface GetTrendingHashtagsResponse {
+    hashtags: Hashtag[];
+}

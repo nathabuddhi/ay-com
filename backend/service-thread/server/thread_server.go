@@ -90,3 +90,7 @@ func (s *ThreadServer) Thread_GetUserMediaThreads(ctx context.Context, req *pb.U
 func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.UserToUserRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetUserReplies(ctx, req)
 }
+
+func (s *ThreadServer) Thread_GetTrendingHashtags(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetTrendingHashtags(ctx, req)
+}

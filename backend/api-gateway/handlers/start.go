@@ -13,6 +13,7 @@ func InitRoutes() (r *mux.Router) {
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	InitUserRoutes(r)
+	InitPublicThreadRoutes(r)
 	zap.L().Info("Public Routes Initialized.")
 
 	InitSecuredRoutes(r)
@@ -76,6 +77,10 @@ func InitSecuredNotificationRoutes(secured *mux.Router) {
 
 	secured.HandleFunc("/notification/getsettings", Notification_GetSettings).Methods("POST")
 	secured.HandleFunc("/notification/updatesettings", Notification_UpdateSettings).Methods("PATCH")
+}
+
+func InitPublicThreadRoutes(r *mux.Router) {
+	r.HandleFunc("/thread/gettrendinghashtags", Thread_GetTrendingHashtags).Methods("GET")
 }
 
 func InitSecuredThreadRoutes(secured *mux.Router) {

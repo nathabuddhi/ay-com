@@ -539,3 +539,16 @@ func Thread_GetUserMediaThreads(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Thread_GetUserMediaThreads(ctx, req)
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
+
+func Thread_GetTrendingHashtags(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetTrendingHashtags) is called.")
+
+	conn := getThreadServiceConn()
+	client := pb.NewThreadServiceClient(conn)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetTrendingHashtags(ctx, &pb.StringThread{})
+	processThreadResponseWithPayload[pb.GetTrendingHashtagsResponse](resp, err, w)
+}

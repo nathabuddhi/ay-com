@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -440,5 +441,71 @@ func (h *Handler) Thread_GetUserMediaThreads(ctx context.Context, req *pb.UserTo
 		Success: true,
 		Message: "Get threads successful.",
 		Data:    returnData,
+	}, nil
+}
+
+func (h *Handler) Thread_GetTrendingHashtags(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Getting trending hashtags")
+
+	var threads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Find(&threads).Error
+	if err != nil {
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	hashtagCount := make(map[string]int)
+	re := regexp.MustCompile(`#(\w+)`)
+
+	for _, thread := range threads {
+		matches := re.FindAllStringSubmatch(thread.Content, -1)
+		for _, match := range matches {
+			if len(match) > 1 {
+				hashtag := strings.ToLower(match[1])
+				hashtagCount[hashtag]++
+			}
+		}
+	}
+
+	type hashtagStat struct {
+		Tag   string
+		Count int
+	}
+	var stats []hashtagStat
+	for tag, count := range hashtagCount {
+		stats = append(stats, hashtagStat{Tag: tag, Count: count})
+	}
+
+	sort.Slice(stats, func(i, j int) bool {
+		return stats[i].Count > stats[j].Count
+	})
+
+	topN := 5
+	if len(stats) < topN {
+		topN = len(stats)
+	}
+
+	var trending []*pb.Hashtag
+	for _, stat := range stats[:topN] {
+		trending = append(trending, &pb.Hashtag{
+			Hashtag:     stat.Tag,
+			ThreadCount: int32(stat.Count),
+		})
+	}
+
+	resp := &pb.GetTrendingHashtagsResponse{
+		Hashtags: trending,
+	}
+
+	data, err := anypb.New(resp)
+	if err != nil {
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Top 5 trending hashtags fetched successfully.",
+		Data:    data,
 	}, nil
 }

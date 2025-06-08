@@ -1,10 +1,10 @@
 <script lang="ts">
     import { EllipsisVertical } from "@lucide/svelte";
+    import type { Hashtag } from "../types/thread";
+    import { onMount } from "svelte";
+    import { getTrendingTags } from "../controllers/thread-controller";
 
-    export let hashtags: {
-        tag: string;
-        count: number;
-    }[];
+    let hashtags: Hashtag[] = $state<Hashtag[]>([]);
 
     function formatNumber(num: number): string {
         if (num >= 1000000) {
@@ -15,6 +15,16 @@
             return num.toString();
         }
     }
+
+    onMount(async () => {
+        const response = await getTrendingTags();
+
+        if (response.success && response.payload) {
+            hashtags = response.payload.hashtags;
+        } else {
+            hashtags = [];
+        }
+    });
 </script>
 
 <div class="trending-section">
@@ -22,27 +32,27 @@
 
     <div class="trending-list">
         {#each hashtags as hashtag}
-            <a href={`/explore?q=%23${hashtag.tag}`} class="trending-item">
+            <a href={`/explore?q=%23${hashtag.hashtag}`} class="trending-item">
                 <div class="trending-tag">
                     <span class="trending-label">Trending</span>
-                    <h3 class="trending-hashtag">#{hashtag.tag}</h3>
+                    <h3 class="trending-hashtag">#{hashtag.hashtag}</h3>
                     <span class="trending-count"
-                        >{formatNumber(hashtag.count)} posts</span
+                        >{formatNumber(hashtag.thread_count)} posts</span
                     >
                 </div>
-
-                <!-- svelte-ignore a11y_consider_explicit_label -->
-                <button class="more-options">
-                    <EllipsisVertical />
-                </button>
             </a>
         {/each}
+        {#if hashtags.length === 0}
+            <div class="no-trending">
+                <p>No trending topics at the moment.</p>
+            </div>
+        {/if}
     </div>
 
     <a href="/explore" class="show-more">Show more</a>
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>

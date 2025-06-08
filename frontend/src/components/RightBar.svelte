@@ -2,14 +2,6 @@
     import SearchBar from "./SearchBar.svelte";
     import TrendingSection from "./TrendingSection.svelte";
     import FollowRecommendations from "./FollowRecommendation.svelte";
-
-    const trendingHashtags = [
-        { tag: "gaming", count: 52000 },
-        { tag: "valorant", count: 43200 },
-        { tag: "minecraft", count: 38500 },
-        { tag: "teddyseekinspirasi", count: 25600 },
-        { tag: "cr7", count: 18900 },
-    ];
 </script>
 
 <aside class="right-sidebar">
@@ -27,7 +19,7 @@
             </div>
         {/if}
 
-        <TrendingSection hashtags={trendingHashtags} />
+        <TrendingSection />
 
         <FollowRecommendations />
     </div>

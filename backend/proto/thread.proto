@@ -7,6 +7,8 @@ import "google/protobuf/any.proto";
 option go_package = "thread/";
 
 service ThreadService {
+    rpc Thread_GetTrendingHashtags (StringThread) returns (ApiResponseThread);
+
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_GetFollowingThreads (GetAllThreadsRequest) returns (ApiResponseThread);
@@ -39,6 +41,15 @@ message ApiResponseThread {
     bool success = 1;
     string message = 2;
     google.protobuf.Any data = 3;
+}
+
+message GetTrendingHashtagsResponse {
+    repeated Hashtag hashtags = 1;
+}
+
+message Hashtag {
+    string hashtag = 1;
+    int32 thread_count = 2;
 }
 
 message SearchThreadRequest {

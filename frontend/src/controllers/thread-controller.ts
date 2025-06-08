@@ -1,6 +1,10 @@
 import { API_URL } from "../env_var";
 import type { ApiResponse } from "../types/api";
-import type { ThreadDetailResponse, ThreadResponse } from "../types/thread";
+import type {
+    GetTrendingHashtagsResponse,
+    ThreadDetailResponse,
+    ThreadResponse,
+} from "../types/thread";
 import { getValidToken } from "./token-controller";
 import { returnDefaultError } from "./util";
 
@@ -383,5 +387,24 @@ export async function pinThread(thread_id: string): Promise<ApiResponse<null>> {
         return data;
     } catch (error) {
         return returnDefaultError<null>(error);
+    }
+}
+
+export async function getTrendingTags(): Promise<
+    ApiResponse<GetTrendingHashtagsResponse>
+> {
+    try {
+        const response = await fetch(`${API_URL}/thread/gettrendinghashtags`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data: ApiResponse<GetTrendingHashtagsResponse> =
+            await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<GetTrendingHashtagsResponse>(error);
     }
 }
