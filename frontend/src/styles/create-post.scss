@@ -23,6 +23,7 @@
 
     textarea {
         width: 100%;
+        min-height: 100px;
         background: none;
         border: none;
         color: var(--text);
@@ -247,6 +248,23 @@
             cursor: pointer;
             padding: 4px 0;
         }
+    }
+}
+.counter-container {
+    position: relative;
+    display: inline-block;
+    .word-counter {
+        max-width: 100px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+    .warning {
+        color: #ff0000;
+        margin-top: 10px;
+    }
+    .word-count {
+        fill: var(--text);
     }
 }
 

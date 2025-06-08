@@ -4,7 +4,26 @@
     import { addToast } from "../stores/toast-wrapper";
     import { postThread } from "../controllers/thread-controller";
 
+    const maxWords: number = 100;
     let postText: string = $state("");
+
+    let wordCount = $derived(
+        postText
+            .trim()
+            .split(/\s+/)
+            .filter((word) => word.length > 0).length
+    );
+
+    let progress = $derived(Math.min((wordCount / maxWords) * 100, 100));
+
+    let circleColor = $derived(
+        wordCount >= maxWords
+            ? "#ff0000"
+            : wordCount > maxWords * 0.8
+              ? "#ffa500"
+              : "#00ff00"
+    );
+
     let selectedFiles: FileList | null = $state<FileList | null>(null);
     let previewImages: string[] = $state<string[]>([]);
     let pollOptions: string[] = $state([]);
@@ -278,6 +297,43 @@
                             {/each}
                         </select>
                     </div>
+                    <div class="counter-container">
+                        <svg width="50" height="50" viewBox="0 0 100 100">
+                            <circle
+                                cx="50"
+                                cy="50"
+                                r="45"
+                                fill="none"
+                                stroke="#e0e0e0"
+                                stroke-width="10"
+                            />
+                            <circle
+                                cx="50"
+                                cy="50"
+                                r="45"
+                                fill="none"
+                                stroke={circleColor}
+                                stroke-width="10"
+                                stroke-dasharray={`${progress * 2.83} ${283 - progress * 2.83}`}
+                                transform="rotate(-90 50 50)"
+                            />
+                            <text
+                                x="50"
+                                y="55"
+                                text-anchor="middle"
+                                font-size="20"
+                                fill="#333"
+                                class="word-count"
+                            >
+                                {wordCount}/{maxWords}
+                            </text>
+                        </svg>
+                        {#if wordCount > maxWords}
+                            <p class="warning">
+                                You have exceeded the word limit!
+                            </p>
+                        {/if}
+                    </div>
                 {/if}
             </div>
             {#if mode === "post"}
@@ -298,9 +354,10 @@
 
         <button
             class="post-button"
-            disabled={!postText &&
+            disabled={(!postText &&
                 previewImages.length === 0 &&
-                (!showPoll || pollOptions.every((p) => !p.trim()))}
+                (!showPoll || pollOptions.every((p) => !p.trim()))) ||
+                wordCount > maxWords}
             onclick={handleSubmit}
         >
             {mode === "post" ? "Post" : "Comment"}

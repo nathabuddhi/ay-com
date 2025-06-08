@@ -893,7 +893,7 @@ $tablet: 768px;
         margin-top: 4px;
         background-color: var(--background);
         border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 10px var(--secondary);
         z-index: 10;
         overflow: hidden;
 
