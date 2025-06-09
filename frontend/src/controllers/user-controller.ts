@@ -92,6 +92,12 @@ export async function login(
                 data.payload.is_verified ? "true" : "false"
             );
         }
+        if (data && data.payload?.is_admin) {
+            localStorage.setItem(
+                "is_admin",
+                data.payload.is_admin ? "true" : "false"
+            );
+        }
         return data;
     } catch (error) {
         return returnDefaultError<LoginResponse>(error);

@@ -43,6 +43,9 @@ service UserService {
     rpc User_IsUserFollowing (IsUserFollowingRequest) returns (BoolUser);
 
     rpc User_RefreshToken(StringUser) returns (ApiResponseUser);
+
+    // Admin routes
+    rpc Admin_IsUserAdmin(StringUser) returns (BoolUser);
 }
 
 message ApiResponseUser {
@@ -248,6 +251,7 @@ message LoginResponse {
     string name = 4;
     bool is_verified = 5;
     string refresh_token = 6;
+    bool is_admin = 7;
 }
 
 message BlockedUser {

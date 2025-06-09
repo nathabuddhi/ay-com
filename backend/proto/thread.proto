@@ -35,6 +35,9 @@ service ThreadService {
     rpc Thread_GetUserReplies (UserToUserRequest) returns (ApiResponseThread);
     rpc Thread_GetUserMediaThreads (UserToUserRequest) returns (ApiResponseThread);
     rpc Thread_GetReplyPermission (StringThread) returns (ApiResponseThread);
+
+    // Admin Routes
+    rpc Admin_DeleteThread (StringThread) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {

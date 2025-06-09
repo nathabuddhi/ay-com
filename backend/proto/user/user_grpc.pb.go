@@ -48,6 +48,7 @@ const (
 	UserService_User_IsUserPrivate_FullMethodName              = "/user.UserService/User_IsUserPrivate"
 	UserService_User_IsUserFollowing_FullMethodName            = "/user.UserService/User_IsUserFollowing"
 	UserService_User_RefreshToken_FullMethodName               = "/user.UserService/User_RefreshToken"
+	UserService_Admin_IsUserAdmin_FullMethodName               = "/user.UserService/Admin_IsUserAdmin"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -84,6 +85,8 @@ type UserServiceClient interface {
 	User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	// Admin routes
+	Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error)
 }
 
 type userServiceClient struct {
@@ -384,6 +387,16 @@ func (c *userServiceClient) User_RefreshToken(ctx context.Context, in *StringUse
 	return out, nil
 }
 
+func (c *userServiceClient) Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BoolUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_IsUserAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -418,6 +431,8 @@ type UserServiceServer interface {
 	User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error)
 	User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error)
 	User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error)
+	// Admin routes
+	Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -514,6 +529,9 @@ func (UnimplementedUserServiceServer) User_IsUserFollowing(context.Context, *IsU
 }
 func (UnimplementedUserServiceServer) User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_RefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_IsUserAdmin not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -1058,6 +1076,24 @@ func _UserService_User_RefreshToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Admin_IsUserAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_IsUserAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_IsUserAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_IsUserAdmin(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1180,6 +1216,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_RefreshToken",
 			Handler:    _UserService_User_RefreshToken_Handler,
+		},
+		{
+			MethodName: "Admin_IsUserAdmin",
+			Handler:    _UserService_Admin_IsUserAdmin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

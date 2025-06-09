@@ -599,3 +599,22 @@ func Thread_GetTrendingHashtags(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Thread_GetTrendingHashtags(ctx, &pb.StringThread{})
 	processThreadResponseWithPayload[pb.GetTrendingHashtagsResponse](resp, err, w)
 }
+
+func Admin_DeleteThread(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (AdminDeleteThread) is called.")
+
+	vars := mux.Vars(r)
+	threadId := vars["id"]
+
+	conn := getThreadServiceConn()
+	client := pb.NewThreadServiceClient(conn)
+
+	req := &pb.StringThread{}
+	req.Value = threadId
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Admin_DeleteThread(ctx, req)
+	processThreadResponseWithoutPayload(resp, err, w)
+}

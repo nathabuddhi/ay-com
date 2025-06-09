@@ -1,0 +1,93 @@
+.admin-container {
+    width: 100%;
+    overflow-x: hidden;
+
+    .admin-header {
+        position: sticky;
+        top: 0;
+        background-color: rgba(var(--background-rgb), 0.8);
+        backdrop-filter: blur(12px);
+        z-index: 10;
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+
+        .admin-tabs {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            border-bottom: 1px solid var(--border);
+            gap: 32px;
+            padding: 0 16px;
+
+            justify-content: center;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-button {
+                flex: none;
+                background: none;
+                border: none;
+                color: var(--text);
+                font-size: 15px;
+                font-weight: 500;
+                padding: 16px 8px;
+                position: relative;
+                cursor: pointer;
+                white-space: nowrap;
+
+                &.active::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 56px;
+                    height: 4px;
+                    background-color: var(--primary);
+                    border-radius: 9999px;
+                }
+
+                &:hover {
+                    background-color: var(--hover);
+                }
+            }
+        }
+    }
+
+    // Responsive tweaks
+    @media (max-width: 768px) {
+        .admin-header {
+            padding: 12px;
+
+            .admin-tabs {
+                gap: 16px;
+                padding: 0 12px;
+
+                .tab-button {
+                    font-size: 14px;
+                    padding: 12px 6px;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .admin-header {
+            padding: 8px;
+
+            .admin-tabs {
+                gap: 12px;
+                padding: 0 8px;
+
+                .tab-button {
+                    font-size: 13px;
+                    padding: 10px 4px;
+                }
+            }
+        }
+    }
+}

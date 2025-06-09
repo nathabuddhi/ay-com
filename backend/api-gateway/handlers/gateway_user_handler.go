@@ -93,6 +93,43 @@ func processUserRequest[T any](r *http.Request, w http.ResponseWriter) (resp *T,
 	return &req, client
 }
 
+func IsUserAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID := r.Context().Value(middleware.UserIdKey).(string)
+		if userID == "" {
+			response := types.ApiResponse{
+				Success: false,
+				Message: "User ID not found in context.",
+				Payload: nil,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		conn := getUserServiceConn()
+		client := pb.NewUserServiceClient(conn)
+
+		var req pb.StringUser
+		req.Value = userID
+		res, err := client.Admin_IsUserAdmin(r.Context(), &req)
+		if err != nil || res == nil || !res.Value {
+			response := types.ApiResponse{
+				Success: false,
+				Message: "User is not admin.",
+				Payload: nil,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // User_Register godoc
 // @Summary Register a new user
 // @Description Register a new user with email, name, username, password, gender, date of birth, security question, security answer, avatar, and banner

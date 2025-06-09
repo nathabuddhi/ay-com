@@ -34,6 +34,7 @@ export interface LoginResponse {
     name: string;
     is_verified: boolean;
     refresh_token: string;
+    is_admin: boolean | undefined;
 }
 
 export interface Settings {

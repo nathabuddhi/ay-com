@@ -77,6 +77,9 @@
     <Route path="/notifications">
         <HomePage />
     </Route>
+    <Route path="/admin">
+        <HomePage />
+    </Route>
     <Route path="/settings">
         <SettingsPage />
     </Route>

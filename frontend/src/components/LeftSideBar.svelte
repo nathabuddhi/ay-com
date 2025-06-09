@@ -1,6 +1,6 @@
 <script lang="ts">
     import ToggleTheme from "./ToggleTheme.svelte";
-    import { BadgeCheck, Menu } from "@lucide/svelte";
+    import { BadgeCheck, Menu, ShieldUser } from "@lucide/svelte";
     import { logout } from "../controllers/token-controller";
     import {
         Mail,
@@ -124,15 +124,17 @@
                 <span class="link-text">Communities</span>
             </a>
 
-            <a
-                href="/premium"
-                class={"nav-link" + (path === "/premium" ? " active" : "")}
-            >
-                <span class="icon">
-                    <Star />
-                </span>
-                <span class="link-text">Premium</span>
-            </a>
+            {#if localStorage.getItem("is_admin") !== "true"}
+                <a
+                    href="/premium"
+                    class={"nav-link" + (path === "/premium" ? " active" : "")}
+                >
+                    <span class="icon">
+                        <Star />
+                    </span>
+                    <span class="link-text">Premium</span>
+                </a>
+            {/if}
 
             <a
                 href="/profile"
@@ -143,6 +145,18 @@
                 </span>
                 <span class="link-text">Profile</span>
             </a>
+
+            {#if localStorage.getItem("is_admin") === "true"}
+                <a
+                    href="/admin"
+                    class={"nav-link" + (path === "/admin" ? " active" : "")}
+                >
+                    <span class="icon">
+                        <ShieldUser />
+                    </span>
+                    <span class="link-text">Admin</span>
+                </a>
+            {/if}
 
             <a href="/settings" class="nav-link">
                 <span class="icon">

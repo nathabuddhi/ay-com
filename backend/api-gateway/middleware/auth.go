@@ -1,11 +1,10 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"os"
-
-	"context"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"

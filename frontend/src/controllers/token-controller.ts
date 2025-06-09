@@ -47,6 +47,7 @@ export function logout(): void {
     localStorage.removeItem("username");
     localStorage.removeItem("name");
     localStorage.removeItem("is_verified");
+    localStorage.removeItem("is_admin");
     window.location.href = "/";
 }
 
@@ -64,6 +65,7 @@ async function refreshToken(refresh_token: string): Promise<string> {
         logout();
         return "";
     } else {
+        localStorage.removeItem("is_admin");
         if (data.payload?.token) {
             setToken(data.payload.token);
         }
@@ -83,6 +85,12 @@ async function refreshToken(refresh_token: string): Promise<string> {
             localStorage.setItem(
                 "is_verified",
                 data.payload.is_verified ? "true" : "false"
+            );
+        }
+        if (data && data.payload?.is_admin) {
+            localStorage.setItem(
+                "is_admin",
+                data.payload.is_admin ? "true" : "false"
             );
         }
         addToast(

@@ -16,6 +16,7 @@ type User struct {
 	IsBanned         bool
 	IsDeactivated    bool
 	IsPrivate        bool
+	IsAdmin          bool
 	Bio              *string
 	SecurityQuestion string
 	SecurityAnswer   string

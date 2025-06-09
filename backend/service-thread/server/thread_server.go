@@ -94,3 +94,8 @@ func (s *ThreadServer) Thread_GetUserReplies(ctx context.Context, req *pb.UserTo
 func (s *ThreadServer) Thread_GetTrendingHashtags(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetTrendingHashtags(ctx, req)
 }
+
+// ADMIN
+func (s *ThreadServer) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Admin_DeleteThread(ctx, req)
+}

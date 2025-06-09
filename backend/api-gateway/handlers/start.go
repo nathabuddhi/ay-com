@@ -20,14 +20,25 @@ func InitRoutes() (r *mux.Router) {
 	return r
 }
 
+func InitAdminRoutes(r *mux.Router) {
+
+	admin := r.PathPrefix("/").Subrouter()
+
+	admin.Use(IsUserAdmin)
+	admin.HandleFunc("/admin/deletethread", Admin_DeleteThread).Methods("DELETE")
+}
+
 func InitSecuredRoutes(r *mux.Router) {
 	secured := r.PathPrefix("/").Subrouter()
 	secured.Use(middleware.JwtAuthMiddleware)
 	InitSecuredUserRoutes(secured)
 	InitSecuredNotificationRoutes(secured)
 	InitSecuredThreadRoutes(secured)
-
 	zap.L().Info("Secured Routes Initialized.")
+
+	// last
+	InitAdminRoutes(secured)
+	zap.L().Info("Admin Routes Initialized.")
 }
 
 func InitUserRoutes(r *mux.Router) {

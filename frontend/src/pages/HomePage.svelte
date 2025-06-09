@@ -12,6 +12,7 @@
     import BookmarkPage from "./BookmarkPage.svelte";
     import ThreadDetailPage from "./ThreadDetailPage.svelte";
     import PremiumPage from "./PremiumPage.svelte";
+    import AdminPage from "./AdminPage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
@@ -42,6 +43,8 @@
             <ThreadDetailPage />
         {:else if currpage.includes("premium")}
             <PremiumPage />
+        {:else if currpage.includes("admin")}
+            <AdminPage />
         {/if}
     </main>
     <RightBar />

@@ -38,6 +38,7 @@ const (
 	ThreadService_Thread_GetUserReplies_FullMethodName       = "/thread.ThreadService/Thread_GetUserReplies"
 	ThreadService_Thread_GetUserMediaThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserMediaThreads"
 	ThreadService_Thread_GetReplyPermission_FullMethodName   = "/thread.ThreadService/Thread_GetReplyPermission"
+	ThreadService_Admin_DeleteThread_FullMethodName          = "/thread.ThreadService/Admin_DeleteThread"
 )
 
 // ThreadServiceClient is the client API for ThreadService service.
@@ -64,6 +65,8 @@ type ThreadServiceClient interface {
 	Thread_GetUserReplies(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	// Admin Routes
+	Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 }
 
 type threadServiceClient struct {
@@ -264,6 +267,16 @@ func (c *threadServiceClient) Thread_GetReplyPermission(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *threadServiceClient) Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Admin_DeleteThread_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ThreadServiceServer is the server API for ThreadService service.
 // All implementations must embed UnimplementedThreadServiceServer
 // for forward compatibility.
@@ -288,6 +301,8 @@ type ThreadServiceServer interface {
 	Thread_GetUserReplies(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
 	Thread_GetUserMediaThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error)
+	// Admin Routes
+	Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error)
 	mustEmbedUnimplementedThreadServiceServer()
 }
 
@@ -354,6 +369,9 @@ func (UnimplementedThreadServiceServer) Thread_GetUserMediaThreads(context.Conte
 }
 func (UnimplementedThreadServiceServer) Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetReplyPermission not implemented")
+}
+func (UnimplementedThreadServiceServer) Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteThread not implemented")
 }
 func (UnimplementedThreadServiceServer) mustEmbedUnimplementedThreadServiceServer() {}
 func (UnimplementedThreadServiceServer) testEmbeddedByValue()                       {}
@@ -718,6 +736,24 @@ func _ThreadService_Thread_GetReplyPermission_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThreadService_Admin_DeleteThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringThread)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Admin_DeleteThread(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Admin_DeleteThread_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Admin_DeleteThread(ctx, req.(*StringThread))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ThreadService_ServiceDesc is the grpc.ServiceDesc for ThreadService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -800,6 +836,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetReplyPermission",
 			Handler:    _ThreadService_Thread_GetReplyPermission_Handler,
+		},
+		{
+			MethodName: "Admin_DeleteThread",
+			Handler:    _ThreadService_Admin_DeleteThread_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

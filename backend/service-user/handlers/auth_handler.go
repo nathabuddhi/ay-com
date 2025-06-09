@@ -109,6 +109,7 @@ func (h *Handlers) User_RefreshToken(ctx context.Context, req *pb.StringUser) (*
 		Username:     user.Username,
 		Name:         user.Name,
 		IsVerified:   user.IsVerified,
+		IsAdmin:      user.IsAdmin,
 	}
 	dataReturn, err := anypb.New(refreshTokenResponse)
 	if err != nil {
@@ -181,6 +182,7 @@ func (h *Handlers) User_Login(ctx context.Context, req *pb.LoginRequest) (*pb.Ap
 		IsVerified:   user.IsVerified,
 		Token:        accessToken,
 		RefreshToken: refreshToken,
+		IsAdmin:      user.IsAdmin,
 	}
 	dataReturn, err := anypb.New(loginResponse)
 	if err != nil {
