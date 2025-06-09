@@ -564,11 +564,43 @@ func User_GetAllFollowing(w http.ResponseWriter, r *http.Request) {
 // @Router /user/submitverifyaccountrequest [post]
 func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("User Submit Verify Account Request is called.")
-	req, client := processUserRequest[pb.SubmitVerifyAccountRequest](r, w)
-	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	err := r.ParseMultipartForm(20 << 20)
+	if err != nil {
+		zap.L().Error("Failed to parse multipart form", zap.Error(err))
+		returnErrorResponse(w, "Failed to parse multipart form")
+		return
+	}
+
+	file, header, err := r.FormFile("face")
+	if err != nil {
+		zap.L().Error("Failed to get face file", zap.Error(err))
+		returnErrorResponse(w, "Failed to get face file")
+		return
+	}
+
+	ext := ""
+	if dot := strings.LastIndex(header.Filename, "."); dot != -1 {
+		ext = header.Filename[dot:]
+	}
+	imagePath, err := UploadVerifyRequestImage(file, ext)
+	if err != nil {
+		zap.L().Error("Error uploading verification request image", zap.Error(err))
+		returnErrorResponse(w, "Failed to upload verification request image")
+		return
+	}
+
+	conn := getUserServiceConn()
+	client := pb.NewUserServiceClient(conn)
 	ctx, cancel := createContext()
 	defer cancel()
-	resp, err := client.User_SubmitVerifyAccountRequest(ctx, req)
+
+	var req pb.SubmitVerifyAccountRequest
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	req.IdentityCardNumber = r.FormValue("identity_card_number")
+	req.ReasonText = r.FormValue("reason")
+	req.SelfieUrl = imagePath
+	resp, err := client.User_SubmitVerifyAccountRequest(ctx, &req)
 	processUserResponseWithoutPayload(resp, err, w)
 }
 

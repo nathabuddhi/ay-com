@@ -1,9 +1,11 @@
 package supabase
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
+	pb "github.com/nathabuddhi/ay-com/backend/service-media/proto/media"
 	"go.uber.org/zap"
 )
 
@@ -19,6 +21,22 @@ func UploadAvatar(userId string, avatarFile io.Reader) (string, error) {
 	}
 
 	return avatarPath, nil
+}
+
+func UploadVerificationMedia(req *pb.UploadImageRequest) (string, error) {
+	zap.L().Info("Uploading verification request", zap.String("id", req.TypeId))
+
+	bucket := "verificationrequest"
+
+	file := bytes.NewReader(req.Image)
+
+	path := fmt.Sprintf("%s.%s", req.TypeId, req.ImageType)
+	if err := uploadFile(bucket, path, file); err != nil {
+		zap.L().Error("Failed to upload avatar", zap.Error(err))
+		return "", err
+	}
+
+	return path, nil
 }
 
 func UploadBanner(userId string, bannerFile io.Reader) (string, error) {

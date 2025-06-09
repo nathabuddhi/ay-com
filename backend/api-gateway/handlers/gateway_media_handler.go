@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/media"
 	"go.uber.org/zap"
@@ -166,6 +167,34 @@ func UploadMessageMedia(messageId string, messageFile io.Reader) error {
 	}
 
 	return nil
+}
+
+func UploadVerifyRequestImage(faceFile io.Reader, fileExtension string) (string, error) {
+	imageData, err := readFileToBytes(faceFile)
+	if err != nil {
+		return "", fmt.Errorf("failed to read face file: %w", err)
+	}
+
+	conn := getMediaServiceConn()
+	client := pb.NewMediaServiceClient(conn)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	generatedId := uuid.New().String()
+
+	bannerReq := &pb.UploadImageRequest{
+		TypeId:     generatedId,
+		Image:      imageData,
+		UploadType: "verification",
+		ImageType:  fileExtension,
+	}
+
+	if _, err := client.Media_UploadMedia(ctx, bannerReq); err != nil {
+		zap.L().Error("Failed to upload thread media", zap.Error(err))
+		return "", fmt.Errorf("failed to upload thread media: %w", err)
+	}
+
+	return generatedId, nil
 }
 
 func User_ChangeAvatar(w http.ResponseWriter, r *http.Request) {

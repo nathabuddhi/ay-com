@@ -1,6 +1,6 @@
 export interface VerifyAccountRequest {
-    user_id: string;
     id: string;
+    user_id: string;
     reason_text: string;
     status: string;
     submitted_at: string;

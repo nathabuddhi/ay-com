@@ -11,6 +11,7 @@
     import CreatePostDialog from "../components/CreatePostDialog.svelte";
     import BookmarkPage from "./BookmarkPage.svelte";
     import ThreadDetailPage from "./ThreadDetailPage.svelte";
+    import PremiumPage from "./PremiumPage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
@@ -39,6 +40,8 @@
             <BookmarkPage />
         {:else if currpage.includes("thread")}
             <ThreadDetailPage />
+        {:else if currpage.includes("premium")}
+            <PremiumPage />
         {/if}
     </main>
     <RightBar />

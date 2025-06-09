@@ -138,11 +138,32 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 
 	var verifyRequest models.UserVerificationRequest
 	err = h.DB.WithContext(ctx).
-		Where("user_id = ? AND status = 'pending'", req.UserId).
+		Where("user_id = ? AND status IN ('pending', 'accepted')", req.UserId).
 		First(&verifyRequest).Error
 
 	if err == nil {
-		return &pb.ApiResponseUser{Success: false, Message: "You already have a pending verification request."}, nil
+		return &pb.ApiResponseUser{Success: false, Message: "You already have a pending or accepted verification request."}, nil
+	}
+
+	hashedIdCardNumber, err := bcrypt.GenerateFromPassword([]byte(req.IdentityCardNumber), bcrypt.DefaultCost)
+	if err != nil {
+		zap.L().Error("Failed to hash identity card number", zap.Error(err))
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to process identity card number."}, nil
+	}
+
+	var existingRequests []models.UserVerificationRequest
+	err = h.DB.WithContext(ctx).
+		Where("status IN ('pending', 'accepted')").
+		Find(&existingRequests).Error
+	if err != nil {
+		zap.L().Error("Failed to check existing id card numbers", zap.Error(err))
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to check identity card number usage."}, nil
+	}
+
+	for _, reqItem := range existingRequests {
+		if bcrypt.CompareHashAndPassword([]byte(reqItem.IdentityCardNumber), []byte(req.IdentityCardNumber)) == nil {
+			return &pb.ApiResponseUser{Success: false, Message: "This identity card number has already been used for a verification request. If this isn't you, contact support and local authority immediately."}, nil
+		}
 	}
 
 	var generatedId string
@@ -155,7 +176,7 @@ func (h *Handlers) User_SubmitVerifyAccountRequest(ctx context.Context, req *pb.
 
 	verifyRequest.Id = generatedId
 	verifyRequest.UserId = req.UserId
-	verifyRequest.IdentityCardNumber = req.IdentityCardNumber
+	verifyRequest.IdentityCardNumber = string(hashedIdCardNumber)
 	verifyRequest.SelfieUrl = req.SelfieUrl
 	verifyRequest.ReasonText = req.ReasonText
 	verifyRequest.Status = "pending"
