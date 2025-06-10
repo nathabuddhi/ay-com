@@ -8,6 +8,7 @@ option go_package = "thread/";
 
 service ThreadService {
     rpc Thread_GetTrendingHashtags (StringThread) returns (ApiResponseThread);
+    rpc Thread_GetThreadCategories (StringThread) returns (ThreadCategories);
 
     // Protected Routes
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
@@ -38,12 +39,18 @@ service ThreadService {
 
     // Admin Routes
     rpc Admin_DeleteThread (StringThread) returns (ApiResponseThread);
+    rpc Admin_AddCategory (StringThread) returns (ApiResponseThread);
+    rpc Admin_DeleteCategory (StringThread) returns (ApiResponseThread);
 }
 
 message ApiResponseThread {
     bool success = 1;
     string message = 2;
     google.protobuf.Any data = 3;
+}
+
+message ThreadCategories {
+    repeated string categories = 1;
 }
 
 message GetTrendingHashtagsResponse {

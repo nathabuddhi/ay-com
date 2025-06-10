@@ -95,7 +95,19 @@ func (s *ThreadServer) Thread_GetTrendingHashtags(ctx context.Context, req *pb.S
 	return s.Handler.Thread_GetTrendingHashtags(ctx, req)
 }
 
+func (s *ThreadServer) Thread_GetThreadCategories(ctx context.Context, req *pb.StringThread) (*pb.ThreadCategories, error) {
+	return s.Handler.Thread_GetThreadCategories(ctx, req)
+}
+
 // ADMIN
 func (s *ThreadServer) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Admin_DeleteThread(ctx, req)
+}
+
+func (s *ThreadServer) Admin_AddCategory(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Admin_AddCategory(ctx, req)
+}
+
+func (s *ThreadServer) Admin_DeleteCategory(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
+	return s.Handler.Admin_DeleteCategory(ctx, req)
 }

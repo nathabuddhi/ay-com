@@ -600,21 +600,28 @@ func Thread_GetTrendingHashtags(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithPayload[pb.GetTrendingHashtagsResponse](resp, err, w)
 }
 
-func Admin_DeleteThread(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("Thread (AdminDeleteThread) is called.")
-
-	vars := mux.Vars(r)
-	threadId := vars["id"]
+func Thread_GetThreadCategories(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetCategories) is called.")
 
 	conn := getThreadServiceConn()
 	client := pb.NewThreadServiceClient(conn)
 
-	req := &pb.StringThread{}
-	req.Value = threadId
-
 	ctx, cancel := createContext()
 	defer cancel()
 
-	resp, err := client.Admin_DeleteThread(ctx, req)
-	processThreadResponseWithoutPayload(resp, err, w)
+	resp, err := client.Thread_GetThreadCategories(ctx, &pb.StringThread{})
+
+	if err != nil {
+		zap.L().Error("Error fetching thread categories", zap.Error(err))
+		returnErrorResponse(w, "Error fetching thread categories: "+err.Error())
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: true,
+		Message: "Thread categories retrieved successfully.",
+		Payload: resp.Categories,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

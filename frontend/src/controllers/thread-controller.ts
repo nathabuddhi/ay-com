@@ -408,3 +408,19 @@ export async function getTrendingTags(): Promise<
         return returnDefaultError<GetTrendingHashtagsResponse>(error);
     }
 }
+
+export async function getCategories(): Promise<ApiResponse<string[]>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/getcategories`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data: ApiResponse<string[]> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<string[]>(error);
+    }
+}

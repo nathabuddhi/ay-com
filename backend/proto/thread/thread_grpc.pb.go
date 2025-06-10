@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ThreadService_Thread_GetTrendingHashtags_FullMethodName  = "/thread.ThreadService/Thread_GetTrendingHashtags"
+	ThreadService_Thread_GetThreadCategories_FullMethodName  = "/thread.ThreadService/Thread_GetThreadCategories"
 	ThreadService_Thread_GetAllThreads_FullMethodName        = "/thread.ThreadService/Thread_GetAllThreads"
 	ThreadService_Thread_GetFollowingThreads_FullMethodName  = "/thread.ThreadService/Thread_GetFollowingThreads"
 	ThreadService_Thread_GetThreadById_FullMethodName        = "/thread.ThreadService/Thread_GetThreadById"
@@ -39,6 +40,8 @@ const (
 	ThreadService_Thread_GetUserMediaThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserMediaThreads"
 	ThreadService_Thread_GetReplyPermission_FullMethodName   = "/thread.ThreadService/Thread_GetReplyPermission"
 	ThreadService_Admin_DeleteThread_FullMethodName          = "/thread.ThreadService/Admin_DeleteThread"
+	ThreadService_Admin_AddCategory_FullMethodName           = "/thread.ThreadService/Admin_AddCategory"
+	ThreadService_Admin_DeleteCategory_FullMethodName        = "/thread.ThreadService/Admin_DeleteCategory"
 )
 
 // ThreadServiceClient is the client API for ThreadService service.
@@ -46,6 +49,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ThreadServiceClient interface {
 	Thread_GetTrendingHashtags(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetThreadCategories(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ThreadCategories, error)
 	// Protected Routes
 	Thread_GetAllThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(ctx context.Context, in *GetFollowingThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -67,6 +71,8 @@ type ThreadServiceClient interface {
 	Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Admin_AddCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Admin_DeleteCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 }
 
 type threadServiceClient struct {
@@ -81,6 +87,16 @@ func (c *threadServiceClient) Thread_GetTrendingHashtags(ctx context.Context, in
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetTrendingHashtags_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *threadServiceClient) Thread_GetThreadCategories(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ThreadCategories, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ThreadCategories)
+	err := c.cc.Invoke(ctx, ThreadService_Thread_GetThreadCategories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -277,11 +293,32 @@ func (c *threadServiceClient) Admin_DeleteThread(ctx context.Context, in *String
 	return out, nil
 }
 
+func (c *threadServiceClient) Admin_AddCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Admin_AddCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *threadServiceClient) Admin_DeleteCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Admin_DeleteCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ThreadServiceServer is the server API for ThreadService service.
 // All implementations must embed UnimplementedThreadServiceServer
 // for forward compatibility.
 type ThreadServiceServer interface {
 	Thread_GetTrendingHashtags(context.Context, *StringThread) (*ApiResponseThread, error)
+	Thread_GetThreadCategories(context.Context, *StringThread) (*ThreadCategories, error)
 	// Protected Routes
 	Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(context.Context, *GetFollowingThreadRequest) (*ApiResponseThread, error)
@@ -303,6 +340,8 @@ type ThreadServiceServer interface {
 	Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error)
+	Admin_AddCategory(context.Context, *StringThread) (*ApiResponseThread, error)
+	Admin_DeleteCategory(context.Context, *StringThread) (*ApiResponseThread, error)
 	mustEmbedUnimplementedThreadServiceServer()
 }
 
@@ -315,6 +354,9 @@ type UnimplementedThreadServiceServer struct{}
 
 func (UnimplementedThreadServiceServer) Thread_GetTrendingHashtags(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetTrendingHashtags not implemented")
+}
+func (UnimplementedThreadServiceServer) Thread_GetThreadCategories(context.Context, *StringThread) (*ThreadCategories, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetThreadCategories not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetAllThreads not implemented")
@@ -373,6 +415,12 @@ func (UnimplementedThreadServiceServer) Thread_GetReplyPermission(context.Contex
 func (UnimplementedThreadServiceServer) Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteThread not implemented")
 }
+func (UnimplementedThreadServiceServer) Admin_AddCategory(context.Context, *StringThread) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_AddCategory not implemented")
+}
+func (UnimplementedThreadServiceServer) Admin_DeleteCategory(context.Context, *StringThread) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteCategory not implemented")
+}
 func (UnimplementedThreadServiceServer) mustEmbedUnimplementedThreadServiceServer() {}
 func (UnimplementedThreadServiceServer) testEmbeddedByValue()                       {}
 
@@ -408,6 +456,24 @@ func _ThreadService_Thread_GetTrendingHashtags_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ThreadServiceServer).Thread_GetTrendingHashtags(ctx, req.(*StringThread))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThreadService_Thread_GetThreadCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringThread)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Thread_GetThreadCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Thread_GetThreadCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Thread_GetThreadCategories(ctx, req.(*StringThread))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -754,6 +820,42 @@ func _ThreadService_Admin_DeleteThread_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThreadService_Admin_AddCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringThread)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Admin_AddCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Admin_AddCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Admin_AddCategory(ctx, req.(*StringThread))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThreadService_Admin_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringThread)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Admin_DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Admin_DeleteCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Admin_DeleteCategory(ctx, req.(*StringThread))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ThreadService_ServiceDesc is the grpc.ServiceDesc for ThreadService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -764,6 +866,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetTrendingHashtags",
 			Handler:    _ThreadService_Thread_GetTrendingHashtags_Handler,
+		},
+		{
+			MethodName: "Thread_GetThreadCategories",
+			Handler:    _ThreadService_Thread_GetThreadCategories_Handler,
 		},
 		{
 			MethodName: "Thread_GetAllThreads",
@@ -840,6 +946,14 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Admin_DeleteThread",
 			Handler:    _ThreadService_Admin_DeleteThread_Handler,
+		},
+		{
+			MethodName: "Admin_AddCategory",
+			Handler:    _ThreadService_Admin_AddCategory_Handler,
+		},
+		{
+			MethodName: "Admin_DeleteCategory",
+			Handler:    _ThreadService_Admin_DeleteCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

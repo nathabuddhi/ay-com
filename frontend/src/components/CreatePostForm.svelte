@@ -2,7 +2,11 @@
     import { Image, ListPlus, X } from "@lucide/svelte";
     import { AVATAR_IMG } from "../env_var";
     import { addToast } from "../stores/toast-wrapper";
-    import { postThread } from "../controllers/thread-controller";
+    import {
+        getCategories,
+        postThread,
+    } from "../controllers/thread-controller";
+    import { onMount } from "svelte";
 
     const maxWords: number = 100;
     let postText: string = $state("");
@@ -29,14 +33,7 @@
     let pollOptions: string[] = $state([]);
     let showPoll = $state(false);
 
-    const categories = [
-        "General",
-        "News",
-        "Gaming",
-        "Education",
-        "Technology",
-        "Art",
-    ];
+    let categories: string[] = $state<string[]>(["LOADING"]);
     let selectedCategory: string = $state("");
     const permissions: string[] = [
         "Everyone",
@@ -189,6 +186,23 @@
             );
         }
     }
+
+    onMount(async () => {
+        const response = await getCategories();
+        if (response.success && response.payload) {
+            categories = response.payload;
+        } else {
+            categories = [
+                "General",
+                "Technology",
+                "Health",
+                "Entertainment",
+                "Other",
+                "Entertainment",
+                "Education",
+            ];
+        }
+    });
 </script>
 
 <div class="create-post-content">

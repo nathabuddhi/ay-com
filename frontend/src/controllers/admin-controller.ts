@@ -64,9 +64,49 @@ export async function rejectUserVerificationRequest(
                     "Content-Type": "application/json",
                     Authorization: await getValidToken(),
                 },
-                body: JSON.stringify({ value: id, reason: reason }),
+                body: JSON.stringify({ id: id, reason: reason }),
             }
         );
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function addThreadCategory(
+    category: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(`${API_URL}/admin/addthreadcategory`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({ value: category }),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}
+
+export async function deleteThreadCategory(
+    category: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(`${API_URL}/admin/deletethreadcategory`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({ value: category }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;

@@ -29,6 +29,8 @@ func InitAdminRoutes(r *mux.Router) {
 	admin.HandleFunc("/admin/getalluserverificationrequests", Admin_GetAllVerifyAccountRequest).Methods("POST")
 	admin.HandleFunc("/admin/rejectverificationrequest", Admin_RejectPremiumRequest).Methods("PATCH")
 	admin.HandleFunc("/admin/approveverificationrequest", Admin_ApprovePremiumRequest).Methods("PATCH")
+	admin.HandleFunc("/admin/addthreadcategory", Admin_AddThreadCategory).Methods("POST")
+	admin.HandleFunc("/admin/deletethreadcategory", Admin_DeleteThreadCategory).Methods("DELETE")
 	zap.L().Info("Admin Routes Initialized.")
 }
 
@@ -99,6 +101,7 @@ func InitPublicThreadRoutes(r *mux.Router) {
 }
 
 func InitSecuredThreadRoutes(secured *mux.Router) {
+	secured.HandleFunc("/thread/getcategories", Thread_GetThreadCategories).Methods("GET")
 	secured.HandleFunc("/thread/getallthreads", Thread_GetAllThreads).Methods("POST")
 	secured.HandleFunc("/thread/getfollowingthreads", Thread_GetFollowingThreads).Methods("POST")
 	secured.HandleFunc("/thread/create", Thread_CreateThread).Methods("POST")
