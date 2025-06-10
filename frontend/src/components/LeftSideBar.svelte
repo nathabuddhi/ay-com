@@ -124,17 +124,15 @@
                 <span class="link-text">Communities</span>
             </a>
 
-            {#if localStorage.getItem("is_admin") !== "true"}
-                <a
-                    href="/premium"
-                    class={"nav-link" + (path === "/premium" ? " active" : "")}
-                >
-                    <span class="icon">
-                        <Star />
-                    </span>
-                    <span class="link-text">Premium</span>
-                </a>
-            {/if}
+            <a
+                href="/premium"
+                class={"nav-link" + (path === "/premium" ? " active" : "")}
+            >
+                <span class="icon">
+                    <Star />
+                </span>
+                <span class="link-text">Premium</span>
+            </a>
 
             <a
                 href="/profile"

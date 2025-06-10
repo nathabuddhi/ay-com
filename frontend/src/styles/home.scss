@@ -106,7 +106,11 @@ $tablet: 768px;
     position: sticky;
     top: 0;
     height: 100vh;
-    overflow-y: hidden;
+    overflow-y: auto;
+    scrollbar-width: none; // Firefox
+    &::-webkit-scrollbar {
+        display: none; // Chrome, Safari, Opera
+    }
     border-right: 1px solid var(--border);
     padding: 0 12px;
     display: flex;
@@ -386,6 +390,11 @@ $tablet: 768px;
 }
 
 .main-content {
+    overflow-y: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
     border-right: 1px solid var(--border);
     min-height: 100vh;
 
@@ -825,6 +834,10 @@ $tablet: 768px;
     top: 0;
     height: 100vh;
     overflow-y: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
     overflow-x: hidden;
     padding: 0 16px;
 
