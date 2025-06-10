@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -213,6 +214,8 @@ func (h *Handlers) User_Register(ctx context.Context, req *pb.RegisterRequest) (
 	if !regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$`).MatchString(req.Email) {
 		return &pb.ApiResponseUser{Success: false, Message: "Invalid email format. Must end with .com"}, nil
 	}
+
+	req.Username = strings.ToLower(req.Username)
 
 	var existingUser models.User
 
