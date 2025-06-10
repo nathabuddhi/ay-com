@@ -30,7 +30,7 @@ func UploadVerificationMedia(req *pb.UploadImageRequest) (string, error) {
 
 	file := bytes.NewReader(req.Image)
 
-	path := fmt.Sprintf("%s.%s", req.TypeId, req.ImageType)
+	path := fmt.Sprintf("%s%s", req.TypeId, req.ImageType)
 	if err := uploadFile(bucket, path, file); err != nil {
 		zap.L().Error("Failed to upload avatar", zap.Error(err))
 		return "", err

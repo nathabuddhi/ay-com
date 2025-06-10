@@ -66,7 +66,7 @@ func checkRedisData(key string, w http.ResponseWriter) bool {
 }
 
 func createContext() (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
 	return ctx, cancel
 }

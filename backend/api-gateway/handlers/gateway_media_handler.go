@@ -194,7 +194,7 @@ func UploadVerifyRequestImage(faceFile io.Reader, fileExtension string) (string,
 		return "", fmt.Errorf("failed to upload thread media: %w", err)
 	}
 
-	return generatedId + "." + fileExtension, nil
+	return generatedId + fileExtension, nil
 }
 
 func User_ChangeAvatar(w http.ResponseWriter, r *http.Request) {
