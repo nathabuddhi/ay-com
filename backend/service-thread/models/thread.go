@@ -63,6 +63,6 @@ type ThreadReply struct {
 	ReplyToId string `gorm:"type:char(36);not null;index;"`
 }
 
-type ThreadCategories struct {
+type ThreadCategory struct {
 	Category string `gorm:"type:varchar(100);not null;primaryKey"`
 }

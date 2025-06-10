@@ -11,7 +11,7 @@ import (
 func (h *Handler) Thread_GetThreadCategories(ctx context.Context, req *pb.StringThread) (*pb.ThreadCategories, error) {
 	zap.L().Info("Getting thread categories for thread ID: " + req.Value)
 
-	var categories []models.ThreadCategories
+	var categories []models.ThreadCategory
 	err := h.DB.WithContext(ctx).
 		Find(&categories).Error
 	if err != nil {
@@ -36,7 +36,7 @@ func (h *Handler) Admin_AddCategory(ctx context.Context, req *pb.StringThread) (
 	zap.L().Info("Adding new thread category", zap.String("category", req.Value))
 
 	if err := h.DB.WithContext(ctx).Create(
-		&models.ThreadCategories{
+		&models.ThreadCategory{
 			Category: req.Value,
 		}).Error; err != nil {
 		zap.L().Error("Error adding thread category", zap.Error(err))
@@ -55,7 +55,7 @@ func (h *Handler) Admin_AddCategory(ctx context.Context, req *pb.StringThread) (
 func (h *Handler) Admin_DeleteCategory(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	zap.L().Info("Deleting thread category", zap.String("category", req.Value))
 
-	if err := h.DB.WithContext(ctx).Where("category = ?", req.Value).Delete(&models.ThreadCategories{}).Error; err != nil {
+	if err := h.DB.WithContext(ctx).Where("category = ?", req.Value).Delete(&models.ThreadCategory{}).Error; err != nil {
 		zap.L().Error("Error deleting thread category", zap.Error(err))
 		return &pb.ApiResponseThread{
 			Success: false,

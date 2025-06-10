@@ -2,8 +2,15 @@
     import { onMount } from "svelte";
     import { isLoggedIn } from "../controllers/token-controller";
     import type { UserProfile, VerifyAccountRequest } from "../types/user";
-    import { getAllUserVerificationRequests } from "../controllers/admin-controller";
+    import {
+        addThreadCategory,
+        deleteThreadCategory,
+        getAllUserVerificationRequests,
+    } from "../controllers/admin-controller";
     import UserVerificationRequest from "../components/Admin/UserVerificationRequest.svelte";
+    import { getCategories } from "../controllers/thread-controller";
+    import { addToast } from "../stores/toast-wrapper";
+    import { Plus, X } from "@lucide/svelte";
 
     async function loadUserVerificationRequests() {
         const response = await getAllUserVerificationRequests();
@@ -15,6 +22,32 @@
         }
     }
 
+    async function loadThreadCategories() {
+        const response = await getCategories();
+        if (response.success && response.payload) {
+            threadCategories = response.payload;
+        } else {
+            threadCategories = [];
+            addToast("error", response.message || "Failed to load categories.");
+        }
+    }
+
+    async function handleAddCategory() {
+        if (newThreadCategory.trim() === "") {
+            addToast("error", "Category name cannot be empty.");
+            return;
+        }
+
+        const response = await addThreadCategory(newThreadCategory.trim());
+        if (response.success) {
+            addToast("success", "Category added successfully.");
+            newThreadCategory = "";
+            loadThreadCategories();
+        } else {
+            addToast("error", response.message || "Failed to add category.");
+        }
+    }
+
     onMount(async () => {
         if (await !isLoggedIn()) {
             window.location.href = "/login";
@@ -23,6 +56,7 @@
         }
 
         loadUserVerificationRequests();
+        loadThreadCategories();
     });
 
     const tabs = [
@@ -46,6 +80,8 @@
 
     let threadCategories = $state<string[]>([]);
     let communityCategories = $state<string[]>([]);
+    let newThreadCategory = $state<string>("");
+    let newCommunityCategory = $state<string>("");
 </script>
 
 <div class="admin-container">
@@ -64,7 +100,7 @@
     </div>
     <div class="admin-content">
         <div class="tab-content">
-            <h3>{activeTab}</h3>
+            <h2>{activeTab}</h2>
             {#if activeTab === "Users"}
                 <ul>
                     {#each users as user}
@@ -78,6 +114,69 @@
                 {#if verificationRequests.length === 0}
                     <p>No pending verification requests found.</p>
                 {/if}
+            {:else if activeTab === "Categories"}
+                <div class="categories-container">
+                    <div class="categories">
+                        <h3>Thread Categories</h3>
+                        <div class="category-list">
+                            {#each threadCategories as category, i}
+                                <div class="category-card">
+                                    <span>{category}</span>
+                                    <button
+                                        class="delete-button"
+                                        title="Delete category"
+                                        onclick={async () => {
+                                            await deleteThreadCategory(
+                                                category
+                                            );
+                                            loadThreadCategories();
+                                        }}
+                                    >
+                                        <X />
+                                    </button>
+                                </div>
+                            {/each}
+                        </div>
+                        <div class="add-category">
+                            <input
+                                type="text"
+                                placeholder="New Category"
+                                bind:value={newThreadCategory}
+                            />
+                            <button onclick={handleAddCategory}>Add</button>
+                        </div>
+                    </div>
+                    <div class="categories">
+                        <h3>Community Categories</h3>
+                        <div class="category-list">
+                            {#each communityCategories as category, i}
+                                <div class="category-card">
+                                    <span>{category}</span>
+                                    <button
+                                        class="delete-button"
+                                        title="Delete category"
+                                        onclick={async () => {
+                                            await deleteThreadCategory(
+                                                category
+                                            );
+                                            loadThreadCategories();
+                                        }}
+                                    >
+                                        <X />
+                                    </button>
+                                </div>
+                            {/each}
+                        </div>
+                        <div class="add-category">
+                            <input
+                                type="text"
+                                placeholder="New Category"
+                                bind:value={newCommunityCategory}
+                            />
+                            <button>Add</button>
+                        </div>
+                    </div>
+                </div>
             {/if}
         </div>
     </div>

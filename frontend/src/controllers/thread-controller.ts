@@ -415,6 +415,7 @@ export async function getCategories(): Promise<ApiResponse<string[]>> {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: await getValidToken(),
             },
         });
         const data: ApiResponse<string[]> = await response.json();
