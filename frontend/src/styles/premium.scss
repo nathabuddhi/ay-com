@@ -15,6 +15,11 @@ $form-max-width: 400px;
         text-align: center;
     }
 
+    .file-upload {
+        border: 1px solid var(--primary);
+        padding: 1rem;
+    }
+
     label {
         display: block;
         margin-bottom: 1rem;
@@ -28,7 +33,37 @@ $form-max-width: 400px;
             border-radius: 4px;
             color: var(--text);
             background: var(--background);
+            border: 1px solid var(--primary);
         }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: var(--background);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 0.25rem;
+            transition: background 0.2s;
+
+            &:hover,
+            &:focus {
+                background: darken(green, 10%);
+            }
+        }
+    }
+
+    .face-preview {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        display: block;
     }
 
     button {

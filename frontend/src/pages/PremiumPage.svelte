@@ -8,6 +8,8 @@
     let faceFile: File | null = null;
     let submitting = $state(false);
 
+    let facePreviewUrl = $state("");
+
     onMount(async () => {
         if (await !isLoggedIn()) {
             window.location.href = "/login";
@@ -17,6 +19,7 @@
 
     function handleFileChange(e: Event) {
         faceFile = (e.target as HTMLInputElement).files?.[0] ?? null;
+        facePreviewUrl = faceFile ? URL.createObjectURL(faceFile) : "";
     }
 
     async function submitForm(event: Event) {
@@ -109,7 +112,7 @@
                 <textarea bind:value={reason} rows="3" required></textarea>
             </label>
 
-            <label>
+            <label class="file-upload">
                 Upload Face Photo
                 <input
                     type="file"
@@ -118,6 +121,7 @@
                     required
                 />
             </label>
+            <img src={facePreviewUrl} alt="Face Preview" class="face-preview" />
 
             <button type="submit" disabled={submitting}>
                 {submitting ? "Submitting..." : "Submit"}
@@ -126,6 +130,7 @@
     </div>
 {/if}
 
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @import "../styles/premium.scss";
 </style>
