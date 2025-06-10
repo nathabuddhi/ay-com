@@ -86,6 +86,10 @@ func (s *UserServer) User_GetAllFollowing(ctx context.Context, req *pb.GetAllFol
 	return s.Handlers.User_GetAllFollowing(ctx, req)
 }
 
+func (s *UserServer) Admin_GetAllVerifyAccountRequest(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_GetAllVerifyAccountRequest(ctx, req)
+}
+
 func (s *UserServer) User_GetAllVerifyAccountRequest(ctx context.Context, req *pb.GetAllVerifyAccountRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetAllVerifyAccountRequest(ctx, req)
 }
@@ -124,6 +128,10 @@ func (s *UserServer) User_IsUserFollowing(ctx context.Context, req *pb.IsUserFol
 
 func (s *UserServer) User_GetFollowRecommendations(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
 	return s.Handlers.User_GetFollowRecommendations(ctx, req)
+}
+
+func (s *UserServer) Admin_IsUserAdmin(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
+	return s.Handlers.Admin_IsUserAdmin(ctx, req)
 }
 
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
