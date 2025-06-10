@@ -652,7 +652,7 @@ func User_SubmitVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} types.ApiResponse
 // @Router /user/getallverifyaccountrequest [post]
 func User_GetAllVerifyAccountRequest(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("User Submit Verify Account Request is called.")
+	zap.L().Info("User Fetch Verify Account Request is called.")
 	req, client := processUserRequest[pb.GetAllVerifyAccountRequest](r, w)
 	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 	ctx, cancel := createContext()
@@ -835,3 +835,4 @@ func User_GetFollowRecommendations(w http.ResponseWriter, r *http.Request) {
 		processUserResponseWithPayload[pb.GetFollowRecommendationsResponse](resp, err, w)
 	}
 }
+

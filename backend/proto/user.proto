@@ -46,6 +46,9 @@ service UserService {
 
     // Admin routes
     rpc Admin_IsUserAdmin(StringUser) returns (BoolUser);
+    rpc Admin_GetAllVerifyAccountRequest (StringUser) returns (ApiResponseUser);
+    rpc Admin_ApprovePremiumRequest (StringUser) returns (ApiResponseUser);
+    rpc Admin_RejectPremiumRequest (RejectPremiumRequest) returns (ApiResponseUser);
 }
 
 message ApiResponseUser {
@@ -64,6 +67,11 @@ message StringUser {
 
 message BoolUser {
     bool value = 1;
+}
+
+message RejectPremiumRequest{
+    string id = 1;
+    string reason = 2;
 }
 
 message UserProfile {
@@ -193,6 +201,7 @@ message VerifyAccountRequest {
     string reason_text = 3;
     string status = 4;
     string submitted_at = 5;
+    string selfie_url = 6;
 }
 
 message GetAllVerifyAccountRequest {

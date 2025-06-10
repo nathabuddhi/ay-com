@@ -70,9 +70,15 @@ func (h *Handlers) User_GetProfile(ctx context.Context, req *pb.GetProfileReques
 		following = 0
 	}
 
+	var requester models.User
+	err = h.DB.Where("user_id = ?", req.RequesterId).First(&requester).Error
+	if err != nil {
+		requester.IsAdmin = false
+	}
+
 	bio := safeString(user.Bio)
 	isPrivate := false
-	if user.IsPrivate && req.RequesterId != user.UserId {
+	if user.IsPrivate && req.RequesterId != user.UserId && !requester.IsAdmin {
 		if !h.IsUserFollowing(ctx, req.RequesterId, user.UserId) {
 			isPrivate = true
 		}

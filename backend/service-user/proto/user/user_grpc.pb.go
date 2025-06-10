@@ -19,36 +19,39 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_User_Register_FullMethodName                   = "/user.UserService/User_Register"
-	UserService_User_Login_FullMethodName                      = "/user.UserService/User_Login"
-	UserService_User_RequestVerificationCode_FullMethodName    = "/user.UserService/User_RequestVerificationCode"
-	UserService_User_ValidateVerificationCode_FullMethodName   = "/user.UserService/User_ValidateVerificationCode"
-	UserService_User_GetSecurityQuestion_FullMethodName        = "/user.UserService/User_GetSecurityQuestion"
-	UserService_User_ValidateSecurityAnswer_FullMethodName     = "/user.UserService/User_ValidateSecurityAnswer"
-	UserService_User_ResetPassword_FullMethodName              = "/user.UserService/User_ResetPassword"
-	UserService_User_GetFollowRecommendations_FullMethodName   = "/user.UserService/User_GetFollowRecommendations"
-	UserService_User_GetProfile_FullMethodName                 = "/user.UserService/User_GetProfile"
-	UserService_User_GetUserId_FullMethodName                  = "/user.UserService/User_GetUserId"
-	UserService_User_ChangePassword_FullMethodName             = "/user.UserService/User_ChangePassword"
-	UserService_User_UpdateProfile_FullMethodName              = "/user.UserService/User_UpdateProfile"
-	UserService_User_SearchPeople_FullMethodName               = "/user.UserService/User_SearchPeople"
-	UserService_User_GetSelfProfile_FullMethodName             = "/user.UserService/User_GetSelfProfile"
-	UserService_User_FollowUser_FullMethodName                 = "/user.UserService/User_FollowUser"
-	UserService_User_BlockUser_FullMethodName                  = "/user.UserService/User_BlockUser"
-	UserService_User_UnFollowUser_FullMethodName               = "/user.UserService/User_UnFollowUser"
-	UserService_User_UnBlockUser_FullMethodName                = "/user.UserService/User_UnBlockUser"
-	UserService_User_GetSettings_FullMethodName                = "/user.UserService/User_GetSettings"
-	UserService_User_UpdateSettings_FullMethodName             = "/user.UserService/User_UpdateSettings"
-	UserService_User_DeactivateAccount_FullMethodName          = "/user.UserService/User_DeactivateAccount"
-	UserService_User_GetAllFollowers_FullMethodName            = "/user.UserService/User_GetAllFollowers"
-	UserService_User_GetAllFollowing_FullMethodName            = "/user.UserService/User_GetAllFollowing"
-	UserService_User_GetAllBlocked_FullMethodName              = "/user.UserService/User_GetAllBlocked"
-	UserService_User_SubmitVerifyAccountRequest_FullMethodName = "/user.UserService/User_SubmitVerifyAccountRequest"
-	UserService_User_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/User_GetAllVerifyAccountRequest"
-	UserService_User_IsUserPrivate_FullMethodName              = "/user.UserService/User_IsUserPrivate"
-	UserService_User_IsUserFollowing_FullMethodName            = "/user.UserService/User_IsUserFollowing"
-	UserService_User_RefreshToken_FullMethodName               = "/user.UserService/User_RefreshToken"
-	UserService_Admin_IsUserAdmin_FullMethodName               = "/user.UserService/Admin_IsUserAdmin"
+	UserService_User_Register_FullMethodName                    = "/user.UserService/User_Register"
+	UserService_User_Login_FullMethodName                       = "/user.UserService/User_Login"
+	UserService_User_RequestVerificationCode_FullMethodName     = "/user.UserService/User_RequestVerificationCode"
+	UserService_User_ValidateVerificationCode_FullMethodName    = "/user.UserService/User_ValidateVerificationCode"
+	UserService_User_GetSecurityQuestion_FullMethodName         = "/user.UserService/User_GetSecurityQuestion"
+	UserService_User_ValidateSecurityAnswer_FullMethodName      = "/user.UserService/User_ValidateSecurityAnswer"
+	UserService_User_ResetPassword_FullMethodName               = "/user.UserService/User_ResetPassword"
+	UserService_User_GetFollowRecommendations_FullMethodName    = "/user.UserService/User_GetFollowRecommendations"
+	UserService_User_GetProfile_FullMethodName                  = "/user.UserService/User_GetProfile"
+	UserService_User_GetUserId_FullMethodName                   = "/user.UserService/User_GetUserId"
+	UserService_User_ChangePassword_FullMethodName              = "/user.UserService/User_ChangePassword"
+	UserService_User_UpdateProfile_FullMethodName               = "/user.UserService/User_UpdateProfile"
+	UserService_User_SearchPeople_FullMethodName                = "/user.UserService/User_SearchPeople"
+	UserService_User_GetSelfProfile_FullMethodName              = "/user.UserService/User_GetSelfProfile"
+	UserService_User_FollowUser_FullMethodName                  = "/user.UserService/User_FollowUser"
+	UserService_User_BlockUser_FullMethodName                   = "/user.UserService/User_BlockUser"
+	UserService_User_UnFollowUser_FullMethodName                = "/user.UserService/User_UnFollowUser"
+	UserService_User_UnBlockUser_FullMethodName                 = "/user.UserService/User_UnBlockUser"
+	UserService_User_GetSettings_FullMethodName                 = "/user.UserService/User_GetSettings"
+	UserService_User_UpdateSettings_FullMethodName              = "/user.UserService/User_UpdateSettings"
+	UserService_User_DeactivateAccount_FullMethodName           = "/user.UserService/User_DeactivateAccount"
+	UserService_User_GetAllFollowers_FullMethodName             = "/user.UserService/User_GetAllFollowers"
+	UserService_User_GetAllFollowing_FullMethodName             = "/user.UserService/User_GetAllFollowing"
+	UserService_User_GetAllBlocked_FullMethodName               = "/user.UserService/User_GetAllBlocked"
+	UserService_User_SubmitVerifyAccountRequest_FullMethodName  = "/user.UserService/User_SubmitVerifyAccountRequest"
+	UserService_User_GetAllVerifyAccountRequest_FullMethodName  = "/user.UserService/User_GetAllVerifyAccountRequest"
+	UserService_User_IsUserPrivate_FullMethodName               = "/user.UserService/User_IsUserPrivate"
+	UserService_User_IsUserFollowing_FullMethodName             = "/user.UserService/User_IsUserFollowing"
+	UserService_User_RefreshToken_FullMethodName                = "/user.UserService/User_RefreshToken"
+	UserService_Admin_IsUserAdmin_FullMethodName                = "/user.UserService/Admin_IsUserAdmin"
+	UserService_Admin_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/Admin_GetAllVerifyAccountRequest"
+	UserService_Admin_ApprovePremiumRequest_FullMethodName      = "/user.UserService/Admin_ApprovePremiumRequest"
+	UserService_Admin_RejectPremiumRequest_FullMethodName       = "/user.UserService/Admin_RejectPremiumRequest"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -87,6 +90,9 @@ type UserServiceClient interface {
 	User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error)
+	Admin_GetAllVerifyAccountRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_ApprovePremiumRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_RejectPremiumRequest(ctx context.Context, in *RejectPremiumRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 }
 
 type userServiceClient struct {
@@ -397,6 +403,36 @@ func (c *userServiceClient) Admin_IsUserAdmin(ctx context.Context, in *StringUse
 	return out, nil
 }
 
+func (c *userServiceClient) Admin_GetAllVerifyAccountRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_GetAllVerifyAccountRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_ApprovePremiumRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_ApprovePremiumRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_RejectPremiumRequest(ctx context.Context, in *RejectPremiumRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_RejectPremiumRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -433,6 +469,9 @@ type UserServiceServer interface {
 	User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error)
+	Admin_GetAllVerifyAccountRequest(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_ApprovePremiumRequest(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_RejectPremiumRequest(context.Context, *RejectPremiumRequest) (*ApiResponseUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -532,6 +571,15 @@ func (UnimplementedUserServiceServer) User_RefreshToken(context.Context, *String
 }
 func (UnimplementedUserServiceServer) Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_IsUserAdmin not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_GetAllVerifyAccountRequest(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_GetAllVerifyAccountRequest not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_ApprovePremiumRequest(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_ApprovePremiumRequest not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_RejectPremiumRequest(context.Context, *RejectPremiumRequest) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_RejectPremiumRequest not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -1094,6 +1142,60 @@ func _UserService_Admin_IsUserAdmin_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Admin_GetAllVerifyAccountRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_GetAllVerifyAccountRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_GetAllVerifyAccountRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_GetAllVerifyAccountRequest(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_ApprovePremiumRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_ApprovePremiumRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_ApprovePremiumRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_ApprovePremiumRequest(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_RejectPremiumRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RejectPremiumRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_RejectPremiumRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_RejectPremiumRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_RejectPremiumRequest(ctx, req.(*RejectPremiumRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1220,6 +1322,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Admin_IsUserAdmin",
 			Handler:    _UserService_Admin_IsUserAdmin_Handler,
+		},
+		{
+			MethodName: "Admin_GetAllVerifyAccountRequest",
+			Handler:    _UserService_Admin_GetAllVerifyAccountRequest_Handler,
+		},
+		{
+			MethodName: "Admin_ApprovePremiumRequest",
+			Handler:    _UserService_Admin_ApprovePremiumRequest_Handler,
+		},
+		{
+			MethodName: "Admin_RejectPremiumRequest",
+			Handler:    _UserService_Admin_RejectPremiumRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

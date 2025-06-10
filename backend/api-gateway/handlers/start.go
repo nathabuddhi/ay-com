@@ -26,6 +26,10 @@ func InitAdminRoutes(r *mux.Router) {
 
 	admin.Use(IsUserAdmin)
 	admin.HandleFunc("/admin/deletethread", Admin_DeleteThread).Methods("DELETE")
+	admin.HandleFunc("/admin/getalluserverificationrequests", Admin_GetAllVerifyAccountRequest).Methods("POST")
+	admin.HandleFunc("/admin/rejectverificationrequest", Admin_RejectPremiumRequest).Methods("PATCH")
+	admin.HandleFunc("/admin/approveverificationrequest", Admin_ApprovePremiumRequest).Methods("PATCH")
+	zap.L().Info("Admin Routes Initialized.")
 }
 
 func InitSecuredRoutes(r *mux.Router) {
@@ -36,9 +40,7 @@ func InitSecuredRoutes(r *mux.Router) {
 	InitSecuredThreadRoutes(secured)
 	zap.L().Info("Secured Routes Initialized.")
 
-	// last
 	InitAdminRoutes(secured)
-	zap.L().Info("Admin Routes Initialized.")
 }
 
 func InitUserRoutes(r *mux.Router) {

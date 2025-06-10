@@ -4,6 +4,7 @@ export interface VerifyAccountRequest {
     reason_text: string;
     status: string;
     submitted_at: string;
+    selfie_url: string;
 }
 
 export interface UserSettings {
@@ -35,6 +36,10 @@ export interface LoginResponse {
     is_verified: boolean;
     refresh_token: string;
     is_admin: boolean | undefined;
+}
+
+export interface GetVerificationRequestsResponse {
+    requests: VerifyAccountRequest[];
 }
 
 export interface Settings {

@@ -16,7 +16,6 @@
             overflow-x: auto;
             white-space: nowrap;
             scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
             border-bottom: 1px solid var(--border);
             gap: 32px;
             padding: 0 16px;
@@ -57,8 +56,68 @@
             }
         }
     }
+    .tab-content {
+        padding: 16px;
+        min-height: calc(100vh - 64px);
 
-    // Responsive tweaks
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .user-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px;
+                background-color: var(--card-bg);
+                border-radius: 8px;
+                box-shadow: var(--shadow);
+                transition: background-color 0.2s;
+
+                &:hover {
+                    background-color: var(--hover);
+                }
+
+                .user-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+
+                    .user-avatar {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background-color: var(--avatar-bg);
+                    }
+
+                    .user-name {
+                        font-size: 16px;
+                        color: var(--text);
+                    }
+                }
+
+                .user-actions {
+                    display: flex;
+                    gap: 8px;
+
+                    button {
+                        background-color: var(--primary);
+                        color: white;
+                        border: none;
+                        padding: 8px 12px;
+                        border-radius: 4px;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: var(--primary-hover);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @media (max-width: 768px) {
         .admin-header {
             padding: 12px;
@@ -89,5 +148,78 @@
                 }
             }
         }
+    }
+}
+
+.request-card {
+    border: 0.5px solid var(--primary);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    background-color: var(--background);
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .request-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .selfie-preview {
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+    }
+
+    .actions {
+        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .actions textarea {
+        resize: vertical;
+        min-height: 60px;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .actions button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .accept-btn {
+        background-color: #22c55e;
+        color: white;
+    }
+
+    .reject-btn {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .timestamp {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    textarea {
+        background-color: var(--background);
+        color: var(--text);
     }
 }

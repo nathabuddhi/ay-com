@@ -130,8 +130,17 @@ func (s *UserServer) User_GetFollowRecommendations(ctx context.Context, req *pb.
 	return s.Handlers.User_GetFollowRecommendations(ctx, req)
 }
 
+// ADMIN======================
 func (s *UserServer) Admin_IsUserAdmin(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
 	return s.Handlers.Admin_IsUserAdmin(ctx, req)
+}
+
+func (s *UserServer) Admin_ApprovePremiumRequest(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_ApprovePremiumRequest(ctx, req)
+}
+
+func (s *UserServer) Admin_RejectPremiumRequest(ctx context.Context, req *pb.RejectPremiumRequest) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_RejectPremiumRequest(ctx, req)
 }
 
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
