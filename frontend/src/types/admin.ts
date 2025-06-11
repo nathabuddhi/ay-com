@@ -28,9 +28,12 @@ export interface UserReportsResponse {
 }
 
 export interface UserReport {
+    report_id: string;
     reporter_id: string;
     reported_id: string;
     reason: string;
+    submitted_at: string;
+    status: string;
 }
 
 export interface CommunityRequestsResponse {

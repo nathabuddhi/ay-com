@@ -836,3 +836,16 @@ func User_GetFollowRecommendations(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func User_ReportUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Report User is called.")
+
+	req, client := processUserRequest[pb.CreateReportRequest](r, w)
+	req.ReporterId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_SendReport(ctx, req)
+
+	processUserResponseWithPayload[pb.AllBlockedUserResponse](resp, err, w)
+}

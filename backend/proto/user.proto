@@ -44,6 +44,8 @@ service UserService {
 
     rpc User_RefreshToken(StringUser) returns (ApiResponseUser);
 
+    rpc User_SendReport(CreateReportRequest) returns (ApiResponseUser);
+
     // Admin routes
     rpc Admin_IsUserAdmin(StringUser) returns (BoolUser);
 
@@ -55,12 +57,22 @@ service UserService {
     rpc Admin_ToggleUserBan(StringUser) returns (ApiResponseUser);
 
     rpc Admin_SendNewsLetter(SendNewsLetterRequest) returns (ApiResponseUser);
+
+    rpc Admin_GetAllReports(StringUser) returns (ApiResponseUser);
+    rpc Admin_ApproveReport(StringUser) returns (ApiResponseUser);
+    rpc Admin_RejectReport(StringUser) returns (ApiResponseUser);
 }
 
 message ApiResponseUser {
     bool success = 1;
     string message = 2;
     google.protobuf.Any data = 3;
+}
+
+message CreateReportRequest{
+    string reporter_id = 1;
+    string reported_id = 2;
+    string reason = 3;
 }
 
 message SendNewsLetterRequest {
@@ -74,6 +86,19 @@ message GetFollowRecommendationsResponse {
 
 message AdminUserResponse {
     repeated AdminUserProfile users = 1;
+}
+
+message GetAllReportsResponse {
+    repeated Report reports = 1;
+}
+
+message Report {
+    string report_id = 1;
+    string reporter_id = 2;
+    string reported_id = 3;
+    string reason = 4;
+    string status = 5; 
+    string submitted_at = 6;
 }
 
 message AdminUserProfile {

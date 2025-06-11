@@ -8,6 +8,7 @@
         getProfile,
         getSelfProfile,
         unfollowUser,
+        reportUser,
     } from "../controllers/user-controller";
     import { addToast } from "../stores/toast-wrapper";
     import { navigate } from "svelte-routing";
@@ -42,6 +43,19 @@
 
     let tabs = $state<string[]>([]);
     let activeTab = $state("");
+
+    async function openReportPanel() {
+        isReportPanelOpen = true;
+        reportReason = "";
+    }
+
+    async function closeReportPanel() {
+        isReportPanelOpen = false;
+        reportReason = "";
+    }
+
+    let reportReason: string = $state("");
+    let isReportPanelOpen: boolean = $state(false);
 
     let showImagePreviewModal = $state(false);
     let previewImageUrl = $state("");
@@ -205,6 +219,26 @@
     function navigateToThread(id: string) {
         navigate(`/thread/${id}`);
     }
+
+    async function handleSendReport() {
+        if (!reportReason || reportReason.trim() === "") {
+            addToast(
+                "error",
+                "Please provide a reason for the report.",
+                "Error!"
+            );
+            return;
+        }
+
+        const response = await reportUser(user.user_id, reportReason);
+
+        if (response.success) {
+            addToast("success", "Report sent successfully!", "Success!");
+            closeReportPanel();
+        } else {
+            addToast("error", response.message, "Error!");
+        }
+    }
 </script>
 
 {#if user}
@@ -261,8 +295,29 @@
                         Edit profile
                     </button>
                 {:else}
+                    {#if isReportPanelOpen}
+                        <input
+                            class="report-reason"
+                            type="text"
+                            bind:value={reportReason}
+                            placeholder="Report reason"
+                        />
+                        <button class="danger-button" onclick={handleSendReport}
+                            >Send Report</button
+                        >
+                        <button
+                            class="edit-profile-button"
+                            onclick={closeReportPanel}
+                        >
+                            Cancel Report
+                        </button>
+                    {:else}
+                        <button class="danger-button" onclick={openReportPanel}>
+                            Report
+                        </button>
+                    {/if}
                     <button
-                        class="edit-profile-button"
+                        class="danger-button"
                         onclick={() => {
                             handleBlock(user.user_id);
                         }}

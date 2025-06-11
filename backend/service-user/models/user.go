@@ -40,3 +40,12 @@ type RefreshToken struct {
 	UserId string `gorm:"primaryKey"`
 	Token  string `gorm:"type:text"`
 }
+
+type UserReport struct {
+	ReportId    string `gorm:"primaryKey"`
+	ReporterId  string
+	ReportedId  string
+	Reason      string
+	SubmittedAt time.Time
+	Status      string
+}

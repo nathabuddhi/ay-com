@@ -112,3 +112,36 @@ func Admin_SendNewsLetter(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Admin_SendNewsLetter(ctx, req)
 	processUserResponseWithoutPayload(resp, err, w)
 }
+
+func Admin_GetAllReports(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin getting all reports.")
+	req := &userpb.StringUser{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+	conn := getUserServiceConn()
+	client := userpb.NewUserServiceClient(conn)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_GetAllReports(ctx, req)
+	processUserResponseWithPayload[userpb.GetAllReportsResponse](resp, err, w)
+}
+
+func Admin_ApproveReport(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin approving report.")
+	req, client := processUserRequest[userpb.StringUser](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_ApproveReport(ctx, req)
+	processUserResponseWithoutPayload(resp, err, w)
+}
+
+func Admin_RejectReport(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin rejeting report.")
+	req, client := processUserRequest[userpb.StringUser](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_RejectReport(ctx, req)
+	processUserResponseWithoutPayload(resp, err, w)
+}

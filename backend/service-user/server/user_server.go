@@ -130,6 +130,10 @@ func (s *UserServer) User_GetFollowRecommendations(ctx context.Context, req *pb.
 	return s.Handlers.User_GetFollowRecommendations(ctx, req)
 }
 
+func (s *UserServer) User_SendReport(ctx context.Context, req *pb.CreateReportRequest) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_CreateReport(ctx, req)
+}
+
 // ADMIN======================
 func (s *UserServer) Admin_IsUserAdmin(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
 	return s.Handlers.Admin_IsUserAdmin(ctx, req)
@@ -153,6 +157,18 @@ func (s *UserServer) Admin_ToggleUserBan(ctx context.Context, req *pb.StringUser
 
 func (s *UserServer) Admin_SendNewsLetter(ctx context.Context, req *pb.SendNewsLetterRequest) (*pb.ApiResponseUser, error) {
 	return s.Handlers.Admin_SendNewsLetter(ctx, req)
+}
+
+func (s *UserServer) Admin_GetAllReports(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_GetAllReports(ctx, req)
+}
+
+func (s *UserServer) Admin_ApproveReport(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_ApproveReport(ctx, req)
+}
+
+func (s *UserServer) Admin_RejectReport(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_RejectReport(ctx, req)
 }
 
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {

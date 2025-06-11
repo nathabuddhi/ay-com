@@ -36,8 +36,12 @@ func InitAdminRoutes(r *mux.Router) {
 	admin.HandleFunc("/admin/approveverificationrequest", Admin_ApprovePremiumRequest).Methods("PATCH")
 	admin.HandleFunc("/admin/getallusers", Admin_GetAllUsers).Methods("GET")
 	admin.HandleFunc("/admin/toggleuserban", Admin_ToggleUserBan).Methods("PATCH")
-	
+
 	admin.HandleFunc("/admin/sendnewsletter", Admin_SendNewsLetter).Methods("POST")
+
+	admin.HandleFunc("/admin/getreports", Admin_GetAllReports).Methods("GET")
+	admin.HandleFunc("/admin/approvereport", Admin_ApproveReport).Methods("PATCH")
+	admin.HandleFunc("/admin/rejectreport", Admin_RejectReport).Methods("PATCH")
 
 	zap.L().Info("Admin Routes Initialized.")
 }
@@ -92,6 +96,7 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/deactivateaccount", User_DeactivateAccount).Methods("POST")
 
 	secured.HandleFunc("/user/getfollowrecommendations", User_GetFollowRecommendations).Methods("GET")
+	secured.HandleFunc("/user/report", User_ReportUser).Methods("POST")
 }
 
 func InitSecuredNotificationRoutes(secured *mux.Router) {

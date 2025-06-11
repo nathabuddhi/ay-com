@@ -546,3 +546,27 @@ export async function getFollowRecommendations(): Promise<
         return returnDefaultError<GetFollowRecommendationsResponse>(error);
     }
 }
+
+export async function reportUser(
+    user_id: string,
+    reason: string
+): Promise<ApiResponse<null>> {
+    try {
+        const response = await fetch(`${API_URL}/user/report`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                reported_id: user_id,
+                reason: reason,
+            }),
+        });
+        const data: ApiResponse<null> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<null>(error);
+    }
+}

@@ -15,28 +15,20 @@
         rejectReport,
         addCommunityCategory,
         deleteCommunityCategory,
-        getCommunityCategories,
-        toggleUserBan,
     } from "../controllers/admin-controller";
     import UserVerificationRequest from "../components/Admin/UserVerificationRequest.svelte";
     import { getCategories } from "../controllers/thread-controller";
     import { addToast } from "../stores/toast-wrapper";
-    import {
-        X,
-        Ban,
-        UserCheck,
-        Send,
-        Eye,
-        Check,
-        AlertTriangle,
-    } from "@lucide/svelte";
+    import { X, Send, Check, AlertTriangle } from "@lucide/svelte";
     import type {
         AdminUserProfile,
         CommunityRequest,
         UserReport,
         VerifyAccountRequest,
     } from "../types/admin";
-    import { AVATAR_IMG } from "../env_var";
+    import { getCommunityCategories } from "../controllers/community-controller";
+    import AdminUserView from "../components/Admin/AdminUserView.svelte";
+    import AdminReportView from "../components/Admin/AdminReportView.svelte";
 
     let activeTab = $state<string>("Users");
     let users = $state<AdminUserProfile[]>([]);
@@ -140,40 +132,6 @@
         }
     }
 
-    async function handleBanUser(userId: string) {
-        try {
-            isLoading = true;
-            const response = await toggleUserBan(userId);
-            if (response.success) {
-                addToast("success", "User banned successfully");
-                await loadAllUsers();
-            } else {
-                addToast("error", response.message || "Failed to ban user");
-            }
-        } catch (error) {
-            addToast("error", "Failed to ban user");
-        } finally {
-            isLoading = false;
-        }
-    }
-
-    async function handleUnbanUser(userId: string) {
-        try {
-            isLoading = true;
-            const response = await toggleUserBan(userId);
-            if (response.success) {
-                addToast("success", "User unbanned successfully");
-                await loadAllUsers();
-            } else {
-                addToast("error", response.message || "Failed to unban user");
-            }
-        } catch (error) {
-            addToast("error", "Failed to unban user");
-        } finally {
-            isLoading = false;
-        }
-    }
-
     async function handleSendNewsletter() {
         if (!newsLetterTitle.trim() || !newsLetterContent.trim()) {
             addToast("error", "Please fill in both title and content");
@@ -234,40 +192,6 @@
             }
         } catch (error) {
             addToast("error", "Failed to reject request");
-        }
-    }
-
-    async function handleApproveReport(reportId: string) {
-        try {
-            const response = await approveReport(reportId);
-            if (response.success) {
-                addToast("success", "Report approved and user banned");
-                await loadUserReports();
-            } else {
-                addToast(
-                    "error",
-                    response.message || "Failed to approve report"
-                );
-            }
-        } catch (error) {
-            addToast("error", "Failed to approve report");
-        }
-    }
-
-    async function handleRejectReport(reportId: string) {
-        try {
-            const response = await rejectReport(reportId);
-            if (response.success) {
-                addToast("success", "Report rejected");
-                await loadUserReports();
-            } else {
-                addToast(
-                    "error",
-                    response.message || "Failed to reject report"
-                );
-            }
-        } catch (error) {
-            addToast("error", "Failed to reject report");
         }
     }
 
@@ -358,7 +282,6 @@
             return;
         }
 
-        // Load initial data
         await Promise.all([
             loadAllUsers(),
             loadUserVerificationRequests(),
@@ -394,66 +317,7 @@
                     <h3>User Management ({users.length} users)</h3>
                     <div class="user-list">
                         {#each users as user}
-                            <div class="user-item">
-                                <div class="user-info">
-                                    <img
-                                        src={AVATAR_IMG +
-                                            "/" +
-                                            user.user_id +
-                                            ".png"}
-                                        alt=""
-                                        class="user-avatar"
-                                    />
-                                    <div class="user-details">
-                                        <div class="user-name">
-                                            <a
-                                                href="/profile/{user.username}"
-                                                target="_blank"
-                                            >
-                                                @{user.username}
-                                            </a>
-                                            <span class="real-name">
-                                                ({user.name})
-                                            </span>
-                                        </div>
-                                        <div class="user-status">
-                                            {#if user.is_verified}
-                                                <span class="badge verified">
-                                                    Verified</span
-                                                >
-                                            {/if}
-                                            {#if user.is_banned}
-                                                <span class="badge banned">
-                                                    Banned
-                                                </span>
-                                            {/if}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="user-actions">
-                                    {#if user.is_banned}
-                                        <button
-                                            class="action-btn unban-btn"
-                                            onclick={() =>
-                                                handleUnbanUser(user.user_id)}
-                                            disabled={isLoading}
-                                        >
-                                            <UserCheck size={16} />
-                                            Unban
-                                        </button>
-                                    {:else}
-                                        <button
-                                            class="action-btn ban-btn"
-                                            onclick={() =>
-                                                handleBanUser(user.user_id)}
-                                            disabled={isLoading}
-                                        >
-                                            <Ban size={16} />
-                                            Ban
-                                        </button>
-                                    {/if}
-                                </div>
-                            </div>
+                            <AdminUserView {user} />
                         {/each}
                     </div>
                 </div>
@@ -577,54 +441,14 @@
                 </div>
             {:else if activeTab === "Reports"}
                 <div class="reports-container">
-                    <h3>User Reports ({reports.length} pending)</h3>
+                    <h3>
+                        User Reports ({reports.filter(
+                            (r) => r.status === "pending"
+                        ).length} pending)
+                    </h3>
                     <div class="report-list">
                         {#each reports as report}
-                            <div class="report-card">
-                                <div class="report-header">
-                                    <AlertTriangle
-                                        size={20}
-                                        class="warning-icon"
-                                    />
-                                    <h4>User Report</h4>
-                                </div>
-                                <div class="report-info">
-                                    <p>
-                                        <strong>Reporter:</strong>
-                                        {report.reporter_id}
-                                    </p>
-                                    <p>
-                                        <strong>Reported User:</strong>
-                                        {report.reported_id}
-                                    </p>
-                                    <p>
-                                        <strong>Reason:</strong>
-                                        {report.reason}
-                                    </p>
-                                </div>
-                                <div class="actions">
-                                    <button
-                                        class="action-btn approve-btn"
-                                        onclick={() =>
-                                            handleApproveReport(
-                                                report.reported_id
-                                            )}
-                                    >
-                                        <Check size={16} />
-                                        Approve & Ban User
-                                    </button>
-                                    <button
-                                        class="action-btn reject-btn"
-                                        onclick={() =>
-                                            handleRejectReport(
-                                                report.reported_id
-                                            )}
-                                    >
-                                        <X size={16} />
-                                        Reject Report
-                                    </button>
-                                </div>
-                            </div>
+                            <AdminReportView {report} />
                         {/each}
                         {#if reports.length === 0}
                             <p class="empty-state">No pending reports</p>

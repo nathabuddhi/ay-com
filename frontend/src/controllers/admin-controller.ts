@@ -250,7 +250,7 @@ export async function getUserReports(): Promise<
     ApiResponse<UserReportsResponse>
 > {
     try {
-        const response = await fetch(`${API_URL}/admin/getuserreports`, {
+        const response = await fetch(`${API_URL}/admin/getreports`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -275,7 +275,7 @@ export async function approveReport(
                 "Content-Type": "application/json",
                 Authorization: await getValidToken(),
             },
-            body: JSON.stringify({ reportId }),
+            body: JSON.stringify({ value: reportId }),
         });
         const data: ApiResponse<null> = await response.json();
 
@@ -295,33 +295,13 @@ export async function rejectReport(
                 "Content-Type": "application/json",
                 Authorization: await getValidToken(),
             },
-            body: JSON.stringify({ reportId }),
+            body: JSON.stringify({ value: reportId }),
         });
         const data: ApiResponse<null> = await response.json();
 
         return data;
     } catch (error) {
         return returnDefaultError<null>(error);
-    }
-}
-
-export async function getCommunityCategories(): Promise<ApiResponse<string[]>> {
-    try {
-        const response = await fetch(
-            `${API_URL}/admin/getcommunitycategories`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: await getValidToken(),
-                },
-            }
-        );
-        const data: ApiResponse<string[]> = await response.json();
-
-        return data;
-    } catch (error) {
-        return returnDefaultError<string[]>(error);
     }
 }
 

@@ -230,3 +230,115 @@ func (h *Handlers) Admin_SendNewsLetter(ctx context.Context, req *pb.SendNewsLet
 		Data:    nil,
 	}, nil
 }
+
+func (h *Handlers) Admin_GetAllReports(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin getting all user reports")
+
+	var reports []models.UserReport
+	err := h.DB.WithContext(ctx).
+		Where("status = ?", "pending").
+		Order("status desc, submitted_at desc").
+		Find(&reports).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get user reports."}, nil
+	}
+
+	if len(reports) == 0 {
+		return &pb.ApiResponseUser{Success: false, Message: "No user reports found."}, nil
+	}
+
+	getAllReportsResponse := &pb.GetAllReportsResponse{
+		Reports: make([]*pb.Report, len(reports)),
+	}
+
+	for i, report := range reports {
+		getAllReportsResponse.Reports[i] = &pb.Report{
+			ReportId:    report.ReportId,
+			ReportedId:  report.ReportedId,
+			ReporterId:  report.ReporterId,
+			Reason:      report.Reason,
+			Status:      report.Status,
+			SubmittedAt: report.SubmittedAt.String(),
+		}
+	}
+
+	returnData, err := anypb.New(getAllReportsResponse)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Get all user reports successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handlers) Admin_ApproveReport(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin approving report with ID: " + req.Value)
+
+	var report models.UserReport
+	err := h.DB.WithContext(ctx).
+		Where("report_id = ? AND status = ?", req.Value, "pending").
+		First(&report).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Report not found."}, nil
+	}
+
+	var reportedUser models.User
+	err = h.DB.WithContext(ctx).
+		Where("user_id = ?", report.ReportedId).
+		First(&reportedUser).Error
+
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Reported user not found."}, nil
+	}
+
+	reportedUser.IsBanned = true
+	report.Status = "approved"
+	err = h.DB.WithContext(ctx).Save(&report).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to approve report."}, nil
+	}
+	err = h.DB.WithContext(ctx).Save(&reportedUser).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to ban reported user."}, nil
+	}
+
+	rabbitmq.PublishDeleteRedis("getprofile/" + reportedUser.UserId)
+	rabbitmq.PublishEmail(reportedUser.Email, "Your account has been banned", "Dear user, your account has been banned due to a report against you. If you believe this is a mistake, please contact our support team for further assistance.")
+
+	var reporter models.User
+	err = h.DB.WithContext(ctx).
+		Where("user_id = ?", report.ReporterId).
+		First(&reporter).Error
+	if err == nil {
+		rabbitmq.PublishSendNotification("system", reporter.UserId, reporter.Email, "Your report has been approved.", "Dear user, your report against "+reportedUser.Username+" has been approved. The user has been banned from the platform. Thank you for helping us maintain a safe community!", "ADMIN")
+	}
+
+	return &pb.ApiResponseUser{Success: true, Message: "Successfully approved report and banned user!"}, nil
+}
+
+func (h *Handlers) Admin_RejectReport(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin rejecting report with ID: " + req.Value)
+
+	var report models.UserReport
+	err := h.DB.WithContext(ctx).
+		Where("report_id = ? AND status = ?", req.Value, "pending").
+		First(&report).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Report not found."}, nil
+	}
+
+	report.Status = "rejected"
+	err = h.DB.WithContext(ctx).Save(&report).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to reject report."}, nil
+	}
+
+	return &pb.ApiResponseUser{Success: true, Message: "Successfully rejected report!"}, nil
+}

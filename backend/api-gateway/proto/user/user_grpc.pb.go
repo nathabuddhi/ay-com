@@ -48,6 +48,7 @@ const (
 	UserService_User_IsUserPrivate_FullMethodName               = "/user.UserService/User_IsUserPrivate"
 	UserService_User_IsUserFollowing_FullMethodName             = "/user.UserService/User_IsUserFollowing"
 	UserService_User_RefreshToken_FullMethodName                = "/user.UserService/User_RefreshToken"
+	UserService_User_SendReport_FullMethodName                  = "/user.UserService/User_SendReport"
 	UserService_Admin_IsUserAdmin_FullMethodName                = "/user.UserService/Admin_IsUserAdmin"
 	UserService_Admin_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/Admin_GetAllVerifyAccountRequest"
 	UserService_Admin_ApprovePremiumRequest_FullMethodName      = "/user.UserService/Admin_ApprovePremiumRequest"
@@ -55,6 +56,9 @@ const (
 	UserService_Admin_GetAllUsers_FullMethodName                = "/user.UserService/Admin_GetAllUsers"
 	UserService_Admin_ToggleUserBan_FullMethodName              = "/user.UserService/Admin_ToggleUserBan"
 	UserService_Admin_SendNewsLetter_FullMethodName             = "/user.UserService/Admin_SendNewsLetter"
+	UserService_Admin_GetAllReports_FullMethodName              = "/user.UserService/Admin_GetAllReports"
+	UserService_Admin_ApproveReport_FullMethodName              = "/user.UserService/Admin_ApproveReport"
+	UserService_Admin_RejectReport_FullMethodName               = "/user.UserService/Admin_RejectReport"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -91,6 +95,7 @@ type UserServiceClient interface {
 	User_IsUserPrivate(ctx context.Context, in *IsAccountPrivateRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_SendReport(ctx context.Context, in *CreateReportRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error)
 	Admin_GetAllVerifyAccountRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
@@ -99,6 +104,9 @@ type UserServiceClient interface {
 	Admin_GetAllUsers(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	Admin_ToggleUserBan(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	Admin_SendNewsLetter(ctx context.Context, in *SendNewsLetterRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_GetAllReports(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_ApproveReport(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_RejectReport(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 }
 
 type userServiceClient struct {
@@ -399,6 +407,16 @@ func (c *userServiceClient) User_RefreshToken(ctx context.Context, in *StringUse
 	return out, nil
 }
 
+func (c *userServiceClient) User_SendReport(ctx context.Context, in *CreateReportRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_SendReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BoolUser)
@@ -469,6 +487,36 @@ func (c *userServiceClient) Admin_SendNewsLetter(ctx context.Context, in *SendNe
 	return out, nil
 }
 
+func (c *userServiceClient) Admin_GetAllReports(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_GetAllReports_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_ApproveReport(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_ApproveReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_RejectReport(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_RejectReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -503,6 +551,7 @@ type UserServiceServer interface {
 	User_IsUserPrivate(context.Context, *IsAccountPrivateRequest) (*BoolUser, error)
 	User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error)
 	User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error)
+	User_SendReport(context.Context, *CreateReportRequest) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error)
 	Admin_GetAllVerifyAccountRequest(context.Context, *StringUser) (*ApiResponseUser, error)
@@ -511,6 +560,9 @@ type UserServiceServer interface {
 	Admin_GetAllUsers(context.Context, *StringUser) (*ApiResponseUser, error)
 	Admin_ToggleUserBan(context.Context, *StringUser) (*ApiResponseUser, error)
 	Admin_SendNewsLetter(context.Context, *SendNewsLetterRequest) (*ApiResponseUser, error)
+	Admin_GetAllReports(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_ApproveReport(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_RejectReport(context.Context, *StringUser) (*ApiResponseUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -608,6 +660,9 @@ func (UnimplementedUserServiceServer) User_IsUserFollowing(context.Context, *IsU
 func (UnimplementedUserServiceServer) User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_RefreshToken not implemented")
 }
+func (UnimplementedUserServiceServer) User_SendReport(context.Context, *CreateReportRequest) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_SendReport not implemented")
+}
 func (UnimplementedUserServiceServer) Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_IsUserAdmin not implemented")
 }
@@ -628,6 +683,15 @@ func (UnimplementedUserServiceServer) Admin_ToggleUserBan(context.Context, *Stri
 }
 func (UnimplementedUserServiceServer) Admin_SendNewsLetter(context.Context, *SendNewsLetterRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_SendNewsLetter not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_GetAllReports(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_GetAllReports not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_ApproveReport(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_ApproveReport not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_RejectReport(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_RejectReport not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -1172,6 +1236,24 @@ func _UserService_User_RefreshToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_SendReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_SendReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_SendReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_SendReport(ctx, req.(*CreateReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Admin_IsUserAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringUser)
 	if err := dec(in); err != nil {
@@ -1294,6 +1376,60 @@ func _UserService_Admin_SendNewsLetter_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Admin_SendNewsLetter(ctx, req.(*SendNewsLetterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_GetAllReports_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_GetAllReports(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_GetAllReports_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_GetAllReports(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_ApproveReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_ApproveReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_ApproveReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_ApproveReport(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_RejectReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_RejectReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_RejectReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_RejectReport(ctx, req.(*StringUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1422,6 +1558,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_User_RefreshToken_Handler,
 		},
 		{
+			MethodName: "User_SendReport",
+			Handler:    _UserService_User_SendReport_Handler,
+		},
+		{
 			MethodName: "Admin_IsUserAdmin",
 			Handler:    _UserService_Admin_IsUserAdmin_Handler,
 		},
@@ -1448,6 +1588,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Admin_SendNewsLetter",
 			Handler:    _UserService_Admin_SendNewsLetter_Handler,
+		},
+		{
+			MethodName: "Admin_GetAllReports",
+			Handler:    _UserService_Admin_GetAllReports_Handler,
+		},
+		{
+			MethodName: "Admin_ApproveReport",
+			Handler:    _UserService_Admin_ApproveReport_Handler,
+		},
+		{
+			MethodName: "Admin_RejectReport",
+			Handler:    _UserService_Admin_RejectReport_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
