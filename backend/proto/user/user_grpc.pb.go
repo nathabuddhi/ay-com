@@ -52,6 +52,9 @@ const (
 	UserService_Admin_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/Admin_GetAllVerifyAccountRequest"
 	UserService_Admin_ApprovePremiumRequest_FullMethodName      = "/user.UserService/Admin_ApprovePremiumRequest"
 	UserService_Admin_RejectPremiumRequest_FullMethodName       = "/user.UserService/Admin_RejectPremiumRequest"
+	UserService_Admin_GetAllUsers_FullMethodName                = "/user.UserService/Admin_GetAllUsers"
+	UserService_Admin_ToggleUserBan_FullMethodName              = "/user.UserService/Admin_ToggleUserBan"
+	UserService_Admin_SendNewsLetter_FullMethodName             = "/user.UserService/Admin_SendNewsLetter"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -93,6 +96,9 @@ type UserServiceClient interface {
 	Admin_GetAllVerifyAccountRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	Admin_ApprovePremiumRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	Admin_RejectPremiumRequest(ctx context.Context, in *RejectPremiumRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_GetAllUsers(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_ToggleUserBan(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	Admin_SendNewsLetter(ctx context.Context, in *SendNewsLetterRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 }
 
 type userServiceClient struct {
@@ -433,6 +439,36 @@ func (c *userServiceClient) Admin_RejectPremiumRequest(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *userServiceClient) Admin_GetAllUsers(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_GetAllUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_ToggleUserBan(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_ToggleUserBan_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Admin_SendNewsLetter(ctx context.Context, in *SendNewsLetterRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_Admin_SendNewsLetter_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -472,6 +508,9 @@ type UserServiceServer interface {
 	Admin_GetAllVerifyAccountRequest(context.Context, *StringUser) (*ApiResponseUser, error)
 	Admin_ApprovePremiumRequest(context.Context, *StringUser) (*ApiResponseUser, error)
 	Admin_RejectPremiumRequest(context.Context, *RejectPremiumRequest) (*ApiResponseUser, error)
+	Admin_GetAllUsers(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_ToggleUserBan(context.Context, *StringUser) (*ApiResponseUser, error)
+	Admin_SendNewsLetter(context.Context, *SendNewsLetterRequest) (*ApiResponseUser, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -580,6 +619,15 @@ func (UnimplementedUserServiceServer) Admin_ApprovePremiumRequest(context.Contex
 }
 func (UnimplementedUserServiceServer) Admin_RejectPremiumRequest(context.Context, *RejectPremiumRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_RejectPremiumRequest not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_GetAllUsers(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_GetAllUsers not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_ToggleUserBan(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_ToggleUserBan not implemented")
+}
+func (UnimplementedUserServiceServer) Admin_SendNewsLetter(context.Context, *SendNewsLetterRequest) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_SendNewsLetter not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -1196,6 +1244,60 @@ func _UserService_Admin_RejectPremiumRequest_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Admin_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_GetAllUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_GetAllUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_GetAllUsers(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_ToggleUserBan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_ToggleUserBan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_ToggleUserBan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_ToggleUserBan(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Admin_SendNewsLetter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendNewsLetterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Admin_SendNewsLetter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Admin_SendNewsLetter_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Admin_SendNewsLetter(ctx, req.(*SendNewsLetterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1334,6 +1436,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Admin_RejectPremiumRequest",
 			Handler:    _UserService_Admin_RejectPremiumRequest_Handler,
+		},
+		{
+			MethodName: "Admin_GetAllUsers",
+			Handler:    _UserService_Admin_GetAllUsers_Handler,
+		},
+		{
+			MethodName: "Admin_ToggleUserBan",
+			Handler:    _UserService_Admin_ToggleUserBan_Handler,
+		},
+		{
+			MethodName: "Admin_SendNewsLetter",
+			Handler:    _UserService_Admin_SendNewsLetter_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

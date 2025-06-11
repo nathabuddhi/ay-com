@@ -1,92 +1,378 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { isLoggedIn } from "../controllers/token-controller";
-    import type { UserProfile, VerifyAccountRequest } from "../types/user";
     import {
         addThreadCategory,
         deleteThreadCategory,
+        getAllUsers,
         getAllUserVerificationRequests,
+        sendNewsletter,
+        getCommunityRequests,
+        approveCommunityRequest,
+        rejectCommunityRequest,
+        getUserReports,
+        approveReport,
+        rejectReport,
+        addCommunityCategory,
+        deleteCommunityCategory,
+        getCommunityCategories,
+        toggleUserBan,
     } from "../controllers/admin-controller";
     import UserVerificationRequest from "../components/Admin/UserVerificationRequest.svelte";
     import { getCategories } from "../controllers/thread-controller";
     import { addToast } from "../stores/toast-wrapper";
-    import { Plus, X } from "@lucide/svelte";
+    import {
+        X,
+        Ban,
+        UserCheck,
+        Send,
+        Eye,
+        Check,
+        AlertTriangle,
+    } from "@lucide/svelte";
+    import type {
+        AdminUserProfile,
+        CommunityRequest,
+        UserReport,
+        VerifyAccountRequest,
+    } from "../types/admin";
+    import { AVATAR_IMG } from "../env_var";
 
-    async function loadUserVerificationRequests() {
-        const response = await getAllUserVerificationRequests();
-
-        if (response.success && response.payload) {
-            verificationRequests = response.payload.requests;
-        } else {
-            verificationRequests = [];
-        }
-    }
-
-    async function loadThreadCategories() {
-        const response = await getCategories();
-        if (response.success && response.payload) {
-            threadCategories = response.payload;
-        } else {
-            threadCategories = [];
-            addToast("error", response.message || "Failed to load categories.");
-        }
-    }
-
-    async function handleAddCategory() {
-        if (newThreadCategory.trim() === "") {
-            addToast("error", "Category name cannot be empty.");
-            return;
-        }
-
-        const response = await addThreadCategory(newThreadCategory.trim());
-        if (response.success) {
-            addToast("success", "Category added successfully.");
-            newThreadCategory = "";
-            loadThreadCategories();
-        } else {
-            addToast("error", response.message || "Failed to add category.");
-        }
-    }
-
-    onMount(async () => {
-        if (await !isLoggedIn()) {
-            window.location.href = "/login";
-        } else if (localStorage.getItem("is_admin") !== "true") {
-            window.location.href = "/home";
-        }
-
-        loadUserVerificationRequests();
-        loadThreadCategories();
-    });
+    let activeTab = $state<string>("Users");
+    let users = $state<AdminUserProfile[]>([]);
+    let reports = $state<UserReport[]>([]);
+    let newsLetterTitle = $state<string>("");
+    let newsLetterContent = $state<string>("");
+    let communityRequests = $state<CommunityRequest[]>([]);
+    let verificationRequests = $state<VerifyAccountRequest[]>([]);
+    let threadCategories = $state<string[]>([]);
+    let communityCategories = $state<string[]>([]);
+    let newThreadCategory = $state<string>("");
+    let newCommunityCategory = $state<string>("");
+    let isLoading = $state<boolean>(false);
 
     const tabs = [
         "Users",
-        "NewsLetter",
+        "Newsletter",
         "Community",
         "Premium",
         "Reports",
         "Categories",
     ];
 
-    let activeTab = $state<string>("Users");
+    async function loadUserVerificationRequests() {
+        try {
+            const response = await getAllUserVerificationRequests();
+            if (response.success && response.payload) {
+                verificationRequests = response.payload.requests;
+            } else {
+                verificationRequests = [];
+            }
+        } catch (error) {
+            addToast("error", "Failed to load verification requests");
+        }
+    }
 
-    let users = $state<UserProfile[]>([]);
+    async function loadThreadCategories() {
+        try {
+            const response = await getCategories();
+            if (response.success && response.payload) {
+                threadCategories = response.payload;
+            } else {
+                threadCategories = [];
+                addToast("error", "Failed to load thread categories");
+            }
+        } catch (error) {
+            addToast("error", "Failed to load thread categories");
+        }
+    }
 
-    let newsLetterTitle = $state<string>("");
-    let newsLetterContent = $state<string>("");
+    async function loadCommunityCategories() {
+        try {
+            const response = await getCommunityCategories();
+            if (response.success && response.payload) {
+                communityCategories = response.payload;
+            } else {
+                communityCategories = [];
+            }
+        } catch (error) {
+            addToast("error", "Failed to load community categories");
+        }
+    }
 
-    // let communityRequests = $state<CommunityRequest[]>([]);
-    let verificationRequests = $state<VerifyAccountRequest[]>([]);
+    async function loadAllUsers() {
+        try {
+            const response = await getAllUsers();
+            if (response.success && response.payload) {
+                users = response.payload.users;
+            } else {
+                users = [];
+                addToast("error", "Failed to load users");
+            }
+        } catch (error) {
+            addToast("error", "Failed to load users");
+        }
+    }
 
-    let threadCategories = $state<string[]>([]);
-    let communityCategories = $state<string[]>([]);
-    let newThreadCategory = $state<string>("");
-    let newCommunityCategory = $state<string>("");
+    async function loadCommunityRequests() {
+        try {
+            const response = await getCommunityRequests();
+            if (response.success && response.payload) {
+                communityRequests = response.payload.requests;
+            } else {
+                communityRequests = [];
+            }
+        } catch (error) {
+            addToast("error", "Failed to load community requests");
+        }
+    }
+
+    async function loadUserReports() {
+        try {
+            const response = await getUserReports();
+            if (response.success && response.payload) {
+                reports = response.payload.reports;
+            } else {
+                reports = [];
+            }
+        } catch (error) {
+            addToast("error", "Failed to load user reports");
+        }
+    }
+
+    async function handleBanUser(userId: string) {
+        try {
+            isLoading = true;
+            const response = await toggleUserBan(userId);
+            if (response.success) {
+                addToast("success", "User banned successfully");
+                await loadAllUsers();
+            } else {
+                addToast("error", response.message || "Failed to ban user");
+            }
+        } catch (error) {
+            addToast("error", "Failed to ban user");
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    async function handleUnbanUser(userId: string) {
+        try {
+            isLoading = true;
+            const response = await toggleUserBan(userId);
+            if (response.success) {
+                addToast("success", "User unbanned successfully");
+                await loadAllUsers();
+            } else {
+                addToast("error", response.message || "Failed to unban user");
+            }
+        } catch (error) {
+            addToast("error", "Failed to unban user");
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    async function handleSendNewsletter() {
+        if (!newsLetterTitle.trim() || !newsLetterContent.trim()) {
+            addToast("error", "Please fill in both title and content");
+            return;
+        }
+
+        try {
+            isLoading = true;
+            const response = await sendNewsletter(
+                newsLetterTitle,
+                newsLetterContent
+            );
+            if (response.success) {
+                addToast("success", "Newsletter sent successfully");
+                newsLetterTitle = "";
+                newsLetterContent = "";
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to send newsletter"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to send newsletter");
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    async function handleApproveCommunityRequest(requestId: string) {
+        try {
+            const response = await approveCommunityRequest(requestId);
+            if (response.success) {
+                addToast("success", "Community request approved");
+                await loadCommunityRequests();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to approve request"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to approve request");
+        }
+    }
+
+    async function handleRejectCommunityRequest(requestId: string) {
+        try {
+            const response = await rejectCommunityRequest(requestId);
+            if (response.success) {
+                addToast("success", "Community request rejected");
+                await loadCommunityRequests();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to reject request"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to reject request");
+        }
+    }
+
+    async function handleApproveReport(reportId: string) {
+        try {
+            const response = await approveReport(reportId);
+            if (response.success) {
+                addToast("success", "Report approved and user banned");
+                await loadUserReports();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to approve report"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to approve report");
+        }
+    }
+
+    async function handleRejectReport(reportId: string) {
+        try {
+            const response = await rejectReport(reportId);
+            if (response.success) {
+                addToast("success", "Report rejected");
+                await loadUserReports();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to reject report"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to reject report");
+        }
+    }
+
+    async function handleAddThreadCategory() {
+        if (newThreadCategory.trim() === "") {
+            addToast("error", "Category name cannot be empty");
+            return;
+        }
+
+        try {
+            const response = await addThreadCategory(newThreadCategory.trim());
+            if (response.success) {
+                addToast("success", "Thread category added successfully");
+                newThreadCategory = "";
+                await loadThreadCategories();
+            } else {
+                addToast("error", response.message || "Failed to add category");
+            }
+        } catch (error) {
+            addToast("error", "Failed to add category");
+        }
+    }
+
+    async function handleAddCommunityCategory() {
+        if (newCommunityCategory.trim() === "") {
+            addToast("error", "Category name cannot be empty");
+            return;
+        }
+
+        try {
+            const response = await addCommunityCategory(
+                newCommunityCategory.trim()
+            );
+            if (response.success) {
+                addToast("success", "Community category added successfully");
+                newCommunityCategory = "";
+                await loadCommunityCategories();
+            } else {
+                addToast("error", response.message || "Failed to add category");
+            }
+        } catch (error) {
+            addToast("error", "Failed to add category");
+        }
+    }
+
+    async function handleDeleteThreadCategory(category: string) {
+        try {
+            const response = await deleteThreadCategory(category);
+            if (response.success) {
+                addToast("success", "Thread category deleted successfully");
+                await loadThreadCategories();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to delete category"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to delete category");
+        }
+    }
+
+    async function handleDeleteCommunityCategory(category: string) {
+        try {
+            const response = await deleteCommunityCategory(category);
+            if (response.success) {
+                addToast("success", "Community category deleted successfully");
+                await loadCommunityCategories();
+            } else {
+                addToast(
+                    "error",
+                    response.message || "Failed to delete category"
+                );
+            }
+        } catch (error) {
+            addToast("error", "Failed to delete category");
+        }
+    }
+
+    onMount(async () => {
+        if (!(await isLoggedIn())) {
+            window.location.href = "/login";
+            return;
+        }
+
+        if (localStorage.getItem("is_admin") !== "true") {
+            window.location.href = "/home";
+            return;
+        }
+
+        // Load initial data
+        await Promise.all([
+            loadAllUsers(),
+            loadUserVerificationRequests(),
+            loadThreadCategories(),
+            loadCommunityCategories(),
+            loadCommunityRequests(),
+            loadUserReports(),
+        ]);
+    });
 </script>
 
 <div class="admin-container">
     <div class="admin-header">
-        <h1>Admin</h1>
+        <h1>Admin Dashboard</h1>
         <div class="admin-tabs">
             {#each tabs as tab}
                 <button
@@ -98,41 +384,271 @@
             {/each}
         </div>
     </div>
+
     <div class="admin-content">
         <div class="tab-content">
             <h2>{activeTab}</h2>
+
             {#if activeTab === "Users"}
-                <ul>
-                    {#each users as user}
-                        <li>{user.username} - {user.email}</li>
-                    {/each}
-                </ul>
+                <div class="users-container">
+                    <h3>User Management ({users.length} users)</h3>
+                    <div class="user-list">
+                        {#each users as user}
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <img
+                                        src={AVATAR_IMG +
+                                            "/" +
+                                            user.user_id +
+                                            ".png"}
+                                        alt=""
+                                        class="user-avatar"
+                                    />
+                                    <div class="user-details">
+                                        <div class="user-name">
+                                            <a
+                                                href="/profile/{user.username}"
+                                                target="_blank"
+                                            >
+                                                @{user.username}
+                                            </a>
+                                            <span class="real-name">
+                                                ({user.name})
+                                            </span>
+                                        </div>
+                                        <div class="user-status">
+                                            {#if user.is_verified}
+                                                <span class="badge verified">
+                                                    Verified</span
+                                                >
+                                            {/if}
+                                            {#if user.is_banned}
+                                                <span class="badge banned">
+                                                    Banned
+                                                </span>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="user-actions">
+                                    {#if user.is_banned}
+                                        <button
+                                            class="action-btn unban-btn"
+                                            onclick={() =>
+                                                handleUnbanUser(user.user_id)}
+                                            disabled={isLoading}
+                                        >
+                                            <UserCheck size={16} />
+                                            Unban
+                                        </button>
+                                    {:else}
+                                        <button
+                                            class="action-btn ban-btn"
+                                            onclick={() =>
+                                                handleBanUser(user.user_id)}
+                                            disabled={isLoading}
+                                        >
+                                            <Ban size={16} />
+                                            Ban
+                                        </button>
+                                    {/if}
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            {:else if activeTab === "Newsletter"}
+                <div class="newsletter-container">
+                    <h3>Send Newsletter</h3>
+                    <div class="newsletter-form">
+                        <div class="form-group">
+                            <label for="newsletter-title">Title</label>
+                            <input
+                                id="newsletter-title"
+                                type="text"
+                                bind:value={newsLetterTitle}
+                                placeholder="Newsletter title..."
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="newsletter-content">Content</label>
+                            <textarea
+                                id="newsletter-content"
+                                bind:value={newsLetterContent}
+                                placeholder="Newsletter content..."
+                                rows="10"
+                            ></textarea>
+                        </div>
+                        <button
+                            class="action-btn send-btn"
+                            onclick={handleSendNewsletter}
+                            disabled={isLoading ||
+                                !newsLetterTitle.trim() ||
+                                !newsLetterContent.trim()}
+                        >
+                            <Send size={16} />
+                            Send Newsletter
+                        </button>
+                    </div>
+                </div>
+            {:else if activeTab === "Community"}
+                <div class="community-container">
+                    <h3>
+                        Community Requests ({communityRequests.length} pending)
+                    </h3>
+                    <div class="request-list">
+                        {#each communityRequests as request}
+                            <div class="request-card">
+                                <div class="request-header">
+                                    <h4>{request.community_name}</h4>
+                                    <span class="timestamp"
+                                        >{new Date(
+                                            request.submitted_at
+                                        ).toLocaleDateString()}</span
+                                    >
+                                </div>
+                                <div class="request-info">
+                                    <p>
+                                        <strong>Category:</strong>
+                                        {request.category}
+                                    </p>
+                                    <p>
+                                        <strong>Description:</strong>
+                                        {request.description}
+                                    </p>
+                                    <p>
+                                        <strong>Requested by:</strong>
+                                        {request.user_id}
+                                    </p>
+                                </div>
+                                {#if request.community_image_url}
+                                    <img
+                                        src={request.community_image_url ||
+                                            "/placeholder.svg"}
+                                        alt="Community"
+                                        class="community-preview"
+                                    />
+                                {/if}
+                                <div class="actions">
+                                    <button
+                                        class="action-btn approve-btn"
+                                        onclick={() =>
+                                            handleApproveCommunityRequest(
+                                                request.community_id
+                                            )}
+                                    >
+                                        <Check size={16} />
+                                        Approve
+                                    </button>
+                                    <button
+                                        class="action-btn reject-btn"
+                                        onclick={() =>
+                                            handleRejectCommunityRequest(
+                                                request.community_id
+                                            )}
+                                    >
+                                        <X size={16} />
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        {/each}
+                        {#if communityRequests.length === 0}
+                            <p class="empty-state">
+                                No pending community requests
+                            </p>
+                        {/if}
+                    </div>
+                </div>
             {:else if activeTab === "Premium"}
-                {#each verificationRequests as request}
-                    <UserVerificationRequest {request} />
-                {/each}
-                {#if verificationRequests.length === 0}
-                    <p>No pending verification requests found.</p>
-                {/if}
+                <div class="premium-container">
+                    <h3>
+                        Premium Verification Requests ({verificationRequests.length}
+                        pending)
+                    </h3>
+                    {#each verificationRequests as request}
+                        <UserVerificationRequest {request} />
+                    {/each}
+                    {#if verificationRequests.length === 0}
+                        <p class="empty-state">
+                            No pending verification requests
+                        </p>
+                    {/if}
+                </div>
+            {:else if activeTab === "Reports"}
+                <div class="reports-container">
+                    <h3>User Reports ({reports.length} pending)</h3>
+                    <div class="report-list">
+                        {#each reports as report}
+                            <div class="report-card">
+                                <div class="report-header">
+                                    <AlertTriangle
+                                        size={20}
+                                        class="warning-icon"
+                                    />
+                                    <h4>User Report</h4>
+                                </div>
+                                <div class="report-info">
+                                    <p>
+                                        <strong>Reporter:</strong>
+                                        {report.reporter_id}
+                                    </p>
+                                    <p>
+                                        <strong>Reported User:</strong>
+                                        {report.reported_id}
+                                    </p>
+                                    <p>
+                                        <strong>Reason:</strong>
+                                        {report.reason}
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <button
+                                        class="action-btn approve-btn"
+                                        onclick={() =>
+                                            handleApproveReport(
+                                                report.reported_id
+                                            )}
+                                    >
+                                        <Check size={16} />
+                                        Approve & Ban User
+                                    </button>
+                                    <button
+                                        class="action-btn reject-btn"
+                                        onclick={() =>
+                                            handleRejectReport(
+                                                report.reported_id
+                                            )}
+                                    >
+                                        <X size={16} />
+                                        Reject Report
+                                    </button>
+                                </div>
+                            </div>
+                        {/each}
+                        {#if reports.length === 0}
+                            <p class="empty-state">No pending reports</p>
+                        {/if}
+                    </div>
+                </div>
             {:else if activeTab === "Categories"}
                 <div class="categories-container">
                     <div class="categories">
                         <h3>Thread Categories</h3>
                         <div class="category-list">
-                            {#each threadCategories as category, i}
+                            {#each threadCategories as category}
                                 <div class="category-card">
-                                    <span>{category}</span>
+                                    <span class="category-name">{category}</span
+                                    >
                                     <button
                                         class="delete-button"
                                         title="Delete category"
-                                        onclick={async () => {
-                                            await deleteThreadCategory(
+                                        onclick={() =>
+                                            handleDeleteThreadCategory(
                                                 category
-                                            );
-                                            loadThreadCategories();
-                                        }}
+                                            )}
                                     >
-                                        <X />
+                                        <X size={16} />
                                     </button>
                                 </div>
                             {/each}
@@ -140,29 +656,31 @@
                         <div class="add-category">
                             <input
                                 type="text"
-                                placeholder="New Category"
+                                placeholder="New thread category"
                                 bind:value={newThreadCategory}
                             />
-                            <button onclick={handleAddCategory}>Add</button>
+                            <button onclick={handleAddThreadCategory}
+                                >Add</button
+                            >
                         </div>
                     </div>
+
                     <div class="categories">
                         <h3>Community Categories</h3>
                         <div class="category-list">
-                            {#each communityCategories as category, i}
+                            {#each communityCategories as category}
                                 <div class="category-card">
-                                    <span>{category}</span>
+                                    <span class="category-name">{category}</span
+                                    >
                                     <button
                                         class="delete-button"
                                         title="Delete category"
-                                        onclick={async () => {
-                                            await deleteThreadCategory(
+                                        onclick={() =>
+                                            handleDeleteCommunityCategory(
                                                 category
-                                            );
-                                            loadThreadCategories();
-                                        }}
+                                            )}
                                     >
-                                        <X />
+                                        <X size={16} />
                                     </button>
                                 </div>
                             {/each}
@@ -170,10 +688,12 @@
                         <div class="add-category">
                             <input
                                 type="text"
-                                placeholder="New Category"
+                                placeholder="New community category"
                                 bind:value={newCommunityCategory}
                             />
-                            <button>Add</button>
+                            <button onclick={handleAddCommunityCategory}
+                                >Add</button
+                            >
                         </div>
                     </div>
                 </div>

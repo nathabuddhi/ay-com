@@ -134,3 +134,99 @@ func (h *Handlers) Admin_RejectPremiumRequest(ctx context.Context, req *pb.Rejec
 	rabbitmq.PublishEmail(user.Email, "Your verification request has been rejected", "Dear user, your verification request has been rejected. <br> Reason: "+req.Reason+"<br> If you think this is a mistake, please contact our support team for further assistance.<br> You may reapply for verification after addressing the issue.<br> Thank you for your understanding!")
 	return &pb.ApiResponseUser{Success: true, Message: "Successfully rejected user verification request!"}, nil
 }
+
+func (h *Handlers) Admin_GetAllUsers(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin getting all users")
+
+	var users []models.User
+	err := h.DB.WithContext(ctx).
+		Find(&users).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to get users."}, nil
+	}
+
+	if len(users) == 0 {
+		return &pb.ApiResponseUser{Success: false, Message: "No users found."}, nil
+	}
+
+	getAllUsersResponse := &pb.AdminUserResponse{
+		Users: make([]*pb.AdminUserProfile, len(users)),
+	}
+
+	for i, user := range users {
+		getAllUsersResponse.Users[i] = &pb.AdminUserProfile{
+			UserId:     user.UserId,
+			Name:       user.Name,
+			Username:   user.Username,
+			IsVerified: user.IsVerified,
+			IsBanned:   user.IsBanned,
+		}
+	}
+
+	returnData, err := anypb.New(getAllUsersResponse)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Get all users successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handlers) Admin_ToggleUserBan(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin toggling ban status for user " + req.Value)
+
+	var user models.User
+	err := h.DB.WithContext(ctx).
+		Where("user_id = ?", req.Value).
+		First(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "User not found."}, nil
+	}
+
+	user.IsBanned = !user.IsBanned
+	err = h.DB.WithContext(ctx).Save(&user).Error
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to toggle user ban status."}, nil
+	}
+
+	rabbitmq.PublishDeleteRedis("getprofile/" + user.UserId)
+	return &pb.ApiResponseUser{Success: true, Message: "Successfully toggled user ban status!"}, nil
+}
+
+func (h *Handlers) Admin_SendNewsLetter(ctx context.Context, req *pb.SendNewsLetterRequest) (*pb.ApiResponseUser, error) {
+	zap.L().Info("Admin sending newsletter with title: " + req.Title)
+
+	if req.Title == "" || req.Content == "" {
+		return &pb.ApiResponseUser{Success: false, Message: "Title and content cannot be empty."}, nil
+	}
+
+	var users []models.User
+	err := h.DB.WithContext(ctx).
+		Where("is_deactivated = ? AND is_banned = ?", false, false).
+		Find(&users).Error
+
+	if err != nil {
+		return &pb.ApiResponseUser{Success: false, Message: "Failed to fetch users to send newsletter."}, nil
+	}
+	for _, user := range users {
+		err = rabbitmq.PublishSendNotification("newsletter", user.UserId, user.Email, "AY.com Newsletter: "+req.Title, req.Content+"<br><br>Thank you for being a part of our community!<br>Best regards,<br>AY.com Team.", "System")
+		if err != nil {
+			zap.L().Error("Failed to send newsletter to user "+user.UserId, zap.Error(err))
+		} else {
+			zap.L().Info("Newsletter sent to user " + user.UserId)
+		}
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "Newsletter sent successfully to all users.",
+		Data:    nil,
+	}, nil
+}

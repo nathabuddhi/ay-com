@@ -143,6 +143,18 @@ func (s *UserServer) Admin_RejectPremiumRequest(ctx context.Context, req *pb.Rej
 	return s.Handlers.Admin_RejectPremiumRequest(ctx, req)
 }
 
+func (s *UserServer) Admin_GetAllUsers(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_GetAllUsers(ctx, req)
+}
+
+func (s *UserServer) Admin_ToggleUserBan(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_ToggleUserBan(ctx, req)
+}
+
+func (s *UserServer) Admin_SendNewsLetter(ctx context.Context, req *pb.SendNewsLetterRequest) (*pb.ApiResponseUser, error) {
+	return s.Handlers.Admin_SendNewsLetter(ctx, req)
+}
+
 // func (s *UserServer) User_(ctx context.Context, req *pb.) (*pb.ApiResponseUser, error) {
 // 	return s.Handlers.User_(ctx, req)
 // }

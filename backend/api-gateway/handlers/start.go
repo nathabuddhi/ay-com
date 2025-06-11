@@ -25,12 +25,20 @@ func InitAdminRoutes(r *mux.Router) {
 	admin := r.PathPrefix("/").Subrouter()
 
 	admin.Use(IsUserAdmin)
+	// thread
 	admin.HandleFunc("/admin/deletethread", Admin_DeleteThread).Methods("DELETE")
+	admin.HandleFunc("/admin/addthreadcategory", Admin_AddThreadCategory).Methods("POST")
+	admin.HandleFunc("/admin/deletethreadcategory", Admin_DeleteThreadCategory).Methods("DELETE")
+
+	// user
 	admin.HandleFunc("/admin/getalluserverificationrequests", Admin_GetAllVerifyAccountRequest).Methods("POST")
 	admin.HandleFunc("/admin/rejectverificationrequest", Admin_RejectPremiumRequest).Methods("PATCH")
 	admin.HandleFunc("/admin/approveverificationrequest", Admin_ApprovePremiumRequest).Methods("PATCH")
-	admin.HandleFunc("/admin/addthreadcategory", Admin_AddThreadCategory).Methods("POST")
-	admin.HandleFunc("/admin/deletethreadcategory", Admin_DeleteThreadCategory).Methods("DELETE")
+	admin.HandleFunc("/admin/getallusers", Admin_GetAllUsers).Methods("GET")
+	admin.HandleFunc("/admin/toggleuserban", Admin_ToggleUserBan).Methods("PATCH")
+	
+	admin.HandleFunc("/admin/sendnewsletter", Admin_SendNewsLetter).Methods("POST")
+
 	zap.L().Info("Admin Routes Initialized.")
 }
 

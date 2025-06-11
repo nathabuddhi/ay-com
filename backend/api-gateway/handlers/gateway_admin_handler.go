@@ -78,3 +78,37 @@ func Admin_AddThreadCategory(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Admin_AddCategory(ctx, req)
 	processThreadResponseWithoutPayload(resp, err, w)
 }
+
+func Admin_GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin Get All Users is called.")
+	conn := getUserServiceConn()
+	client := userpb.NewUserServiceClient(conn)
+
+	req := &userpb.StringUser{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_GetAllUsers(ctx, req)
+	processUserResponseWithPayload[userpb.AdminUserResponse](resp, err, w)
+}
+
+func Admin_ToggleUserBan(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin toggling user ban category.")
+	req, client := processUserRequest[userpb.StringUser](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_ToggleUserBan(ctx, req)
+	processUserResponseWithoutPayload(resp, err, w)
+}
+
+func Admin_SendNewsLetter(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin sending newsletter.")
+	req, client := processUserRequest[userpb.SendNewsLetterRequest](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_SendNewsLetter(ctx, req)
+	processUserResponseWithoutPayload(resp, err, w)
+}

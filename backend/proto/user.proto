@@ -46,9 +46,15 @@ service UserService {
 
     // Admin routes
     rpc Admin_IsUserAdmin(StringUser) returns (BoolUser);
+
     rpc Admin_GetAllVerifyAccountRequest (StringUser) returns (ApiResponseUser);
     rpc Admin_ApprovePremiumRequest (StringUser) returns (ApiResponseUser);
     rpc Admin_RejectPremiumRequest (RejectPremiumRequest) returns (ApiResponseUser);
+
+    rpc Admin_GetAllUsers(StringUser) returns (ApiResponseUser);
+    rpc Admin_ToggleUserBan(StringUser) returns (ApiResponseUser);
+
+    rpc Admin_SendNewsLetter(SendNewsLetterRequest) returns (ApiResponseUser);
 }
 
 message ApiResponseUser {
@@ -57,8 +63,25 @@ message ApiResponseUser {
     google.protobuf.Any data = 3;
 }
 
+message SendNewsLetterRequest {
+    string title = 1;
+    string content = 2;
+}
+
 message GetFollowRecommendationsResponse {
     repeated string user_ids = 1;
+}
+
+message AdminUserResponse {
+    repeated AdminUserProfile users = 1;
+}
+
+message AdminUserProfile {
+    string user_id = 1;
+    string username = 2;
+    string name = 3;
+    bool is_verified = 4;
+    bool is_banned = 5;
 }
 
 message StringUser {
