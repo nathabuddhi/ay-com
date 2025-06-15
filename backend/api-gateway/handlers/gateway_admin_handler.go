@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
+	communitypb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/community"
 	threadpb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/thread"
 	userpb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/user"
 	"go.uber.org/zap"
@@ -144,4 +145,17 @@ func Admin_RejectReport(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	resp, err := client.Admin_RejectReport(ctx, req)
 	processUserResponseWithoutPayload(resp, err, w)
+}
+
+func Admin_GetAllCommunityRequests(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin getting all community requests.")
+
+	req := &communitypb.StringCommunity{}
+	conn := getUserServiceConn()
+	client := communitypb.NewCommunityServiceClient(conn)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_GetAllCommunityRequests(ctx, req)
+	processCommunityResponseWithPayload[communitypb.GetCommunitiesResponse](resp, err, w)
 }

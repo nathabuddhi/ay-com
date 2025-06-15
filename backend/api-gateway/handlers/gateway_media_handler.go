@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"sync"
@@ -299,4 +300,59 @@ func User_ChangeBanner(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
 	}
+}
+
+func UploadCommunityIcon(file io.Reader, header *multipart.FileHeader, id string) (string, error) {
+	imageData, err := readFileToBytes(file)
+	if err != nil {
+		return "", fmt.Errorf("failed to read file: %w", err)
+	}
+
+	ext := header.Filename[strings.LastIndex(header.Filename, ".")+1:]
+
+	conn := getMediaServiceConn()
+	client := pb.NewMediaServiceClient(conn)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	bannerReq := &pb.UploadImageRequest{
+		TypeId:     id,
+		Image:      imageData,
+		UploadType: "communityicon",
+		ImageType:  ext,
+	}
+
+	if _, err := client.Media_UploadMedia(ctx, bannerReq); err != nil {
+		zap.L().Error("Failed to upload community icon", zap.Error(err))
+		return "", fmt.Errorf("failed to upload community icon: %w", err)
+	}
+
+	return id + "." + ext, nil
+}
+
+func UploadCommunityBanner(file io.Reader, header *multipart.FileHeader, id string) (string, error) {
+	imageData, err := readFileToBytes(file)
+	if err != nil {
+		return "", fmt.Errorf("failed to read file: %w", err)
+	}
+
+	ext := header.Filename[strings.LastIndex(header.Filename, ".")+1:]
+
+	conn := getMediaServiceConn()
+	client := pb.NewMediaServiceClient(conn)
+	ctx, cancel := createContext()
+	defer cancel()
+	bannerReq := &pb.UploadImageRequest{
+		TypeId:     id,
+		Image:      imageData,
+		UploadType: "communitybanner",
+		ImageType:  ext,
+	}
+
+	if _, err := client.Media_UploadMedia(ctx, bannerReq); err != nil {
+		zap.L().Error("Failed to upload community banner", zap.Error(err))
+		return "", fmt.Errorf("failed to upload community banner: %w", err)
+	}
+
+	return id + "." + ext, nil
 }

@@ -72,17 +72,49 @@ func (s *MediaServer) Media_UploadMedia(ctx context.Context, req *pb.UploadImage
 	if req.UploadType == "verification" {
 		path, err := supabase.UploadVerificationMedia(req)
 		if err != nil {
-			zap.L().Error("Failed to upload thread media", zap.Error(err))
+			zap.L().Error("Failed to upload media", zap.Error(err))
 			return &pb.ApiResponseMedia{
 				Success: false,
-				Message: "Failed to upload thread media.",
+				Message: "Failed to upload media.",
 			}, nil
 		}
 
 		return &pb.ApiResponseMedia{
 			Success: true,
-			Message: "Thread Media uploaded successfully.",
+			Message: "Media uploaded successfully.",
 			Url:     path,
+		}, nil
+	}
+
+	if req.UploadType == "communityicon" {
+		err := supabase.UploadCommunityImage(req, true)
+		if err != nil {
+			zap.L().Error("Failed to upload media", zap.Error(err))
+			return &pb.ApiResponseMedia{
+				Success: false,
+				Message: "Failed to upload media.",
+			}, nil
+		}
+
+		return &pb.ApiResponseMedia{
+			Success: true,
+			Message: "Media uploaded successfully.",
+		}, nil
+	}
+
+	if req.UploadType == "communitybanner" {
+		err := supabase.UploadCommunityImage(req, false)
+		if err != nil {
+			zap.L().Error("Failed to upload media", zap.Error(err))
+			return &pb.ApiResponseMedia{
+				Success: false,
+				Message: "Failed to upload media.",
+			}, nil
+		}
+
+		return &pb.ApiResponseMedia{
+			Success: true,
+			Message: "Media uploaded successfully.",
 		}, nil
 	}
 

@@ -47,6 +47,6 @@ export interface CommunityRequest {
     category: string;
     description: string;
     submitted_at: string;
-    community_image_url: string;
-    community_banner_url: string;
+    banner_image: string;
+    icon_image: string;
 }

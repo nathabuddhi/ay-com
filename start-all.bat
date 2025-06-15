@@ -2,6 +2,7 @@
 wt ^
 new-tab -d .\backend\service-user --title "USER" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\service-notification --title "NOTIFICATION" cmd /k "go build -o main.exe && main.exe" ; ^
+new-tab -d .\backend\service-community --title "COMMUNITY" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\service-thread --title "THREAD" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\service-media --title "MEDI" cmd /k "go build -o main.exe && main.exe" ; ^
 new-tab -d .\backend\util-email --title "EMAIL" cmd /k "go build -o main.exe && main.exe" ; ^

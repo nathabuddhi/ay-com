@@ -188,6 +188,10 @@ export async function postThread(
         formData.append("reply_permission", reply_permission);
         formData.append("reply_to", reply || "");
         formData.append("media_count", media?.length.toString() ?? "0");
+        formData.append(
+            "is_advertisement",
+            localStorage.getItem("is_admin") === "true" ? "true" : "false"
+        );
 
         if (schedule !== "") {
             formData.append("is_scheduled", "true");

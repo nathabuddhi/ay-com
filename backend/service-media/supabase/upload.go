@@ -78,6 +78,21 @@ func UploadThreadMedia(thread_id string, file io.Reader) (string, error) {
 	return mediaPath, nil
 }
 
+func UploadCommunityImage(req *pb.UploadImageRequest, isIcon bool) error {
+	bucket := "communityicon"
+	if !isIcon {
+		bucket = "communitybanner"
+	}
+
+	bannerPath := fmt.Sprintf("%s.%s", req.TypeId, req.ImageType)
+	if err := uploadFile(bucket, bannerPath, bytes.NewReader(req.Image)); err != nil {
+		zap.L().Error("Failed to upload community media", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
 func fileExists(bucket, filePath string) bool {
 	_, err := Client.DownloadFile(bucket, filePath)
 	if err != nil {

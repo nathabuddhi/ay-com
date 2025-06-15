@@ -43,6 +43,8 @@ func InitAdminRoutes(r *mux.Router) {
 	admin.HandleFunc("/admin/approvereport", Admin_ApproveReport).Methods("PATCH")
 	admin.HandleFunc("/admin/rejectreport", Admin_RejectReport).Methods("PATCH")
 
+	admin.HandleFunc("/admin/getcommunityrequests", Admin_GetAllCommunityRequests).Methods("GET")
+
 	zap.L().Info("Admin Routes Initialized.")
 }
 
@@ -52,6 +54,7 @@ func InitSecuredRoutes(r *mux.Router) {
 	InitSecuredUserRoutes(secured)
 	InitSecuredNotificationRoutes(secured)
 	InitSecuredThreadRoutes(secured)
+	InitSecuredCommunityRoutes(secured)
 	zap.L().Info("Secured Routes Initialized.")
 
 	InitAdminRoutes(secured)
@@ -139,9 +142,9 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getuserreplies", Thread_GetUserReplies).Methods("POST")
 	secured.HandleFunc("/thread/getusermediathreads", Thread_GetUserMediaThreads).Methods("POST")
 
-	// secured.HandleFunc("/thread/getthreadsbyuser", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/getthreadsbycommunity", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/getpopularhashtags", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/getthreadsbyhashtag", Thread_).Methods("POST")
-	// secured.HandleFunc("/thread/getthreadsbymedia", Thread_).Methods("POST")
+	// secured.HandleFunc("/thread/getcommunitythreads", Thread_).Methods("POST")
+}
+
+func InitSecuredCommunityRoutes(secured *mux.Router) {
+	secured.HandleFunc("/community/create", Community_CreateCommunity).Methods("POST")
 }

@@ -385,14 +385,14 @@
                                         {request.user_id}
                                     </p>
                                 </div>
-                                {#if request.community_image_url}
+                                <!-- {#if request.community_image_url}
                                     <img
                                         src={request.community_image_url ||
                                             "/placeholder.svg"}
                                         alt="Community"
                                         class="community-preview"
                                     />
-                                {/if}
+                                {/if} -->
                                 <div class="actions">
                                     <button
                                         class="action-btn approve-btn"
