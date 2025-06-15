@@ -5,6 +5,7 @@
         getCommunityCategories,
     } from "../controllers/community-controller";
     import { addToast } from "../stores/toast-wrapper";
+    import { isLoggedIn } from "../controllers/token-controller";
 
     let isSubmitting = $state(false);
     let name = $state("");

@@ -312,7 +312,7 @@ export async function addCommunityCategory(
                 "Content-Type": "application/json",
                 Authorization: await getValidToken(),
             },
-            body: JSON.stringify({ category }),
+            body: JSON.stringify({ value: category }),
         });
         const data: ApiResponse<null> = await response.json();
 
@@ -334,7 +334,7 @@ export async function deleteCommunityCategory(
                     "Content-Type": "application/json",
                     Authorization: await getValidToken(),
                 },
-                body: JSON.stringify({ category }),
+                body: JSON.stringify({ value: category }),
             }
         );
         const data: ApiResponse<null> = await response.json();

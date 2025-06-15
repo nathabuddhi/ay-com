@@ -26,6 +26,8 @@ const (
 	CommunityService_Community_GetUserPendingApprovalCommunities_FullMethodName = "/community.CommunityService/Community_GetUserPendingApprovalCommunities"
 	CommunityService_Community_GetCategories_FullMethodName                     = "/community.CommunityService/Community_GetCategories"
 	CommunityService_Community_GetCommunityById_FullMethodName                  = "/community.CommunityService/Community_GetCommunityById"
+	CommunityService_Admin_DeleteCategory_FullMethodName                        = "/community.CommunityService/Admin_DeleteCategory"
+	CommunityService_Admin_AddCategory_FullMethodName                           = "/community.CommunityService/Admin_AddCategory"
 	CommunityService_Admin_GetAllCommunityRequests_FullMethodName               = "/community.CommunityService/Admin_GetAllCommunityRequests"
 	CommunityService_Admin_ApproveCommunity_FullMethodName                      = "/community.CommunityService/Admin_ApproveCommunity"
 	CommunityService_Admin_RejectCommunity_FullMethodName                       = "/community.CommunityService/Admin_RejectCommunity"
@@ -44,6 +46,8 @@ type CommunityServiceClient interface {
 	Community_GetCategories(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
 	Community_GetCommunityById(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	// Admin Routes
+	Admin_DeleteCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Admin_AddCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Admin_GetAllCommunityRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Admin_ApproveCommunity(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Admin_RejectCommunity(ctx context.Context, in *RejectCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
@@ -127,6 +131,26 @@ func (c *communityServiceClient) Community_GetCommunityById(ctx context.Context,
 	return out, nil
 }
 
+func (c *communityServiceClient) Admin_DeleteCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Admin_DeleteCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Admin_AddCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Admin_AddCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *communityServiceClient) Admin_GetAllCommunityRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseCommunity)
@@ -170,6 +194,8 @@ type CommunityServiceServer interface {
 	Community_GetCategories(context.Context, *StringCommunity) (*GetCategoriesResponse, error)
 	Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	// Admin Routes
+	Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Admin_AddCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Admin_GetAllCommunityRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Admin_ApproveCommunity(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Admin_RejectCommunity(context.Context, *RejectCommunityRequest) (*ApiResponseCommunity, error)
@@ -203,6 +229,12 @@ func (UnimplementedCommunityServiceServer) Community_GetCategories(context.Conte
 }
 func (UnimplementedCommunityServiceServer) Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCommunityById not implemented")
+}
+func (UnimplementedCommunityServiceServer) Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteCategory not implemented")
+}
+func (UnimplementedCommunityServiceServer) Admin_AddCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_AddCategory not implemented")
 }
 func (UnimplementedCommunityServiceServer) Admin_GetAllCommunityRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_GetAllCommunityRequests not implemented")
@@ -360,6 +392,42 @@ func _CommunityService_Community_GetCommunityById_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_Admin_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Admin_DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Admin_DeleteCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Admin_DeleteCategory(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Admin_AddCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Admin_AddCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Admin_AddCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Admin_AddCategory(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommunityService_Admin_GetAllCommunityRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringCommunity)
 	if err := dec(in); err != nil {
@@ -448,6 +516,14 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Community_GetCommunityById",
 			Handler:    _CommunityService_Community_GetCommunityById_Handler,
+		},
+		{
+			MethodName: "Admin_DeleteCategory",
+			Handler:    _CommunityService_Admin_DeleteCategory_Handler,
+		},
+		{
+			MethodName: "Admin_AddCategory",
+			Handler:    _CommunityService_Admin_AddCategory_Handler,
 		},
 		{
 			MethodName: "Admin_GetAllCommunityRequests",

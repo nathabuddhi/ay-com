@@ -93,3 +93,42 @@ func (h *Handler) Admin_RejectCommunity(ctx context.Context, req *pb.RejectCommu
 		Message: "Community approved successfully.",
 	}, nil
 }
+
+func (h *Handler) Admin_AddCategory(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
+	zap.L().Info("Admin adding community category", zap.String("category_name", req.Value))
+
+	if req.Value == "" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Category name cannot be empty."}, nil
+	}
+
+	category := models.CommunityCategory{Category: req.Value}
+	err := h.DB.WithContext(ctx).Create(&category).Error
+	if err != nil {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to add category."}, nil
+	}
+
+	return &pb.ApiResponseCommunity{
+		Success: true,
+		Message: "Category added successfully.",
+	}, nil
+}
+
+func (h *Handler) Admin_DeleteCategory(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
+	zap.L().Info("Admin deleting community category", zap.String("category_name", req.Value))
+
+	if req.Value == "" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Category name cannot be empty."}, nil
+	}
+
+	if err := h.DB.WithContext(ctx).Where("category = ?", req.Value).Delete(&models.CommunityCategory{}).Error; err != nil {
+		zap.L().Error("Error deleting community category", zap.Error(err))
+		return &pb.ApiResponseCommunity{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+	return &pb.ApiResponseCommunity{
+		Success: true,
+		Message: "Category deleted successfully.",
+	}, nil
+}

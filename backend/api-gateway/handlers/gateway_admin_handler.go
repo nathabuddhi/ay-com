@@ -179,3 +179,23 @@ func Admin_ApproveCommunity(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Admin_ApproveCommunity(ctx, req)
 	processCommunityResponseWithoutPayload(resp, err, w)
 }
+
+func Admin_DeleteCommunityCategory(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin adding community category.")
+	req, client := processCommunityRequest[communitypb.StringCommunity](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_DeleteCategory(ctx, req)
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Admin_AddCommunityCategory(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin adding community category.")
+	req, client := processCommunityRequest[communitypb.StringCommunity](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_AddCategory(ctx, req)
+	processCommunityResponseWithoutPayload(resp, err, w)
+}

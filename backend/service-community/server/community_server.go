@@ -58,3 +58,11 @@ func (s *CommunityServer) Admin_ApproveCommunity(ctx context.Context, req *pb.St
 func (s *CommunityServer) Admin_RejectCommunity(ctx context.Context, req *pb.RejectCommunityRequest) (*pb.ApiResponseCommunity, error) {
 	return s.Handler.Admin_RejectCommunity(ctx, req)
 }
+
+func (s *CommunityServer) Admin_AddCategory(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
+	return s.Handler.Admin_AddCategory(ctx, req)
+}
+
+func (s *CommunityServer) Admin_DeleteCategory(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
+	return s.Handler.Admin_DeleteCategory(ctx, req)
+}

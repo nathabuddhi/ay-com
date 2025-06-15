@@ -43,9 +43,13 @@ func InitAdminRoutes(r *mux.Router) {
 	admin.HandleFunc("/admin/approvereport", Admin_ApproveReport).Methods("PATCH")
 	admin.HandleFunc("/admin/rejectreport", Admin_RejectReport).Methods("PATCH")
 
+	// community
 	admin.HandleFunc("/admin/getcommunityrequests", Admin_GetAllCommunityRequests).Methods("GET")
 	admin.HandleFunc("/admin/approvecommunity", Admin_ApproveCommunity).Methods("PATCH")
 	admin.HandleFunc("/admin/rejectcommunity", Admin_RejectCommunity).Methods("PATCH")
+
+	admin.HandleFunc("/admin/addcommunitycategory", Admin_AddCommunityCategory).Methods("POST")
+	admin.HandleFunc("/admin/deletecommunitycategory", Admin_DeleteCommunityCategory).Methods("DELETE")
 
 	zap.L().Info("Admin Routes Initialized.")
 }

@@ -624,7 +624,7 @@ const file_community_proto_rawDesc = "" +
 	"\x13CommunityCategories\x12\x1e\n" +
 	"\n" +
 	"categories\x18\x01 \x03(\tR\n" +
-	"categories2\xc2\a\n" +
+	"categories2\xe9\b\n" +
 	"\x10CommunityService\x12Z\n" +
 	"\x1bCommunity_GetAllCommunities\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12_\n" +
 	"\x19Community_CreateCommunity\x12!.community.CreateCommunityRequest\x1a\x1f.community.ApiResponseCommunity\x12[\n" +
@@ -632,7 +632,9 @@ const file_community_proto_rawDesc = "" +
 	"#Community_GetUserPendingCommunities\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12j\n" +
 	"+Community_GetUserPendingApprovalCommunities\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12W\n" +
 	"\x17Community_GetCategories\x12\x1a.community.StringCommunity\x1a .community.GetCategoriesResponse\x12Y\n" +
-	"\x1aCommunity_GetCommunityById\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12\\\n" +
+	"\x1aCommunity_GetCommunityById\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12S\n" +
+	"\x14Admin_DeleteCategory\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12P\n" +
+	"\x11Admin_AddCategory\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12\\\n" +
 	"\x1dAdmin_GetAllCommunityRequests\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12U\n" +
 	"\x16Admin_ApproveCommunity\x12\x1a.community.StringCommunity\x1a\x1f.community.ApiResponseCommunity\x12[\n" +
 	"\x15Admin_RejectCommunity\x12!.community.RejectCommunityRequest\x1a\x1f.community.ApiResponseCommunityB\fZ\n" +
@@ -673,21 +675,25 @@ var file_community_proto_depIdxs = []int32{
 	1,  // 6: community.CommunityService.Community_GetUserPendingApprovalCommunities:input_type -> community.StringCommunity
 	1,  // 7: community.CommunityService.Community_GetCategories:input_type -> community.StringCommunity
 	1,  // 8: community.CommunityService.Community_GetCommunityById:input_type -> community.StringCommunity
-	1,  // 9: community.CommunityService.Admin_GetAllCommunityRequests:input_type -> community.StringCommunity
-	1,  // 10: community.CommunityService.Admin_ApproveCommunity:input_type -> community.StringCommunity
-	3,  // 11: community.CommunityService.Admin_RejectCommunity:input_type -> community.RejectCommunityRequest
-	0,  // 12: community.CommunityService.Community_GetAllCommunities:output_type -> community.ApiResponseCommunity
-	0,  // 13: community.CommunityService.Community_CreateCommunity:output_type -> community.ApiResponseCommunity
-	0,  // 14: community.CommunityService.Community_GetUserCommunities:output_type -> community.ApiResponseCommunity
-	0,  // 15: community.CommunityService.Community_GetUserPendingCommunities:output_type -> community.ApiResponseCommunity
-	0,  // 16: community.CommunityService.Community_GetUserPendingApprovalCommunities:output_type -> community.ApiResponseCommunity
-	5,  // 17: community.CommunityService.Community_GetCategories:output_type -> community.GetCategoriesResponse
-	0,  // 18: community.CommunityService.Community_GetCommunityById:output_type -> community.ApiResponseCommunity
-	0,  // 19: community.CommunityService.Admin_GetAllCommunityRequests:output_type -> community.ApiResponseCommunity
-	0,  // 20: community.CommunityService.Admin_ApproveCommunity:output_type -> community.ApiResponseCommunity
-	0,  // 21: community.CommunityService.Admin_RejectCommunity:output_type -> community.ApiResponseCommunity
-	12, // [12:22] is the sub-list for method output_type
-	2,  // [2:12] is the sub-list for method input_type
+	1,  // 9: community.CommunityService.Admin_DeleteCategory:input_type -> community.StringCommunity
+	1,  // 10: community.CommunityService.Admin_AddCategory:input_type -> community.StringCommunity
+	1,  // 11: community.CommunityService.Admin_GetAllCommunityRequests:input_type -> community.StringCommunity
+	1,  // 12: community.CommunityService.Admin_ApproveCommunity:input_type -> community.StringCommunity
+	3,  // 13: community.CommunityService.Admin_RejectCommunity:input_type -> community.RejectCommunityRequest
+	0,  // 14: community.CommunityService.Community_GetAllCommunities:output_type -> community.ApiResponseCommunity
+	0,  // 15: community.CommunityService.Community_CreateCommunity:output_type -> community.ApiResponseCommunity
+	0,  // 16: community.CommunityService.Community_GetUserCommunities:output_type -> community.ApiResponseCommunity
+	0,  // 17: community.CommunityService.Community_GetUserPendingCommunities:output_type -> community.ApiResponseCommunity
+	0,  // 18: community.CommunityService.Community_GetUserPendingApprovalCommunities:output_type -> community.ApiResponseCommunity
+	5,  // 19: community.CommunityService.Community_GetCategories:output_type -> community.GetCategoriesResponse
+	0,  // 20: community.CommunityService.Community_GetCommunityById:output_type -> community.ApiResponseCommunity
+	0,  // 21: community.CommunityService.Admin_DeleteCategory:output_type -> community.ApiResponseCommunity
+	0,  // 22: community.CommunityService.Admin_AddCategory:output_type -> community.ApiResponseCommunity
+	0,  // 23: community.CommunityService.Admin_GetAllCommunityRequests:output_type -> community.ApiResponseCommunity
+	0,  // 24: community.CommunityService.Admin_ApproveCommunity:output_type -> community.ApiResponseCommunity
+	0,  // 25: community.CommunityService.Admin_RejectCommunity:output_type -> community.ApiResponseCommunity
+	14, // [14:26] is the sub-list for method output_type
+	2,  // [2:14] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
 	2,  // [2:2] is the sub-list for extension extendee
 	0,  // [0:2] is the sub-list for field type_name

@@ -17,6 +17,8 @@ service CommunityService {
     rpc Community_GetCommunityById (StringCommunity) returns (ApiResponseCommunity);
 
     // Admin Routes
+    rpc Admin_DeleteCategory (StringCommunity) returns (ApiResponseCommunity);
+    rpc Admin_AddCategory (StringCommunity) returns (ApiResponseCommunity);
     rpc Admin_GetAllCommunityRequests (StringCommunity) returns (ApiResponseCommunity);
     rpc Admin_ApproveCommunity (StringCommunity) returns (ApiResponseCommunity);
     rpc Admin_RejectCommunity (RejectCommunityRequest) returns (ApiResponseCommunity);
