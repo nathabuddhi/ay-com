@@ -44,6 +44,8 @@ func InitAdminRoutes(r *mux.Router) {
 	admin.HandleFunc("/admin/rejectreport", Admin_RejectReport).Methods("PATCH")
 
 	admin.HandleFunc("/admin/getcommunityrequests", Admin_GetAllCommunityRequests).Methods("GET")
+	admin.HandleFunc("/admin/approvecommunity", Admin_ApproveCommunity).Methods("PATCH")
+	admin.HandleFunc("/admin/rejectcommunity", Admin_RejectCommunity).Methods("PATCH")
 
 	zap.L().Info("Admin Routes Initialized.")
 }
@@ -147,4 +149,9 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 
 func InitSecuredCommunityRoutes(secured *mux.Router) {
 	secured.HandleFunc("/community/create", Community_CreateCommunity).Methods("POST")
+	secured.HandleFunc("/community/getcategories", Community_GetCategories).Methods("GET")
+	secured.HandleFunc("/community/getallcommunities", Community_GetAllCommunities).Methods("GET")
+	secured.HandleFunc("/community/getusercommunities", Community_GetUserCommunities).Methods("GET")
+	secured.HandleFunc("/community/getuserpendingcommunities", Community_GetUserPendingCommunities).Methods("GET")
+	secured.HandleFunc("/community/get/{id}", Community_GetCommunityById).Methods("GET")
 }

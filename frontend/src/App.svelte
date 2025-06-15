@@ -77,6 +77,15 @@
     <Route path="/notifications">
         <HomePage />
     </Route>
+    <Route path="/communities">
+        <HomePage />
+    </Route>
+    <Route path="/community/create">
+        <HomePage />
+    </Route>
+    <Route path="/community/*">
+        <HomePage />
+    </Route>
     <Route path="/admin">
         <HomePage />
     </Route>

@@ -18,7 +18,7 @@ func (h *Handler) GetMemberCount(communityId string) int32 {
 
 func (h *Handler) GetCommunityById(communityId string) (*pb.Community, error) {
 	var community models.Community
-	err := h.DB.Where("community_id = ?", communityId).First(&community).Error
+	err := h.DB.Where("community_id = ? AND is_rejected = ?", communityId, false).First(&community).Error
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +31,7 @@ func (h *Handler) GetCommunityById(communityId string) (*pb.Community, error) {
 		BannerImage:   community.BannerImage,
 		CreatorId:     community.CreatorId,
 		CreatedAt:     community.CreatedAt.String(),
+		Categories:    h.GetCommunityCategories(communityId),
 		MemberCount:   h.GetMemberCount(community.CommunityId),
 	}, nil
 }

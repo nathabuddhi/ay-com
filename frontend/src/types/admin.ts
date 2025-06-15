@@ -3,6 +3,7 @@ export interface AdminAllUsersResponse {
 }
 
 export interface AdminUserProfile {
+    id: string;
     user_id: string;
     username: string;
     name: string;
@@ -37,16 +38,16 @@ export interface UserReport {
 }
 
 export interface CommunityRequestsResponse {
-    requests: CommunityRequest[];
+    communities: CommunityRequest[];
 }
 
 export interface CommunityRequest {
     community_id: string;
     user_id: string;
     community_name: string;
-    category: string;
+    categories: string[];
     description: string;
-    submitted_at: string;
+    created_at: string;
     banner_image: string;
     icon_image: string;
 }

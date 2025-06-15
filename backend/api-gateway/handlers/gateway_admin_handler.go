@@ -151,11 +151,31 @@ func Admin_GetAllCommunityRequests(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Admin getting all community requests.")
 
 	req := &communitypb.StringCommunity{}
-	conn := getUserServiceConn()
+	conn := getCommunityServiceConn()
 	client := communitypb.NewCommunityServiceClient(conn)
 
 	ctx, cancel := createContext()
 	defer cancel()
 	resp, err := client.Admin_GetAllCommunityRequests(ctx, req)
 	processCommunityResponseWithPayload[communitypb.GetCommunitiesResponse](resp, err, w)
+}
+
+func Admin_RejectCommunity(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin rejecting community.")
+	req, client := processCommunityRequest[communitypb.RejectCommunityRequest](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_RejectCommunity(ctx, req)
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Admin_ApproveCommunity(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Admin approving community.")
+	req, client := processCommunityRequest[communitypb.StringCommunity](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+	resp, err := client.Admin_ApproveCommunity(ctx, req)
+	processCommunityResponseWithoutPayload(resp, err, w)
 }

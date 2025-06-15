@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nathabuddhi/ay-com/backend/service-community/database"
 	"github.com/nathabuddhi/ay-com/backend/service-community/handlers"
+	"github.com/nathabuddhi/ay-com/backend/service-community/rabbitmq"
 	pb "github.com/nathabuddhi/ay-com/backend/service-community/proto/community"
 	"github.com/nathabuddhi/ay-com/backend/service-community/server"
 	"go.uber.org/zap"
@@ -55,7 +56,7 @@ func main() {
 
 	db := database.InitDB()
 	handler := handlers.NewHandlers(db)
-	// rabbitmq.InitRabbitMQ()
+	rabbitmq.InitRabbitMQ()
 
 	lis, err := net.Listen("tcp", ":5004")
 	if err != nil {
@@ -70,7 +71,6 @@ func main() {
 	zap.L().Info("Community Service gRPC server started successfully.")
 
 	zap.L().Info("Community Service Running. Listening on port 5004.")
-	// go rabbitmqreceive.InitHandler(handler)
 	if err := s.Serve(lis); err != nil {
 		zap.L().Fatal("Failed to serve: " + err.Error())
 	}

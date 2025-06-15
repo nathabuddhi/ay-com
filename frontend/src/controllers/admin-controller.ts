@@ -204,17 +204,14 @@ export async function approveCommunityRequest(
     requestId: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            `${API_URL}/admin/approvecommunityrequest`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: await getValidToken(),
-                },
-                body: JSON.stringify({ value: requestId }),
-            }
-        );
+        const response = await fetch(`${API_URL}/admin/approvecommunity`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({ value: requestId }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;
@@ -227,17 +224,17 @@ export async function rejectCommunityRequest(
     requestId: string
 ): Promise<ApiResponse<null>> {
     try {
-        const response = await fetch(
-            `${API_URL}/admin/rejectcommunityrequest`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: await getValidToken(),
-                },
-                body: JSON.stringify({ value: requestId }),
-            }
-        );
+        const response = await fetch(`${API_URL}/admin/rejectcommunity`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                community_id: requestId,
+                reason: "Community already exists.",
+            }),
+        });
         const data: ApiResponse<null> = await response.json();
 
         return data;

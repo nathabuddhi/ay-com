@@ -19,7 +19,7 @@
     import UserVerificationRequest from "../components/Admin/UserVerificationRequest.svelte";
     import { getCategories } from "../controllers/thread-controller";
     import { addToast } from "../stores/toast-wrapper";
-    import { X, Send, Check, AlertTriangle } from "@lucide/svelte";
+    import { X, Send, Check } from "@lucide/svelte";
     import type {
         AdminUserProfile,
         CommunityRequest,
@@ -35,7 +35,7 @@
     let reports = $state<UserReport[]>([]);
     let newsLetterTitle = $state<string>("");
     let newsLetterContent = $state<string>("");
-    let communityRequests = $state<CommunityRequest[]>([]);
+    let communityRequests: CommunityRequest[] = $state<CommunityRequest[]>([]);
     let verificationRequests = $state<VerifyAccountRequest[]>([]);
     let threadCategories = $state<string[]>([]);
     let communityCategories = $state<string[]>([]);
@@ -82,8 +82,11 @@
     async function loadCommunityCategories() {
         try {
             const response = await getCommunityCategories();
-            if (response.success && response.payload) {
-                communityCategories = response.payload;
+            if (
+                response.success &&
+                response.payload
+            ) {
+                communityCategories = response.payload.categories;
             } else {
                 communityCategories = [];
             }
@@ -109,8 +112,8 @@
     async function loadCommunityRequests() {
         try {
             const response = await getCommunityRequests();
-            if (response.success && response.payload) {
-                communityRequests = response.payload.requests;
+            if (response.success && response.payload && response.payload.communities) {
+                communityRequests = response.payload.communities;
             } else {
                 communityRequests = [];
             }
@@ -358,7 +361,7 @@
             {:else if activeTab === "Community"}
                 <div class="community-container">
                     <h3>
-                        Community Requests ({communityRequests.length} pending)
+                        Community Requests ({communityRequests.length ?? 0} pending)
                     </h3>
                     <div class="request-list">
                         {#each communityRequests as request}
@@ -367,22 +370,37 @@
                                     <h4>{request.community_name}</h4>
                                     <span class="timestamp"
                                         >{new Date(
-                                            request.submitted_at
+                                            request.created_at
                                         ).toLocaleDateString()}</span
                                     >
                                 </div>
                                 <div class="request-info">
                                     <p>
                                         <strong>Category:</strong>
-                                        {request.category}
+                                        {#each request.categories as cat}
+                                            <span class="category-tag">
+                                                {cat},&nbsp;
+                                            </span>
+                                        {/each}
                                     </p>
                                     <p>
                                         <strong>Description:</strong>
                                         {request.description}
                                     </p>
                                     <p>
-                                        <strong>Requested by:</strong>
-                                        {request.user_id}
+                                        <strong>Requested by: &nbsp; </strong><a
+                                            href={`/user/${
+                                                users.find(
+                                                    (u) =>
+                                                        u.id === request.user_id
+                                                )?.username
+                                            }`}
+                                            class="username-link"
+                                        >
+                                            @{users.find(
+                                                (u) => u.id === request.user_id
+                                            )?.username || "Unknown User"}
+                                        </a>
                                     </p>
                                 </div>
                                 <!-- {#if request.community_image_url}

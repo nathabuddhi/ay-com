@@ -11,6 +11,8 @@ type Community struct {
 	IconImage     string
 	BannerImage   string
 	IsPending     bool
+	IsRejected    bool
+	RejectReason  string `gorm:"type:text"`
 	CreatedAt     time.Time
 }
 

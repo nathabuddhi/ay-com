@@ -19,10 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CommunityService_Community_GetAllCommunities_FullMethodName   = "/community.CommunityService/Community_GetAllCommunities"
-	CommunityService_Community_CreateCommunity_FullMethodName     = "/community.CommunityService/Community_CreateCommunity"
-	CommunityService_Community_GetUserCommunities_FullMethodName  = "/community.CommunityService/Community_GetUserCommunities"
-	CommunityService_Admin_GetAllCommunityRequests_FullMethodName = "/community.CommunityService/Admin_GetAllCommunityRequests"
+	CommunityService_Community_GetAllCommunities_FullMethodName                 = "/community.CommunityService/Community_GetAllCommunities"
+	CommunityService_Community_CreateCommunity_FullMethodName                   = "/community.CommunityService/Community_CreateCommunity"
+	CommunityService_Community_GetUserCommunities_FullMethodName                = "/community.CommunityService/Community_GetUserCommunities"
+	CommunityService_Community_GetUserPendingCommunities_FullMethodName         = "/community.CommunityService/Community_GetUserPendingCommunities"
+	CommunityService_Community_GetUserPendingApprovalCommunities_FullMethodName = "/community.CommunityService/Community_GetUserPendingApprovalCommunities"
+	CommunityService_Community_GetCategories_FullMethodName                     = "/community.CommunityService/Community_GetCategories"
+	CommunityService_Community_GetCommunityById_FullMethodName                  = "/community.CommunityService/Community_GetCommunityById"
+	CommunityService_Admin_GetAllCommunityRequests_FullMethodName               = "/community.CommunityService/Admin_GetAllCommunityRequests"
+	CommunityService_Admin_ApproveCommunity_FullMethodName                      = "/community.CommunityService/Admin_ApproveCommunity"
+	CommunityService_Admin_RejectCommunity_FullMethodName                       = "/community.CommunityService/Admin_RejectCommunity"
 )
 
 // CommunityServiceClient is the client API for CommunityService service.
@@ -33,8 +39,14 @@ type CommunityServiceClient interface {
 	Community_GetAllCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_CreateCommunity(ctx context.Context, in *CreateCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_GetUserCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetUserPendingCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetUserPendingApprovalCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetCategories(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
+	Community_GetCommunityById(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_GetAllCommunityRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Admin_ApproveCommunity(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Admin_RejectCommunity(ctx context.Context, in *RejectCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 }
 
 type communityServiceClient struct {
@@ -75,10 +87,70 @@ func (c *communityServiceClient) Community_GetUserCommunities(ctx context.Contex
 	return out, nil
 }
 
+func (c *communityServiceClient) Community_GetUserPendingCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetUserPendingCommunities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_GetUserPendingApprovalCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetUserPendingApprovalCommunities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_GetCategories(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCategoriesResponse)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetCategories_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_GetCommunityById(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetCommunityById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *communityServiceClient) Admin_GetAllCommunityRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseCommunity)
 	err := c.cc.Invoke(ctx, CommunityService_Admin_GetAllCommunityRequests_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Admin_ApproveCommunity(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Admin_ApproveCommunity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Admin_RejectCommunity(ctx context.Context, in *RejectCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Admin_RejectCommunity_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +165,14 @@ type CommunityServiceServer interface {
 	Community_GetAllCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Community_CreateCommunity(context.Context, *CreateCommunityRequest) (*ApiResponseCommunity, error)
 	Community_GetUserCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_GetUserPendingCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_GetUserPendingApprovalCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_GetCategories(context.Context, *StringCommunity) (*GetCategoriesResponse, error)
+	Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_GetAllCommunityRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Admin_ApproveCommunity(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Admin_RejectCommunity(context.Context, *RejectCommunityRequest) (*ApiResponseCommunity, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }
 
@@ -114,8 +192,26 @@ func (UnimplementedCommunityServiceServer) Community_CreateCommunity(context.Con
 func (UnimplementedCommunityServiceServer) Community_GetUserCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Community_GetUserCommunities not implemented")
 }
+func (UnimplementedCommunityServiceServer) Community_GetUserPendingCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetUserPendingCommunities not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_GetUserPendingApprovalCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetUserPendingApprovalCommunities not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_GetCategories(context.Context, *StringCommunity) (*GetCategoriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCategories not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCommunityById not implemented")
+}
 func (UnimplementedCommunityServiceServer) Admin_GetAllCommunityRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_GetAllCommunityRequests not implemented")
+}
+func (UnimplementedCommunityServiceServer) Admin_ApproveCommunity(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_ApproveCommunity not implemented")
+}
+func (UnimplementedCommunityServiceServer) Admin_RejectCommunity(context.Context, *RejectCommunityRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Admin_RejectCommunity not implemented")
 }
 func (UnimplementedCommunityServiceServer) mustEmbedUnimplementedCommunityServiceServer() {}
 func (UnimplementedCommunityServiceServer) testEmbeddedByValue()                          {}
@@ -192,6 +288,78 @@ func _CommunityService_Community_GetUserCommunities_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_Community_GetUserPendingCommunities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetUserPendingCommunities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetUserPendingCommunities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetUserPendingCommunities(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_GetUserPendingApprovalCommunities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetUserPendingApprovalCommunities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetUserPendingApprovalCommunities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetUserPendingApprovalCommunities(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetCategories(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_GetCommunityById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetCommunityById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetCommunityById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetCommunityById(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommunityService_Admin_GetAllCommunityRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringCommunity)
 	if err := dec(in); err != nil {
@@ -206,6 +374,42 @@ func _CommunityService_Admin_GetAllCommunityRequests_Handler(srv interface{}, ct
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommunityServiceServer).Admin_GetAllCommunityRequests(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Admin_ApproveCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Admin_ApproveCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Admin_ApproveCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Admin_ApproveCommunity(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Admin_RejectCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RejectCommunityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Admin_RejectCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Admin_RejectCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Admin_RejectCommunity(ctx, req.(*RejectCommunityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -230,8 +434,32 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CommunityService_Community_GetUserCommunities_Handler,
 		},
 		{
+			MethodName: "Community_GetUserPendingCommunities",
+			Handler:    _CommunityService_Community_GetUserPendingCommunities_Handler,
+		},
+		{
+			MethodName: "Community_GetUserPendingApprovalCommunities",
+			Handler:    _CommunityService_Community_GetUserPendingApprovalCommunities_Handler,
+		},
+		{
+			MethodName: "Community_GetCategories",
+			Handler:    _CommunityService_Community_GetCategories_Handler,
+		},
+		{
+			MethodName: "Community_GetCommunityById",
+			Handler:    _CommunityService_Community_GetCommunityById_Handler,
+		},
+		{
 			MethodName: "Admin_GetAllCommunityRequests",
 			Handler:    _CommunityService_Admin_GetAllCommunityRequests_Handler,
+		},
+		{
+			MethodName: "Admin_ApproveCommunity",
+			Handler:    _CommunityService_Admin_ApproveCommunity_Handler,
+		},
+		{
+			MethodName: "Admin_RejectCommunity",
+			Handler:    _CommunityService_Admin_RejectCommunity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

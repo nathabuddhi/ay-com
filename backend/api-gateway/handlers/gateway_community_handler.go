@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/middleware"
 	pb "github.com/nathabuddhi/ay-com/backend/api-gateway/proto/community"
 	"github.com/nathabuddhi/ay-com/backend/api-gateway/types"
@@ -135,7 +136,36 @@ func Community_CreateCommunity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := &pb.CreateCommunityRequest{}
-	req.Category = r.FormValue("category")
+	categoryCountStr := r.FormValue("category_count")
+	var categoryCount int32
+	if categoryCountStr != "" {
+		var parsedCount int
+		_, err := fmt.Sscanf(categoryCountStr, "%d", &parsedCount)
+		if err != nil {
+			zap.L().Error("Invalid category_count value", zap.Error(err))
+			returnErrorResponse(w, "Invalid category_count value")
+			return
+		}
+		categoryCount = int32(parsedCount)
+	}
+
+	if categoryCount < 1 {
+		zap.L().Error("Category count must be at least 1")
+		returnErrorResponse(w, "Category count must be at least 1")
+		return
+	}
+
+	req.Categories = make([]string, categoryCount)
+	for i := 0; i < int(categoryCount); i++ {
+		category := r.FormValue(fmt.Sprintf("category_%d", i+1))
+		if category == "" {
+			zap.L().Error("Category cannot be empty", zap.Int("category_index", i+1))
+			returnErrorResponse(w, fmt.Sprintf("Category %d cannot be empty", i+1))
+			return
+		}
+		req.Categories[i] = category
+	}
+
 	req.CommunityName = r.FormValue("name")
 	req.Description = r.FormValue("description")
 	req.Rules = r.FormValue("rules")
@@ -155,4 +185,108 @@ func Community_CreateCommunity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Community_GetUserCommunities(w http.ResponseWriter, r *http.Request) {
+	conn := getCommunityServiceConn()
+	client := pb.NewCommunityServiceClient(conn)
+
+	req := &pb.StringCommunity{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetUserCommunities(ctx, req)
+
+	processCommunityResponseWithPayload[pb.GetCommunitiesResponse](resp, err, w)
+}
+
+func Community_GetCategories(w http.ResponseWriter, r *http.Request) {
+	conn := getCommunityServiceConn()
+	client := pb.NewCommunityServiceClient(conn)
+
+	req := &pb.StringCommunity{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetCategories(ctx, req)
+
+	if err != nil {
+		zap.L().Error("Error forwarding request", zap.Error(err))
+		returnErrorResponse(w, "Error forwarding request: "+err.Error())
+		return
+	}
+
+	if resp == nil || resp.Categories == nil {
+		zap.L().Error("Received nil response from community service")
+		returnErrorResponse(w, "Received nil response from community service")
+		return
+	}
+
+	response := &types.ApiResponse{
+		Success: true,
+		Message: "Successfully retrieved categories.",
+		Payload: &pb.GetCategoriesResponse{
+			Categories: resp.Categories,
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func Community_GetCommunityById(w http.ResponseWriter, r *http.Request) {
+	conn := getCommunityServiceConn()
+	client := pb.NewCommunityServiceClient(conn)
+
+	vars := mux.Vars(r)
+	community_id := vars["id"]
+	if community_id == "" {
+		zap.L().Error("Community id parameter missing")
+		returnErrorResponse(w, "Community id is required")
+		return
+	}
+
+	if !checkRedisData("getcommunity/"+community_id, w) {
+		req := &pb.StringCommunity{}
+
+		req.Value = community_id
+
+		ctx, cancel := createContext()
+		defer cancel()
+
+		resp, err := client.Community_GetCommunityById(ctx, req)
+
+		processCommunityResponseWithPayload[pb.Community](resp, err, w)
+	}
+}
+
+func Community_GetAllCommunities(w http.ResponseWriter, r *http.Request) {
+	conn := getCommunityServiceConn()
+	client := pb.NewCommunityServiceClient(conn)
+
+	req := &pb.StringCommunity{}
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetAllCommunities(ctx, req)
+
+	processCommunityResponseWithPayload[pb.GetCommunitiesResponse](resp, err, w)
+}
+
+func Community_GetUserPendingCommunities(w http.ResponseWriter, r *http.Request) {
+	conn := getCommunityServiceConn()
+	client := pb.NewCommunityServiceClient(conn)
+
+	req := &pb.StringCommunity{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetUserPendingCommunities(ctx, req)
+
+	processCommunityResponseWithPayload[pb.GetCommunitiesResponse](resp, err, w)
 }
