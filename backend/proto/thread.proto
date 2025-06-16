@@ -41,6 +41,8 @@ service ThreadService {
     rpc Thread_GetCommunityMediaThreads (GeneralThreadRequest) returns (ApiResponseThread);
     rpc Thread_GetAdvertisementThreads (GeneralThreadRequest) returns (ApiResponseThread);
 
+    rpc Thread_GetThreadsByHashtag (GeneralThreadRequest) returns (ApiResponseThread);
+
     // Admin Routes
     rpc Admin_DeleteThread (StringThread) returns (ApiResponseThread);
     rpc Admin_AddCategory (StringThread) returns (ApiResponseThread);

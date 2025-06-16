@@ -42,6 +42,7 @@ const (
 	ThreadService_Thread_GetCommunityThreads_FullMethodName      = "/thread.ThreadService/Thread_GetCommunityThreads"
 	ThreadService_Thread_GetCommunityMediaThreads_FullMethodName = "/thread.ThreadService/Thread_GetCommunityMediaThreads"
 	ThreadService_Thread_GetAdvertisementThreads_FullMethodName  = "/thread.ThreadService/Thread_GetAdvertisementThreads"
+	ThreadService_Thread_GetThreadsByHashtag_FullMethodName      = "/thread.ThreadService/Thread_GetThreadsByHashtag"
 	ThreadService_Admin_DeleteThread_FullMethodName              = "/thread.ThreadService/Admin_DeleteThread"
 	ThreadService_Admin_AddCategory_FullMethodName               = "/thread.ThreadService/Admin_AddCategory"
 	ThreadService_Admin_DeleteCategory_FullMethodName            = "/thread.ThreadService/Admin_DeleteCategory"
@@ -75,6 +76,7 @@ type ThreadServiceClient interface {
 	Thread_GetCommunityThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetCommunityMediaThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetAdvertisementThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetThreadsByHashtag(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Admin_AddCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -319,6 +321,16 @@ func (c *threadServiceClient) Thread_GetAdvertisementThreads(ctx context.Context
 	return out, nil
 }
 
+func (c *threadServiceClient) Thread_GetThreadsByHashtag(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Thread_GetThreadsByHashtag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *threadServiceClient) Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
@@ -377,6 +389,7 @@ type ThreadServiceServer interface {
 	Thread_GetCommunityThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_GetCommunityMediaThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_GetAdvertisementThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
+	Thread_GetThreadsByHashtag(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error)
 	Admin_AddCategory(context.Context, *StringThread) (*ApiResponseThread, error)
@@ -459,6 +472,9 @@ func (UnimplementedThreadServiceServer) Thread_GetCommunityMediaThreads(context.
 }
 func (UnimplementedThreadServiceServer) Thread_GetAdvertisementThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetAdvertisementThreads not implemented")
+}
+func (UnimplementedThreadServiceServer) Thread_GetThreadsByHashtag(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetThreadsByHashtag not implemented")
 }
 func (UnimplementedThreadServiceServer) Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteThread not implemented")
@@ -904,6 +920,24 @@ func _ThreadService_Thread_GetAdvertisementThreads_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThreadService_Thread_GetThreadsByHashtag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralThreadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Thread_GetThreadsByHashtag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Thread_GetThreadsByHashtag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Thread_GetThreadsByHashtag(ctx, req.(*GeneralThreadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ThreadService_Admin_DeleteThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringThread)
 	if err := dec(in); err != nil {
@@ -1056,6 +1090,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetAdvertisementThreads",
 			Handler:    _ThreadService_Thread_GetAdvertisementThreads_Handler,
+		},
+		{
+			MethodName: "Thread_GetThreadsByHashtag",
+			Handler:    _ThreadService_Thread_GetThreadsByHashtag_Handler,
 		},
 		{
 			MethodName: "Admin_DeleteThread",

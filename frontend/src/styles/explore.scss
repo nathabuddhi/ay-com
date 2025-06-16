@@ -218,3 +218,32 @@
     z-index: 10;
     overflow: hidden;
 }
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .hashtag-list {
+        display: flex;
+        justify-content: space-evenly;
+
+        .hashtag-btn {
+            color: var(--primary);
+            background-color: var(--background);
+            border: none;
+        }
+
+        .hashtag-btn:hover {
+            text-decoration: underline;
+        }
+
+        .hashtag-btn.selected {
+            color: black;
+            background-color: var(--primary);
+            text-decoration: underline;
+            border-radius: 10px;
+            padding: 5px;
+        }
+    }
+}

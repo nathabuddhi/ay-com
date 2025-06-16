@@ -557,7 +557,7 @@ func (h *Handler) Thread_GetTrendingHashtags(ctx context.Context, req *pb.String
 		return stats[i].Count > stats[j].Count
 	})
 
-	topN := 5
+	topN := 10
 	if len(stats) < topN {
 		topN = len(stats)
 	}
@@ -581,7 +581,7 @@ func (h *Handler) Thread_GetTrendingHashtags(ctx context.Context, req *pb.String
 
 	return &pb.ApiResponseThread{
 		Success: true,
-		Message: "Top 5 trending hashtags fetched successfully.",
+		Message: "Top 10 trending hashtags fetched successfully.",
 		Data:    data,
 	}, nil
 }
@@ -755,6 +755,57 @@ func (h *Handler) Thread_GetCommunityThreads(ctx context.Context, req *pb.Genera
 	return &pb.ApiResponseThread{
 		Success: true,
 		Message: "Get advertisement threads successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handler) Thread_GetThreadByhashtag(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Getting threads by hashtag", zap.String("hashtag", req.ThreadId))
+
+	if req.ThreadId == "" {
+		return &pb.ApiResponseThread{Success: false, Message: "Invalid request parameters."}, nil
+	}
+
+	var threads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("content LIKE ?", "%#"+req.ThreadId+"%").
+		Order("created_at desc").
+		Find(&threads).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: true, Message: "No threads found."}, nil
+		}
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	getAllThreadResponse := &pb.GetThreadsResponse{
+		Threads: make([]*pb.Thread, len(threads)),
+	}
+
+	for i, request := range threads {
+		threadResponse, err := h.processThreadResponse(ctx, request, req.UserId)
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: err.Error(),
+			}, nil
+		}
+		getAllThreadResponse.Threads[i] = &threadResponse
+	}
+
+	returnData, err := anypb.New(getAllThreadResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get threads by hashtag successful.",
 		Data:    returnData,
 	}, nil
 }

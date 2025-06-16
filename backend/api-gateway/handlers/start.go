@@ -151,6 +151,8 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getcommunitythreads", Thread_GetCommunityThreads).Methods("POST")
 	secured.HandleFunc("/thread/getcommunitymediathreads", Thread_GetCommunityMediaThreads).Methods("POST")
 	secured.HandleFunc("/thread/getadvertisementthreads", Thread_GetAdvertisementThreads).Methods("POST")
+
+	secured.HandleFunc("/thread/getthreadsbyhashtag", Thread_GetThreadByhashtag).Methods("POST")
 }
 
 func InitSecuredCommunityRoutes(secured *mux.Router) {
