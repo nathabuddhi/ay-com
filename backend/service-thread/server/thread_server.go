@@ -103,6 +103,10 @@ func (s *ThreadServer) Thread_GetAdvertisementThreads(ctx context.Context, req *
 	return s.Handler.Thread_GetAdvertisementThreads(ctx, req)
 }
 
+func (s *ThreadServer) Thread_GetCommunityMediaThreads(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetCommunityMediaThreads(ctx, req)
+}
+
 func (s *ThreadServer) Thread_GetCommunityThreads(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
 	return s.Handler.Thread_GetCommunityThreads(ctx, req)
 }

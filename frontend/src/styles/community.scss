@@ -640,6 +640,7 @@ button {
     overflow: hidden;
     min-width: 100%;
     max-width: 100%;
+    box-shadow: 0 0.5px 1px var(--primary-hover);
 
     .logo {
         img {

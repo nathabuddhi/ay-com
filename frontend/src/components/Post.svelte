@@ -322,11 +322,11 @@
     {#if post.is_advertisement}
         <p class="repost-text">Advertisement Thread</p>
     {/if}
-    {#if post.community_id && post.community_id !== "" && community}
+    {#if post.community_id && post.community_id !== "" && community && !window.location.pathname.includes("community")}
         <p class="repost-text">
-            Post from <a href={"/community/" + community.community_id}
-                >{community.community_name}</a
-            >
+            Post from <a href={"/community/" + community.community_id}>
+                {community.community_name}
+            </a>
         </p>
     {/if}
     <article class="post">

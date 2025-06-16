@@ -4,16 +4,15 @@
     import {
         getCommunityById,
         getCommunityMembers,
-        // getCommunityThreads,
         // getCommunityMedia,
         sendJoinRequest,
         acceptJoinRequest,
         declineJoinRequest,
         promoteMember,
         demoteModerator,
-        getPendingJoinCommunities,
         getCommunityJoinRequests,
     } from "../controllers/community-controller";
+    import { getCommunityThreads } from "../controllers/thread-controller";
     import Post from "../components/Post.svelte";
     import MembersModal from "../components/MembersModal.svelte";
     import {
@@ -94,6 +93,36 @@
         }
     }
 
+    async function loadThreads() {
+        if (!community) return;
+
+        const response = await getCommunityThreads(community.community_id);
+        if (response.success && response.payload) {
+            latestThreads = response.payload.threads;
+            topThreads = response.payload.threads
+                .sort((a, b) => (b.like_count ?? 0) - (a.like_count ?? 0))
+                .slice(0, 3);
+        } else {
+            addToast("error", response.message || "Failed to load threads.");
+        }
+    }
+
+    async function loadMedia() {
+        if (!community) return;
+
+        const response = await getCommunityThreads(community.community_id);
+        if (response.success && response.payload) {
+            mediaThreads = response.payload.threads.filter(
+                (thread) => thread.media && thread.media.length > 0
+            );
+        } else {
+            addToast(
+                "error",
+                response.message || "Failed to load media threads."
+            );
+        }
+    }
+
     async function loadTabData() {
         if (!community) return;
 
@@ -106,35 +135,16 @@
                         .sort((a, b) => (b.followers ?? 0) - (a.followers ?? 0))
                         .slice(0, 3);
 
-                    // const topThreadsRes = await getCommunityThreads(
-                    //     community.community_id,
-                    //     "top"
-                    // );
-
-                    // if (topThreadsRes.success && topThreadsRes.payload) {
-                    //     topThreads = topThreadsRes.payload.threads;
-                    // } else {
-                    //     addToast(
-                    //         "error",
-                    //         "Failed to load top threads",
-                    //         "Error"
-                    //     );
-                    //     topThreads = [];
-                    // }
+                    loadThreads();
 
                     break;
 
                 case "latest":
-                // latestThreads = await getCommunityThreads(
-                //     community.community_id,
-                //     "latest"
-                // );
-                // break;
+                    loadThreads();
+                    break;
 
                 case "media":
-                    // mediaThreads = await getCommunityMedia(
-                    //     community.community_id
-                    // );
+                    loadMedia();
                     break;
 
                 case "manage":
@@ -614,4 +624,5 @@
 <!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/community.scss";
+    @use "../styles/profile.scss";
 </style>

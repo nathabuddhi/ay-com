@@ -475,6 +475,51 @@ func (h *Handler) Thread_GetUserMediaThreads(ctx context.Context, req *pb.UserTo
 	}, nil
 }
 
+func (h *Handler) Thread_GetCommunityMediaThreads(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	var threads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Where("community_id = ? AND has_media = ?", req.ThreadId, true).
+		Order("created_at desc").
+		Find(&threads).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: true, Message: "No threads found."}, nil
+		}
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	getAllThreadResponse := &pb.GetThreadsResponse{
+		Threads: make([]*pb.Thread, len(threads)),
+	}
+
+	for i, request := range threads {
+		threadResponse, err := h.processThreadResponse(ctx, request, req.UserId)
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: err.Error(),
+			}, nil
+		}
+		getAllThreadResponse.Threads[i] = &threadResponse
+	}
+
+	returnData, err := anypb.New(getAllThreadResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get threads successful.",
+		Data:    returnData,
+	}, nil
+}
+
 func (h *Handler) Thread_GetTrendingHashtags(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	zap.L().Info("Getting trending hashtags")
 
