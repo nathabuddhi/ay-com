@@ -312,6 +312,63 @@ type userWithDistance struct {
 	distance int
 }
 
+func (h *Handlers) User_GetAllPublicUsers(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("User Fetching All Public Users")
+
+	var users []models.User
+	if err := h.DB.Where("is_deactivated = ? AND is_banned = ? AND is_private = ?", false, false, false).Find(&users).Error; err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Error fetching users: " + err.Error(),
+		}, nil
+	}
+
+	var result []*pb.UserProfile
+
+	for _, user := range users {
+		bio := safeString(user.Bio)
+		followers, err := h.GetFollowers(user.UserId)
+		following, err2 := h.GetFollowing(user.UserId)
+		if err != nil {
+			followers = 0
+		} else if err2 != nil {
+			following = 0
+		}
+		result = append(result, &pb.UserProfile{
+			UserId:      user.UserId,
+			Username:    user.Username,
+			Name:        user.Name,
+			Bio:         bio,
+			IsVerified:  user.IsVerified,
+			Gender:      user.Gender,
+			DateOfBirth: user.DateOfBirth.Format("2006-01-02"),
+			Email:       user.Email,
+			JoinDate:    user.JoinedAt.Format("2006-01-02"),
+			Followers:   int32(followers),
+			Following:   int32(following),
+		})
+	}
+
+	resp := &pb.SearchPeopleResponse{
+		Users: result,
+	}
+
+	returnData, err := anypb.New(resp)
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "All Public Users fetched successfully.",
+		Data:    returnData,
+	}, nil
+}
+
 func (h *Handlers) User_SearchUser(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
 	zap.L().Info("User Searching", zap.String("query", req.Value))
 

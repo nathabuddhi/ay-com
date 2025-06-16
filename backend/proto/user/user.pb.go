@@ -2863,7 +2863,7 @@ const file_user_proto_rawDesc = "" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12!\n" +
 	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\"?\n" +
 	"\x14SearchPeopleResponse\x12'\n" +
-	"\x05users\x18\x01 \x03(\v2\x11.user.UserProfileR\x05users2\xbc\x16\n" +
+	"\x05users\x18\x01 \x03(\v2\x11.user.UserProfileR\x05users2\xff\x16\n" +
 	"\vUserService\x12=\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x15.user.ApiResponseUser\x127\n" +
 	"\n" +
@@ -2874,7 +2874,8 @@ const file_user_proto_rawDesc = "" +
 	"\x1bUser_ValidateSecurityAnswer\x12#.user.ValidateSecurityAnswerRequest\x1a\x15.user.ApiResponseUser\x12G\n" +
 	"\x12User_ResetPassword\x12\x1a.user.ResetPasswordRequest\x1a\x15.user.ApiResponseUser\x12H\n" +
 	"\x1dUser_GetFollowRecommendations\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12A\n" +
-	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12@\n" +
+	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12A\n" +
+	"\x16User_GetAllPublicUsers\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12@\n" +
 	"\x0eUser_GetUserId\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12I\n" +
 	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x15.user.ApiResponseUser\x12K\n" +
 	"\x12User_UpdateProfile\x12\x1e.user.UpdateUserProfileRequest\x1a\x15.user.ApiResponseUser\x12>\n" +
@@ -2986,79 +2987,81 @@ var file_user_proto_depIdxs = []int32{
 	19, // 14: user.UserService.User_ResetPassword:input_type -> user.ResetPasswordRequest
 	8,  // 15: user.UserService.User_GetFollowRecommendations:input_type -> user.StringUser
 	12, // 16: user.UserService.User_GetProfile:input_type -> user.GetProfileRequest
-	12, // 17: user.UserService.User_GetUserId:input_type -> user.GetProfileRequest
-	17, // 18: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
-	37, // 19: user.UserService.User_UpdateProfile:input_type -> user.UpdateUserProfileRequest
-	8,  // 20: user.UserService.User_GetSelfProfile:input_type -> user.StringUser
-	21, // 21: user.UserService.User_FollowUser:input_type -> user.FollowUserRequest
-	22, // 22: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
-	23, // 23: user.UserService.User_UnFollowUser:input_type -> user.UnFollowUserRequest
-	24, // 24: user.UserService.User_UnBlockUser:input_type -> user.UnBlockUserRequest
-	25, // 25: user.UserService.User_GetSettings:input_type -> user.GetSettingsRequest
-	26, // 26: user.UserService.User_UpdateSettings:input_type -> user.UpdateSettingsRequest
-	28, // 27: user.UserService.User_DeactivateAccount:input_type -> user.DeactivateAccountRequest
-	33, // 28: user.UserService.User_GetAllFollowers:input_type -> user.GetAllFollowersRequest
-	34, // 29: user.UserService.User_GetAllFollowing:input_type -> user.GetAllFollowingRequest
-	8,  // 30: user.UserService.User_GetAllBlocked:input_type -> user.StringUser
-	29, // 31: user.UserService.User_SubmitVerifyAccountRequest:input_type -> user.SubmitVerifyAccountRequest
-	31, // 32: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
-	38, // 33: user.UserService.User_IsUserPrivate:input_type -> user.IsAccountPrivateRequest
-	39, // 34: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
-	8,  // 35: user.UserService.User_RefreshToken:input_type -> user.StringUser
-	1,  // 36: user.UserService.User_SendReport:input_type -> user.CreateReportRequest
-	8,  // 37: user.UserService.User_SearchUser:input_type -> user.StringUser
-	8,  // 38: user.UserService.Admin_IsUserAdmin:input_type -> user.StringUser
-	8,  // 39: user.UserService.Admin_GetAllVerifyAccountRequest:input_type -> user.StringUser
-	8,  // 40: user.UserService.Admin_ApprovePremiumRequest:input_type -> user.StringUser
-	10, // 41: user.UserService.Admin_RejectPremiumRequest:input_type -> user.RejectPremiumRequest
-	8,  // 42: user.UserService.Admin_GetAllUsers:input_type -> user.StringUser
-	8,  // 43: user.UserService.Admin_ToggleUserBan:input_type -> user.StringUser
-	2,  // 44: user.UserService.Admin_SendNewsLetter:input_type -> user.SendNewsLetterRequest
-	8,  // 45: user.UserService.Admin_GetAllReports:input_type -> user.StringUser
-	8,  // 46: user.UserService.Admin_ApproveReport:input_type -> user.StringUser
-	8,  // 47: user.UserService.Admin_RejectReport:input_type -> user.StringUser
-	0,  // 48: user.UserService.User_Register:output_type -> user.ApiResponseUser
-	0,  // 49: user.UserService.User_Login:output_type -> user.ApiResponseUser
-	0,  // 50: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 51: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 52: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
-	0,  // 53: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
-	0,  // 54: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
-	0,  // 55: user.UserService.User_GetFollowRecommendations:output_type -> user.ApiResponseUser
-	0,  // 56: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
-	0,  // 57: user.UserService.User_GetUserId:output_type -> user.ApiResponseUser
-	0,  // 58: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
-	0,  // 59: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
-	0,  // 60: user.UserService.User_GetSelfProfile:output_type -> user.ApiResponseUser
-	0,  // 61: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
-	0,  // 62: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
-	0,  // 63: user.UserService.User_UnFollowUser:output_type -> user.ApiResponseUser
-	0,  // 64: user.UserService.User_UnBlockUser:output_type -> user.ApiResponseUser
-	0,  // 65: user.UserService.User_GetSettings:output_type -> user.ApiResponseUser
-	0,  // 66: user.UserService.User_UpdateSettings:output_type -> user.ApiResponseUser
-	0,  // 67: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponseUser
-	0,  // 68: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponseUser
-	0,  // 69: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponseUser
-	0,  // 70: user.UserService.User_GetAllBlocked:output_type -> user.ApiResponseUser
-	0,  // 71: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponseUser
-	0,  // 72: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
-	9,  // 73: user.UserService.User_IsUserPrivate:output_type -> user.BoolUser
-	9,  // 74: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
-	0,  // 75: user.UserService.User_RefreshToken:output_type -> user.ApiResponseUser
-	0,  // 76: user.UserService.User_SendReport:output_type -> user.ApiResponseUser
-	0,  // 77: user.UserService.User_SearchUser:output_type -> user.ApiResponseUser
-	9,  // 78: user.UserService.Admin_IsUserAdmin:output_type -> user.BoolUser
-	0,  // 79: user.UserService.Admin_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
-	0,  // 80: user.UserService.Admin_ApprovePremiumRequest:output_type -> user.ApiResponseUser
-	0,  // 81: user.UserService.Admin_RejectPremiumRequest:output_type -> user.ApiResponseUser
-	0,  // 82: user.UserService.Admin_GetAllUsers:output_type -> user.ApiResponseUser
-	0,  // 83: user.UserService.Admin_ToggleUserBan:output_type -> user.ApiResponseUser
-	0,  // 84: user.UserService.Admin_SendNewsLetter:output_type -> user.ApiResponseUser
-	0,  // 85: user.UserService.Admin_GetAllReports:output_type -> user.ApiResponseUser
-	0,  // 86: user.UserService.Admin_ApproveReport:output_type -> user.ApiResponseUser
-	0,  // 87: user.UserService.Admin_RejectReport:output_type -> user.ApiResponseUser
-	48, // [48:88] is the sub-list for method output_type
-	8,  // [8:48] is the sub-list for method input_type
+	8,  // 17: user.UserService.User_GetAllPublicUsers:input_type -> user.StringUser
+	12, // 18: user.UserService.User_GetUserId:input_type -> user.GetProfileRequest
+	17, // 19: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
+	37, // 20: user.UserService.User_UpdateProfile:input_type -> user.UpdateUserProfileRequest
+	8,  // 21: user.UserService.User_GetSelfProfile:input_type -> user.StringUser
+	21, // 22: user.UserService.User_FollowUser:input_type -> user.FollowUserRequest
+	22, // 23: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
+	23, // 24: user.UserService.User_UnFollowUser:input_type -> user.UnFollowUserRequest
+	24, // 25: user.UserService.User_UnBlockUser:input_type -> user.UnBlockUserRequest
+	25, // 26: user.UserService.User_GetSettings:input_type -> user.GetSettingsRequest
+	26, // 27: user.UserService.User_UpdateSettings:input_type -> user.UpdateSettingsRequest
+	28, // 28: user.UserService.User_DeactivateAccount:input_type -> user.DeactivateAccountRequest
+	33, // 29: user.UserService.User_GetAllFollowers:input_type -> user.GetAllFollowersRequest
+	34, // 30: user.UserService.User_GetAllFollowing:input_type -> user.GetAllFollowingRequest
+	8,  // 31: user.UserService.User_GetAllBlocked:input_type -> user.StringUser
+	29, // 32: user.UserService.User_SubmitVerifyAccountRequest:input_type -> user.SubmitVerifyAccountRequest
+	31, // 33: user.UserService.User_GetAllVerifyAccountRequest:input_type -> user.GetAllVerifyAccountRequest
+	38, // 34: user.UserService.User_IsUserPrivate:input_type -> user.IsAccountPrivateRequest
+	39, // 35: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
+	8,  // 36: user.UserService.User_RefreshToken:input_type -> user.StringUser
+	1,  // 37: user.UserService.User_SendReport:input_type -> user.CreateReportRequest
+	8,  // 38: user.UserService.User_SearchUser:input_type -> user.StringUser
+	8,  // 39: user.UserService.Admin_IsUserAdmin:input_type -> user.StringUser
+	8,  // 40: user.UserService.Admin_GetAllVerifyAccountRequest:input_type -> user.StringUser
+	8,  // 41: user.UserService.Admin_ApprovePremiumRequest:input_type -> user.StringUser
+	10, // 42: user.UserService.Admin_RejectPremiumRequest:input_type -> user.RejectPremiumRequest
+	8,  // 43: user.UserService.Admin_GetAllUsers:input_type -> user.StringUser
+	8,  // 44: user.UserService.Admin_ToggleUserBan:input_type -> user.StringUser
+	2,  // 45: user.UserService.Admin_SendNewsLetter:input_type -> user.SendNewsLetterRequest
+	8,  // 46: user.UserService.Admin_GetAllReports:input_type -> user.StringUser
+	8,  // 47: user.UserService.Admin_ApproveReport:input_type -> user.StringUser
+	8,  // 48: user.UserService.Admin_RejectReport:input_type -> user.StringUser
+	0,  // 49: user.UserService.User_Register:output_type -> user.ApiResponseUser
+	0,  // 50: user.UserService.User_Login:output_type -> user.ApiResponseUser
+	0,  // 51: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 52: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 53: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
+	0,  // 54: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
+	0,  // 55: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
+	0,  // 56: user.UserService.User_GetFollowRecommendations:output_type -> user.ApiResponseUser
+	0,  // 57: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
+	0,  // 58: user.UserService.User_GetAllPublicUsers:output_type -> user.ApiResponseUser
+	0,  // 59: user.UserService.User_GetUserId:output_type -> user.ApiResponseUser
+	0,  // 60: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
+	0,  // 61: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
+	0,  // 62: user.UserService.User_GetSelfProfile:output_type -> user.ApiResponseUser
+	0,  // 63: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
+	0,  // 64: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
+	0,  // 65: user.UserService.User_UnFollowUser:output_type -> user.ApiResponseUser
+	0,  // 66: user.UserService.User_UnBlockUser:output_type -> user.ApiResponseUser
+	0,  // 67: user.UserService.User_GetSettings:output_type -> user.ApiResponseUser
+	0,  // 68: user.UserService.User_UpdateSettings:output_type -> user.ApiResponseUser
+	0,  // 69: user.UserService.User_DeactivateAccount:output_type -> user.ApiResponseUser
+	0,  // 70: user.UserService.User_GetAllFollowers:output_type -> user.ApiResponseUser
+	0,  // 71: user.UserService.User_GetAllFollowing:output_type -> user.ApiResponseUser
+	0,  // 72: user.UserService.User_GetAllBlocked:output_type -> user.ApiResponseUser
+	0,  // 73: user.UserService.User_SubmitVerifyAccountRequest:output_type -> user.ApiResponseUser
+	0,  // 74: user.UserService.User_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
+	9,  // 75: user.UserService.User_IsUserPrivate:output_type -> user.BoolUser
+	9,  // 76: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
+	0,  // 77: user.UserService.User_RefreshToken:output_type -> user.ApiResponseUser
+	0,  // 78: user.UserService.User_SendReport:output_type -> user.ApiResponseUser
+	0,  // 79: user.UserService.User_SearchUser:output_type -> user.ApiResponseUser
+	9,  // 80: user.UserService.Admin_IsUserAdmin:output_type -> user.BoolUser
+	0,  // 81: user.UserService.Admin_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
+	0,  // 82: user.UserService.Admin_ApprovePremiumRequest:output_type -> user.ApiResponseUser
+	0,  // 83: user.UserService.Admin_RejectPremiumRequest:output_type -> user.ApiResponseUser
+	0,  // 84: user.UserService.Admin_GetAllUsers:output_type -> user.ApiResponseUser
+	0,  // 85: user.UserService.Admin_ToggleUserBan:output_type -> user.ApiResponseUser
+	0,  // 86: user.UserService.Admin_SendNewsLetter:output_type -> user.ApiResponseUser
+	0,  // 87: user.UserService.Admin_GetAllReports:output_type -> user.ApiResponseUser
+	0,  // 88: user.UserService.Admin_ApproveReport:output_type -> user.ApiResponseUser
+	0,  // 89: user.UserService.Admin_RejectReport:output_type -> user.ApiResponseUser
+	49, // [49:90] is the sub-list for method output_type
+	8,  // [8:49] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name

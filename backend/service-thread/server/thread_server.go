@@ -115,6 +115,10 @@ func (s *ThreadServer) Thread_GetThreadsByHashtag(ctx context.Context, req *pb.G
 	return s.Handler.Thread_GetThreadByhashtag(ctx, req)
 }
 
+func (s *ThreadServer) Thread_SearchThread(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_SearchThread(ctx, req)
+}
+
 // ADMIN
 func (s *ThreadServer) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Admin_DeleteThread(ctx, req)

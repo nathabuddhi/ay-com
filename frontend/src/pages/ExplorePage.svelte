@@ -5,10 +5,17 @@
     import type { UserProfile } from "../types/user";
     import type { Community } from "../types/community";
     import {
+        getThreadsByContent,
         getThreadsByHashtag,
         getTrendingTags,
     } from "../controllers/thread-controller";
     import Post from "../components/Post.svelte";
+    import {
+        getAllPublicUsers,
+        searchUsers,
+    } from "../controllers/user-controller";
+    import { AVATAR_IMG } from "../env_var";
+    import SimpleMemberCard from "../components/SimpleMemberCard.svelte";
 
     let tabs = $state<string[]>([""]);
     let activeTab = $state("Top");
@@ -42,6 +49,28 @@
             hashtags = hashTagResponse.payload.hashtags;
         } else {
             hashtags = [];
+        }
+
+        const allUsersResponse = await getAllPublicUsers();
+
+        if (allUsersResponse.success && allUsersResponse.payload) {
+            allUsers = allUsersResponse.payload.users;
+        } else {
+            allUsers = [];
+        }
+
+        const topUsersResponse = await searchUsers(query);
+        if (topUsersResponse.success && topUsersResponse.payload) {
+            topUsers = topUsersResponse.payload.users.slice(0, 3);
+        } else {
+            topUsers = [];
+        }
+
+        const topThreadResponse = await getThreadsByContent(query);
+        if (topThreadResponse.success && topThreadResponse.payload) {
+            topPosts = topThreadResponse.payload.threads;
+        } else {
+            topPosts = [];
         }
     }
 
@@ -119,7 +148,28 @@
                 {/if}
             {/if}
         {:else if activeTab === "Top"}
-            <p>Top content goes here...</p>
+            <div class="top-section">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center;"
+                >
+                    <h2>Top Members</h2>
+                    <button
+                        class="standard-button"
+                        onclick={() => setActiveTab("People")}>All Users</button
+                    >
+                </div>
+                <ul class="top-users">
+                    {#each topUsers as user}
+                        <SimpleMemberCard {user} />
+                    {/each}
+                </ul>
+                <h2>Top Threads</h2>
+                <ul class="top-posts">
+                    {#each topPosts as post}
+                        <Post {post} />
+                    {/each}
+                </ul>
+            </div>
         {:else if activeTab === "Latest"}
             <p>Latest content goes here...</p>
         {:else if activeTab === "People"}

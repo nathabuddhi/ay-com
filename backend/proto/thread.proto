@@ -21,6 +21,7 @@ service ThreadService {
     rpc Thread_TogglePinThread (GeneralThreadRequest) returns (ApiResponseThread);
     
     rpc Thread_VoteThread (SubmitVote) returns (ApiResponseThread);
+    rpc Thread_SearchThread (GeneralThreadRequest) returns (ApiResponseThread);
     
     rpc Thread_ToggleLike (GeneralThreadRequest) returns (ApiResponseThread);
     

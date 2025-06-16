@@ -654,6 +654,18 @@ func Thread_GetThreadByhashtag(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Thread_GetThreadsByHashtag(ctx, req)
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
+func Thread_SearchThread(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetThreadByhashtag) is called.")
+
+	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_SearchThread(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
 
 func Thread_GetThreadCategories(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (GetCategories) is called.")

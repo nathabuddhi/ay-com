@@ -593,3 +593,23 @@ export async function searchUsers(
         return returnDefaultError<GetProfilesResponse>(error);
     }
 }
+
+export async function getAllPublicUsers(): Promise<
+    ApiResponse<GetProfilesResponse>
+> {
+    try {
+        const response = await fetch(`${API_URL}/user/getall`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({}),
+        });
+        const data: ApiResponse<GetProfilesResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<GetProfilesResponse>(error);
+    }
+}

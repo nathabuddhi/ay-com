@@ -839,3 +839,17 @@ func User_ReportUser(w http.ResponseWriter, r *http.Request) {
 
 	processUserResponseWithPayload[pb.AllBlockedUserResponse](resp, err, w)
 }
+
+func User_GetAllPublicUsers(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User User_GetAllPublicUsers is called.")
+
+	req, client := processUserRequest[pb.StringUser](r, w)
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.User_GetAllPublicUsers(ctx, req)
+
+	processUserResponseWithPayload[pb.SearchPeopleResponse](resp, err, w)
+}

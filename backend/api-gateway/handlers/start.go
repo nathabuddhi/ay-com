@@ -106,6 +106,7 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getfollowrecommendations", User_GetFollowRecommendations).Methods("GET")
 	secured.HandleFunc("/user/report", User_ReportUser).Methods("POST")
 	secured.HandleFunc("/user/search", User_SearchUser).Methods("POST")
+	secured.HandleFunc("/user/getall", User_GetAllPublicUsers).Methods("POST")
 }
 
 func InitSecuredNotificationRoutes(secured *mux.Router) {
@@ -129,12 +130,12 @@ func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/create", Thread_CreateThread).Methods("POST")
 	secured.HandleFunc("/thread/get/{id}", Thread_GetThreadById).Methods("GET")
 
-	secured.HandleFunc("/thread/search", Thread_SearchThreads).Methods("POST")
 	secured.HandleFunc("/thread/delete", Thread_DeleteThread).Methods("DELETE")
 
 	secured.HandleFunc("/thread/pinthread", Thread_TogglePinThread).Methods("POST")
 
 	secured.HandleFunc("/thread/vote", Thread_VoteThread).Methods("POST")
+	secured.HandleFunc("/thread/search", Thread_SearchThread).Methods("POST")
 
 	secured.HandleFunc("/thread/togglelike", Thread_ToggleLike).Methods("POST")
 	secured.HandleFunc("/thread/togglebookmark", Thread_ToggleBookmark).Methods("POST")

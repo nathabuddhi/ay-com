@@ -138,6 +138,10 @@ func (s *UserServer) User_SearchUser(ctx context.Context, req *pb.StringUser) (*
 	return s.Handlers.User_SearchUser(ctx, req)
 }
 
+func (s *UserServer) User_GetAllPublicUsers(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_GetAllPublicUsers(ctx, req)
+}
+
 // ADMIN======================
 func (s *UserServer) Admin_IsUserAdmin(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
 	return s.Handlers.Admin_IsUserAdmin(ctx, req)
