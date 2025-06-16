@@ -23,6 +23,7 @@ const (
 	ThreadService_Thread_GetThreadCategories_FullMethodName      = "/thread.ThreadService/Thread_GetThreadCategories"
 	ThreadService_Thread_GetAllThreads_FullMethodName            = "/thread.ThreadService/Thread_GetAllThreads"
 	ThreadService_Thread_GetFollowingThreads_FullMethodName      = "/thread.ThreadService/Thread_GetFollowingThreads"
+	ThreadService_Thread_GetLatestThreads_FullMethodName         = "/thread.ThreadService/Thread_GetLatestThreads"
 	ThreadService_Thread_GetThreadById_FullMethodName            = "/thread.ThreadService/Thread_GetThreadById"
 	ThreadService_Thread_SearchThreads_FullMethodName            = "/thread.ThreadService/Thread_SearchThreads"
 	ThreadService_Thread_DeleteThread_FullMethodName             = "/thread.ThreadService/Thread_DeleteThread"
@@ -58,6 +59,7 @@ type ThreadServiceClient interface {
 	// Protected Routes
 	Thread_GetAllThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(ctx context.Context, in *GetFollowingThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetLatestThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetThreadById(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_SearchThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_DeleteThread(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -127,6 +129,16 @@ func (c *threadServiceClient) Thread_GetFollowingThreads(ctx context.Context, in
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
 	err := c.cc.Invoke(ctx, ThreadService_Thread_GetFollowingThreads_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *threadServiceClient) Thread_GetLatestThreads(ctx context.Context, in *GetAllThreadsRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Thread_GetLatestThreads_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -382,6 +394,7 @@ type ThreadServiceServer interface {
 	// Protected Routes
 	Thread_GetAllThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_GetFollowingThreads(context.Context, *GetFollowingThreadRequest) (*ApiResponseThread, error)
+	Thread_GetLatestThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	Thread_SearchThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error)
 	Thread_DeleteThread(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
@@ -428,6 +441,9 @@ func (UnimplementedThreadServiceServer) Thread_GetAllThreads(context.Context, *G
 }
 func (UnimplementedThreadServiceServer) Thread_GetFollowingThreads(context.Context, *GetFollowingThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetFollowingThreads not implemented")
+}
+func (UnimplementedThreadServiceServer) Thread_GetLatestThreads(context.Context, *GetAllThreadsRequest) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetLatestThreads not implemented")
 }
 func (UnimplementedThreadServiceServer) Thread_GetThreadById(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetThreadById not implemented")
@@ -590,6 +606,24 @@ func _ThreadService_Thread_GetFollowingThreads_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ThreadServiceServer).Thread_GetFollowingThreads(ctx, req.(*GetFollowingThreadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThreadService_Thread_GetLatestThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllThreadsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Thread_GetLatestThreads(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Thread_GetLatestThreads_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Thread_GetLatestThreads(ctx, req.(*GetAllThreadsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1048,6 +1082,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetFollowingThreads",
 			Handler:    _ThreadService_Thread_GetFollowingThreads_Handler,
+		},
+		{
+			MethodName: "Thread_GetLatestThreads",
+			Handler:    _ThreadService_Thread_GetLatestThreads_Handler,
 		},
 		{
 			MethodName: "Thread_GetThreadById",

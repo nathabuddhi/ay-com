@@ -1541,12 +1541,13 @@ const file_thread_proto_rawDesc = "" +
 	"\rRepostRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text2\xc9\x11\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text2\x9d\x12\n" +
 	"\rThreadService\x12M\n" +
 	"\x1aThread_GetTrendingHashtags\x12\x14.thread.StringThread\x1a\x19.thread.ApiResponseThread\x12L\n" +
 	"\x1aThread_GetThreadCategories\x12\x14.thread.StringThread\x1a\x18.thread.ThreadCategories\x12O\n" +
 	"\x14Thread_GetAllThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12Z\n" +
-	"\x1aThread_GetFollowingThreads\x12!.thread.GetFollowingThreadRequest\x1a\x19.thread.ApiResponseThread\x12O\n" +
+	"\x1aThread_GetFollowingThreads\x12!.thread.GetFollowingThreadRequest\x1a\x19.thread.ApiResponseThread\x12R\n" +
+	"\x17Thread_GetLatestThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12O\n" +
 	"\x14Thread_GetThreadById\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12O\n" +
 	"\x14Thread_SearchThreads\x12\x1c.thread.GetAllThreadsRequest\x1a\x19.thread.ApiResponseThread\x12N\n" +
 	"\x13Thread_DeleteThread\x12\x1c.thread.GeneralThreadRequest\x1a\x19.thread.ApiResponseThread\x12D\n" +
@@ -1622,60 +1623,62 @@ var file_thread_proto_depIdxs = []int32{
 	7,  // 8: thread.ThreadService.Thread_GetThreadCategories:input_type -> thread.StringThread
 	16, // 9: thread.ThreadService.Thread_GetAllThreads:input_type -> thread.GetAllThreadsRequest
 	6,  // 10: thread.ThreadService.Thread_GetFollowingThreads:input_type -> thread.GetFollowingThreadRequest
-	9,  // 11: thread.ThreadService.Thread_GetThreadById:input_type -> thread.GeneralThreadRequest
-	16, // 12: thread.ThreadService.Thread_SearchThreads:input_type -> thread.GetAllThreadsRequest
-	9,  // 13: thread.ThreadService.Thread_DeleteThread:input_type -> thread.GeneralThreadRequest
-	19, // 14: thread.ThreadService.Thread_CreateThread:input_type -> thread.PostThread
-	9,  // 15: thread.ThreadService.Thread_TogglePinThread:input_type -> thread.GeneralThreadRequest
-	8,  // 16: thread.ThreadService.Thread_VoteThread:input_type -> thread.SubmitVote
-	9,  // 17: thread.ThreadService.Thread_SearchThread:input_type -> thread.GeneralThreadRequest
-	9,  // 18: thread.ThreadService.Thread_ToggleLike:input_type -> thread.GeneralThreadRequest
-	9,  // 19: thread.ThreadService.Thread_ToggleBookmark:input_type -> thread.GeneralThreadRequest
-	21, // 20: thread.ThreadService.Thread_ToggleRepost:input_type -> thread.RepostRequest
-	7,  // 21: thread.ThreadService.Thread_GetBookmarkedThreads:input_type -> thread.StringThread
-	7,  // 22: thread.ThreadService.Thread_GetRepostedThreads:input_type -> thread.StringThread
-	10, // 23: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.UserToUserRequest
-	7,  // 24: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.StringThread
-	10, // 25: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.UserToUserRequest
-	10, // 26: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.UserToUserRequest
-	7,  // 27: thread.ThreadService.Thread_GetReplyPermission:input_type -> thread.StringThread
-	9,  // 28: thread.ThreadService.Thread_GetCommunityThreads:input_type -> thread.GeneralThreadRequest
-	9,  // 29: thread.ThreadService.Thread_GetCommunityMediaThreads:input_type -> thread.GeneralThreadRequest
-	9,  // 30: thread.ThreadService.Thread_GetAdvertisementThreads:input_type -> thread.GeneralThreadRequest
-	9,  // 31: thread.ThreadService.Thread_GetThreadsByHashtag:input_type -> thread.GeneralThreadRequest
-	7,  // 32: thread.ThreadService.Admin_DeleteThread:input_type -> thread.StringThread
-	7,  // 33: thread.ThreadService.Admin_AddCategory:input_type -> thread.StringThread
-	7,  // 34: thread.ThreadService.Admin_DeleteCategory:input_type -> thread.StringThread
-	0,  // 35: thread.ThreadService.Thread_GetTrendingHashtags:output_type -> thread.ApiResponseThread
-	1,  // 36: thread.ThreadService.Thread_GetThreadCategories:output_type -> thread.ThreadCategories
-	0,  // 37: thread.ThreadService.Thread_GetAllThreads:output_type -> thread.ApiResponseThread
-	0,  // 38: thread.ThreadService.Thread_GetFollowingThreads:output_type -> thread.ApiResponseThread
-	0,  // 39: thread.ThreadService.Thread_GetThreadById:output_type -> thread.ApiResponseThread
-	0,  // 40: thread.ThreadService.Thread_SearchThreads:output_type -> thread.ApiResponseThread
-	0,  // 41: thread.ThreadService.Thread_DeleteThread:output_type -> thread.ApiResponseThread
-	0,  // 42: thread.ThreadService.Thread_CreateThread:output_type -> thread.ApiResponseThread
-	0,  // 43: thread.ThreadService.Thread_TogglePinThread:output_type -> thread.ApiResponseThread
-	0,  // 44: thread.ThreadService.Thread_VoteThread:output_type -> thread.ApiResponseThread
-	0,  // 45: thread.ThreadService.Thread_SearchThread:output_type -> thread.ApiResponseThread
-	0,  // 46: thread.ThreadService.Thread_ToggleLike:output_type -> thread.ApiResponseThread
-	0,  // 47: thread.ThreadService.Thread_ToggleBookmark:output_type -> thread.ApiResponseThread
-	0,  // 48: thread.ThreadService.Thread_ToggleRepost:output_type -> thread.ApiResponseThread
-	0,  // 49: thread.ThreadService.Thread_GetBookmarkedThreads:output_type -> thread.ApiResponseThread
-	0,  // 50: thread.ThreadService.Thread_GetRepostedThreads:output_type -> thread.ApiResponseThread
-	0,  // 51: thread.ThreadService.Thread_GetUserThreads:output_type -> thread.ApiResponseThread
-	0,  // 52: thread.ThreadService.Thread_GetUserLikedThreads:output_type -> thread.ApiResponseThread
-	0,  // 53: thread.ThreadService.Thread_GetUserReplies:output_type -> thread.ApiResponseThread
-	0,  // 54: thread.ThreadService.Thread_GetUserMediaThreads:output_type -> thread.ApiResponseThread
-	0,  // 55: thread.ThreadService.Thread_GetReplyPermission:output_type -> thread.ApiResponseThread
-	0,  // 56: thread.ThreadService.Thread_GetCommunityThreads:output_type -> thread.ApiResponseThread
-	0,  // 57: thread.ThreadService.Thread_GetCommunityMediaThreads:output_type -> thread.ApiResponseThread
-	0,  // 58: thread.ThreadService.Thread_GetAdvertisementThreads:output_type -> thread.ApiResponseThread
-	0,  // 59: thread.ThreadService.Thread_GetThreadsByHashtag:output_type -> thread.ApiResponseThread
-	0,  // 60: thread.ThreadService.Admin_DeleteThread:output_type -> thread.ApiResponseThread
-	0,  // 61: thread.ThreadService.Admin_AddCategory:output_type -> thread.ApiResponseThread
-	0,  // 62: thread.ThreadService.Admin_DeleteCategory:output_type -> thread.ApiResponseThread
-	35, // [35:63] is the sub-list for method output_type
-	7,  // [7:35] is the sub-list for method input_type
+	16, // 11: thread.ThreadService.Thread_GetLatestThreads:input_type -> thread.GetAllThreadsRequest
+	9,  // 12: thread.ThreadService.Thread_GetThreadById:input_type -> thread.GeneralThreadRequest
+	16, // 13: thread.ThreadService.Thread_SearchThreads:input_type -> thread.GetAllThreadsRequest
+	9,  // 14: thread.ThreadService.Thread_DeleteThread:input_type -> thread.GeneralThreadRequest
+	19, // 15: thread.ThreadService.Thread_CreateThread:input_type -> thread.PostThread
+	9,  // 16: thread.ThreadService.Thread_TogglePinThread:input_type -> thread.GeneralThreadRequest
+	8,  // 17: thread.ThreadService.Thread_VoteThread:input_type -> thread.SubmitVote
+	9,  // 18: thread.ThreadService.Thread_SearchThread:input_type -> thread.GeneralThreadRequest
+	9,  // 19: thread.ThreadService.Thread_ToggleLike:input_type -> thread.GeneralThreadRequest
+	9,  // 20: thread.ThreadService.Thread_ToggleBookmark:input_type -> thread.GeneralThreadRequest
+	21, // 21: thread.ThreadService.Thread_ToggleRepost:input_type -> thread.RepostRequest
+	7,  // 22: thread.ThreadService.Thread_GetBookmarkedThreads:input_type -> thread.StringThread
+	7,  // 23: thread.ThreadService.Thread_GetRepostedThreads:input_type -> thread.StringThread
+	10, // 24: thread.ThreadService.Thread_GetUserThreads:input_type -> thread.UserToUserRequest
+	7,  // 25: thread.ThreadService.Thread_GetUserLikedThreads:input_type -> thread.StringThread
+	10, // 26: thread.ThreadService.Thread_GetUserReplies:input_type -> thread.UserToUserRequest
+	10, // 27: thread.ThreadService.Thread_GetUserMediaThreads:input_type -> thread.UserToUserRequest
+	7,  // 28: thread.ThreadService.Thread_GetReplyPermission:input_type -> thread.StringThread
+	9,  // 29: thread.ThreadService.Thread_GetCommunityThreads:input_type -> thread.GeneralThreadRequest
+	9,  // 30: thread.ThreadService.Thread_GetCommunityMediaThreads:input_type -> thread.GeneralThreadRequest
+	9,  // 31: thread.ThreadService.Thread_GetAdvertisementThreads:input_type -> thread.GeneralThreadRequest
+	9,  // 32: thread.ThreadService.Thread_GetThreadsByHashtag:input_type -> thread.GeneralThreadRequest
+	7,  // 33: thread.ThreadService.Admin_DeleteThread:input_type -> thread.StringThread
+	7,  // 34: thread.ThreadService.Admin_AddCategory:input_type -> thread.StringThread
+	7,  // 35: thread.ThreadService.Admin_DeleteCategory:input_type -> thread.StringThread
+	0,  // 36: thread.ThreadService.Thread_GetTrendingHashtags:output_type -> thread.ApiResponseThread
+	1,  // 37: thread.ThreadService.Thread_GetThreadCategories:output_type -> thread.ThreadCategories
+	0,  // 38: thread.ThreadService.Thread_GetAllThreads:output_type -> thread.ApiResponseThread
+	0,  // 39: thread.ThreadService.Thread_GetFollowingThreads:output_type -> thread.ApiResponseThread
+	0,  // 40: thread.ThreadService.Thread_GetLatestThreads:output_type -> thread.ApiResponseThread
+	0,  // 41: thread.ThreadService.Thread_GetThreadById:output_type -> thread.ApiResponseThread
+	0,  // 42: thread.ThreadService.Thread_SearchThreads:output_type -> thread.ApiResponseThread
+	0,  // 43: thread.ThreadService.Thread_DeleteThread:output_type -> thread.ApiResponseThread
+	0,  // 44: thread.ThreadService.Thread_CreateThread:output_type -> thread.ApiResponseThread
+	0,  // 45: thread.ThreadService.Thread_TogglePinThread:output_type -> thread.ApiResponseThread
+	0,  // 46: thread.ThreadService.Thread_VoteThread:output_type -> thread.ApiResponseThread
+	0,  // 47: thread.ThreadService.Thread_SearchThread:output_type -> thread.ApiResponseThread
+	0,  // 48: thread.ThreadService.Thread_ToggleLike:output_type -> thread.ApiResponseThread
+	0,  // 49: thread.ThreadService.Thread_ToggleBookmark:output_type -> thread.ApiResponseThread
+	0,  // 50: thread.ThreadService.Thread_ToggleRepost:output_type -> thread.ApiResponseThread
+	0,  // 51: thread.ThreadService.Thread_GetBookmarkedThreads:output_type -> thread.ApiResponseThread
+	0,  // 52: thread.ThreadService.Thread_GetRepostedThreads:output_type -> thread.ApiResponseThread
+	0,  // 53: thread.ThreadService.Thread_GetUserThreads:output_type -> thread.ApiResponseThread
+	0,  // 54: thread.ThreadService.Thread_GetUserLikedThreads:output_type -> thread.ApiResponseThread
+	0,  // 55: thread.ThreadService.Thread_GetUserReplies:output_type -> thread.ApiResponseThread
+	0,  // 56: thread.ThreadService.Thread_GetUserMediaThreads:output_type -> thread.ApiResponseThread
+	0,  // 57: thread.ThreadService.Thread_GetReplyPermission:output_type -> thread.ApiResponseThread
+	0,  // 58: thread.ThreadService.Thread_GetCommunityThreads:output_type -> thread.ApiResponseThread
+	0,  // 59: thread.ThreadService.Thread_GetCommunityMediaThreads:output_type -> thread.ApiResponseThread
+	0,  // 60: thread.ThreadService.Thread_GetAdvertisementThreads:output_type -> thread.ApiResponseThread
+	0,  // 61: thread.ThreadService.Thread_GetThreadsByHashtag:output_type -> thread.ApiResponseThread
+	0,  // 62: thread.ThreadService.Admin_DeleteThread:output_type -> thread.ApiResponseThread
+	0,  // 63: thread.ThreadService.Admin_AddCategory:output_type -> thread.ApiResponseThread
+	0,  // 64: thread.ThreadService.Admin_DeleteCategory:output_type -> thread.ApiResponseThread
+	36, // [36:65] is the sub-list for method output_type
+	7,  // [7:36] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name

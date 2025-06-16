@@ -119,6 +119,10 @@ func (s *ThreadServer) Thread_SearchThread(ctx context.Context, req *pb.GeneralT
 	return s.Handler.Thread_SearchThread(ctx, req)
 }
 
+func (s *ThreadServer) Thread_GetLatestThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetLatestThreads(ctx, req)
+}
+
 // ADMIN
 func (s *ThreadServer) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Admin_DeleteThread(ctx, req)

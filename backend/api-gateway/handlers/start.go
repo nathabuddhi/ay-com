@@ -126,6 +126,7 @@ func InitPublicThreadRoutes(r *mux.Router) {
 func InitSecuredThreadRoutes(secured *mux.Router) {
 	secured.HandleFunc("/thread/getcategories", Thread_GetThreadCategories).Methods("GET")
 	secured.HandleFunc("/thread/getallthreads", Thread_GetAllThreads).Methods("POST")
+	secured.HandleFunc("/thread/getall", Thread_GetLatestThreads).Methods("POST")
 	secured.HandleFunc("/thread/getfollowingthreads", Thread_GetFollowingThreads).Methods("POST")
 	secured.HandleFunc("/thread/create", Thread_CreateThread).Methods("POST")
 	secured.HandleFunc("/thread/get/{id}", Thread_GetThreadById).Methods("GET")

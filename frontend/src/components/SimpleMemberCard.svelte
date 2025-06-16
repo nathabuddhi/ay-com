@@ -1,23 +1,41 @@
 <script lang="ts">
+    import { followUser } from "../controllers/user-controller";
     import { AVATAR_IMG } from "../env_var";
+    import { addToast } from "../stores/toast-wrapper";
     import type { UserProfile } from "../types/user";
 
     let { user }: { user: UserProfile } = $props();
+
+    async function handleFollowClick() {
+        const response = await followUser(user.user_id);
+
+        if (response.success) {
+            addToast("success", "Followed successfully!", "Success!");
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        } else {
+            addToast("error", response.message, "Error!");
+        }
+    }
 </script>
 
 <div class="member-item">
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-        class="member-info"
-        role="button"
-        tabindex="0"
-        onclick={() => (window.location.href = `/profile/${user.user_id}`)}
-    >
+    <div class="member-info" role="button" tabindex="0">
         <img
             src={AVATAR_IMG + user.user_id + ".png" || "/placeholder.svg"}
             alt={user.username}
         />
-        <span>{user.username}</span>
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <span
+            onclick={() => (window.location.href = `/profile/${user.username}`)}
+        >
+            {user.username}
+        </span>
+        <button class="follow-btn" onclick={handleFollowClick}
+            >Follow User</button
+        >
     </div>
 </div>
 
@@ -49,6 +67,20 @@
                 height: 40px;
                 border-radius: 50%;
                 object-fit: cover;
+            }
+        }
+
+        .follow-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: var(--primary-hover);
             }
         }
     }

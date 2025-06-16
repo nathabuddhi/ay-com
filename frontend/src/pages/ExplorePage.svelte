@@ -5,6 +5,7 @@
     import type { UserProfile } from "../types/user";
     import type { Community } from "../types/community";
     import {
+        getAllThreads,
         getThreadsByContent,
         getThreadsByHashtag,
         getTrendingTags,
@@ -16,6 +17,7 @@
     } from "../controllers/user-controller";
     import { AVATAR_IMG } from "../env_var";
     import SimpleMemberCard from "../components/SimpleMemberCard.svelte";
+    import Pagination from "../components/Pagination.svelte";
 
     let tabs = $state<string[]>([""]);
     let activeTab = $state("Top");
@@ -71,6 +73,13 @@
             topPosts = topThreadResponse.payload.threads;
         } else {
             topPosts = [];
+        }
+
+        const latestPostsResponse = await getThreadsByContent(query);
+        if (latestPostsResponse.success && latestPostsResponse.payload) {
+            latestPosts = latestPostsResponse.payload.threads;
+        } else {
+            latestPosts = [];
         }
     }
 
@@ -171,9 +180,14 @@
                 </ul>
             </div>
         {:else if activeTab === "Latest"}
-            <p>Latest content goes here...</p>
+            {#each topPosts as post}
+                <Post {post} />
+            {/each}
         {:else if activeTab === "People"}
-            <p>People content goes here...</p>
+            {#each allUsers as user}
+                <SimpleMemberCard {user} />
+            {/each}
+            <Pagination totalItems={allUsers.length} />
         {:else if activeTab === "Media"}
             <p>Media content goes here...</p>
         {:else if activeTab === "Communities"}

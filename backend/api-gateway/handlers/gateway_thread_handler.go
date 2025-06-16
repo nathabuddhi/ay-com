@@ -361,6 +361,19 @@ func Thread_SearchThreads(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
 }
 
+func Thread_GetLatestThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (SearchThreads) is called.")
+
+	req, client := processThreadRequest[pb.GetAllThreadsRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetLatestThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
 func Thread_DeleteThread(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (DeleteThread) is called.")
 

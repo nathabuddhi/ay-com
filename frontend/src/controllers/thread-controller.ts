@@ -539,3 +539,21 @@ export async function getThreadsByContent(
         return returnDefaultError<ThreadResponse>(error);
     }
 }
+
+export async function getAllThreads(): Promise<ApiResponse<ThreadResponse>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/getall`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({}),
+        });
+        const data: ApiResponse<ThreadResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<ThreadResponse>(error);
+    }
+}

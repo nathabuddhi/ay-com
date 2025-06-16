@@ -860,3 +860,53 @@ func (h *Handler) Thread_SearchThread(ctx context.Context, req *pb.GeneralThread
 		Data:    returnData,
 	}, nil
 }
+
+func (h *Handler) Thread_GetLatestThreads(ctx context.Context, req *pb.GetAllThreadsRequest) (*pb.ApiResponseThread, error) {
+	zap.L().Info("Getting latest threads", zap.String("user_id", req.UserId))
+
+	if req.UserId == "" {
+		return &pb.ApiResponseThread{Success: false, Message: "Invalid request parameters."}, nil
+	}
+
+	var threads []models.Thread
+	err := h.DB.WithContext(ctx).
+		Where("is_scheduled = false OR scheduled_at < ?", time.Now()).
+		Order("created_at desc").
+		Find(&threads).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &pb.ApiResponseThread{Success: true, Message: "No threads found."}, nil
+		}
+		return &pb.ApiResponseThread{Success: false, Message: err.Error()}, nil
+	}
+
+	getAllThreadResponse := &pb.GetThreadsResponse{
+		Threads: make([]*pb.Thread, len(threads)),
+	}
+
+	for i, request := range threads {
+		threadResponse, err := h.processThreadResponse(ctx, request, req.UserId)
+		if err != nil {
+			return &pb.ApiResponseThread{
+				Success: false,
+				Message: err.Error(),
+			}, nil
+		}
+		getAllThreadResponse.Threads[i] = &threadResponse
+	}
+
+	returnData, err := anypb.New(getAllThreadResponse)
+	if err != nil {
+		return &pb.ApiResponseThread{
+			Success: false,
+			Message: "An error occurred: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseThread{
+		Success: true,
+		Message: "Get threads by hashtag successful.",
+		Data:    returnData,
+	}, nil
+}
