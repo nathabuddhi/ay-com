@@ -14,6 +14,7 @@ service ThreadService {
     rpc Thread_GetAllThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_GetFollowingThreads (GetFollowingThreadRequest) returns (ApiResponseThread);
     rpc Thread_GetLatestThreads (GetAllThreadsRequest) returns (ApiResponseThread);
+    rpc Thread_SearchMedia (GeneralThreadRequest)   returns (ApiResponseThread);
     rpc Thread_GetThreadById (GeneralThreadRequest) returns (ApiResponseThread);
     rpc Thread_SearchThreads (GetAllThreadsRequest) returns (ApiResponseThread);
     rpc Thread_DeleteThread (GeneralThreadRequest) returns (ApiResponseThread);

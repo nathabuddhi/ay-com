@@ -557,3 +557,23 @@ export async function getAllThreads(): Promise<ApiResponse<ThreadResponse>> {
         return returnDefaultError<ThreadResponse>(error);
     }
 }
+
+export async function getAllMediaThreads(
+    query: string
+): Promise<ApiResponse<ThreadResponse>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/searchmedia`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({ thread_id: query }),
+        });
+        const data: ApiResponse<ThreadResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<ThreadResponse>(error);
+    }
+}

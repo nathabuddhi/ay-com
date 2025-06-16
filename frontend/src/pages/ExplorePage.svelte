@@ -5,7 +5,7 @@
     import type { UserProfile } from "../types/user";
     import type { Community } from "../types/community";
     import {
-        getAllThreads,
+        getAllMediaThreads,
         getThreadsByContent,
         getThreadsByHashtag,
         getTrendingTags,
@@ -15,9 +15,11 @@
         getAllPublicUsers,
         searchUsers,
     } from "../controllers/user-controller";
-    import { AVATAR_IMG } from "../env_var";
+    import { THREAD_IMG } from "../env_var";
     import SimpleMemberCard from "../components/SimpleMemberCard.svelte";
     import Pagination from "../components/Pagination.svelte";
+    import { getAllCommunities } from "../controllers/community-controller";
+    import CommunityComponent from "../components/CommunityComponent.svelte";
 
     let tabs = $state<string[]>([""]);
     let activeTab = $state("Top");
@@ -44,6 +46,10 @@
 
     // communities
     let communities = $state<Community[]>([]);
+
+    $effect(() => {
+        $inspect(mediaPosts);
+    });
 
     async function loadAllData() {
         const hashTagResponse = await getTrendingTags();
@@ -80,6 +86,20 @@
             latestPosts = latestPostsResponse.payload.threads;
         } else {
             latestPosts = [];
+        }
+
+        const communitiesResponse = await getAllCommunities();
+        if (communitiesResponse.success && communitiesResponse.payload) {
+            communities = communitiesResponse.payload.communities;
+        } else {
+            communities = [];
+        }
+
+        const mediaPostsResponse = await getAllMediaThreads(query);
+        if (mediaPostsResponse.success && mediaPostsResponse.payload) {
+            mediaPosts = mediaPostsResponse.payload.threads;
+        } else {
+            mediaPosts = [];
         }
     }
 
@@ -189,9 +209,53 @@
             {/each}
             <Pagination totalItems={allUsers.length} />
         {:else if activeTab === "Media"}
-            <p>Media content goes here...</p>
+            <div class="media-grid">
+                {#each mediaPosts as mediaPost}
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    {#each mediaPost.media as media (media.media_url)}
+                        <!-- svelte-ignore a11y_click_events_have_key_events -->
+                        <div
+                            class="media-item"
+                            onclick={() =>
+                                (window.location.href =
+                                    "/thread" + mediaPost.thread_id)}
+                        >
+                            {#if media.media_type === "image" || media.type === "gif"}
+                                <img
+                                    src={`${THREAD_IMG}/${media.media_url}` ||
+                                        "/placeholder.svg"}
+                                    alt="Media content"
+                                />
+                            {:else if media.type === "video"}
+                                <!-- svelte-ignore a11y_media_has_caption -->
+                                <video src={media.media_url} controls={false}
+                                ></video>
+                                <div class="video-overlay">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="white"
+                                        stroke="white"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <polygon points="5 3 19 12 5 21 5 3"
+                                        ></polygon>
+                                    </svg>
+                                </div>
+                            {/if}
+                        </div>
+                    {/each}
+                {/each}
+            </div>
         {:else if activeTab === "Communities"}
-            <p>Communities content goes here...</p>
+            {#each communities as community}
+                <CommunityComponent {community} />
+            {/each}
+            <Pagination totalItems={communities.length} />
         {/if}
     </div>
 </div>
