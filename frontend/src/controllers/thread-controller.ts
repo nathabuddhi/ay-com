@@ -183,7 +183,7 @@ export async function getCommunityThreads(
                 Authorization: await getValidToken(),
             },
             body: JSON.stringify({
-                value: community_id,
+                thread_id: community_id,
             }),
         });
         const data: ApiResponse<ThreadResponse> = await response.json();
@@ -451,5 +451,28 @@ export async function getCategories(): Promise<ApiResponse<string[]>> {
         return data;
     } catch (error) {
         return returnDefaultError<string[]>(error);
+    }
+}
+
+export async function getAdvertisementThreads(): Promise<
+    ApiResponse<ThreadResponse>
+> {
+    try {
+        const response = await fetch(
+            `${API_URL}/thread/getadvertisementthreads`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: await getValidToken(),
+                },
+                body: JSON.stringify({}),
+            }
+        );
+        const data: ApiResponse<ThreadResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<ThreadResponse>(error);
     }
 }

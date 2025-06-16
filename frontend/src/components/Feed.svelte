@@ -3,6 +3,7 @@
     import type { Thread } from "../types/thread";
     import Post from "./Post.svelte";
     import {
+        getAdvertisementThreads,
         getFollowingThreads,
         getForYouThreads,
     } from "../controllers/thread-controller";
@@ -14,6 +15,7 @@
 
     let forYouPosts = $state<Thread[]>([]);
     let followingPosts = $state<Thread[]>([]);
+    let advertisements = $state<Thread[]>([]);
     let userCommunities = $state<Community[]>([]);
 
     const tabs = ["For you", "Following"];
@@ -23,7 +25,23 @@
         activeTab = tab;
     }
 
+    async function loadAdvertisements() {
+        const response = await getAdvertisementThreads();
+
+        if (response.success) {
+            advertisements = response.payload?.threads || [];
+        } else {
+            addToast(
+                "error",
+                "Failed to fetch advertisements: " + response.message,
+                "Error!"
+            );
+        }
+    }
+
     onMount(async () => {
+        loadAdvertisements();
+
         const communityResponse = await getUserCommunities();
         if (communityResponse.success) {
             userCommunities = communityResponse.payload?.communities || [];
@@ -83,8 +101,15 @@
     <CreatePostForm isOpen={true} mode={"post"} />
     <div class="posts-container">
         {#if activeTab === "For you"}
-            {#each forYouPosts as post}
+            {#each forYouPosts as post, i}
                 <Post {post} />
+                {#if (i + 1) % 5 === 0 && advertisements.length > 0}
+                    <Post
+                        post={advertisements[
+                            (i / 5) % advertisements.length | 0
+                        ]}
+                    />
+                {/if}
             {/each}
             {#if forYouPosts.length === 0}
                 <p class="no-posts-message">No posts yet.</p>
@@ -92,8 +117,15 @@
                 <p class="end-posts-message">You have reached the end.</p>
             {/if}
         {:else}
-            {#each followingPosts as post}
+            {#each followingPosts as post, i}
                 <Post {post} />
+                {#if (i + 1) % 5 === 0 && advertisements.length > 0}
+                    <Post
+                        post={advertisements[
+                            (i / 5) % advertisements.length | 0
+                        ]}
+                    />
+                {/if}
             {/each}
             {#if followingPosts.length === 0}
                 <p class="no-posts-message">No posts yet.</p>

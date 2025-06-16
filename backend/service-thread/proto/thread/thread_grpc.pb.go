@@ -19,30 +19,31 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ThreadService_Thread_GetTrendingHashtags_FullMethodName  = "/thread.ThreadService/Thread_GetTrendingHashtags"
-	ThreadService_Thread_GetThreadCategories_FullMethodName  = "/thread.ThreadService/Thread_GetThreadCategories"
-	ThreadService_Thread_GetAllThreads_FullMethodName        = "/thread.ThreadService/Thread_GetAllThreads"
-	ThreadService_Thread_GetFollowingThreads_FullMethodName  = "/thread.ThreadService/Thread_GetFollowingThreads"
-	ThreadService_Thread_GetThreadById_FullMethodName        = "/thread.ThreadService/Thread_GetThreadById"
-	ThreadService_Thread_SearchThreads_FullMethodName        = "/thread.ThreadService/Thread_SearchThreads"
-	ThreadService_Thread_DeleteThread_FullMethodName         = "/thread.ThreadService/Thread_DeleteThread"
-	ThreadService_Thread_CreateThread_FullMethodName         = "/thread.ThreadService/Thread_CreateThread"
-	ThreadService_Thread_TogglePinThread_FullMethodName      = "/thread.ThreadService/Thread_TogglePinThread"
-	ThreadService_Thread_VoteThread_FullMethodName           = "/thread.ThreadService/Thread_VoteThread"
-	ThreadService_Thread_ToggleLike_FullMethodName           = "/thread.ThreadService/Thread_ToggleLike"
-	ThreadService_Thread_ToggleBookmark_FullMethodName       = "/thread.ThreadService/Thread_ToggleBookmark"
-	ThreadService_Thread_ToggleRepost_FullMethodName         = "/thread.ThreadService/Thread_ToggleRepost"
-	ThreadService_Thread_GetBookmarkedThreads_FullMethodName = "/thread.ThreadService/Thread_GetBookmarkedThreads"
-	ThreadService_Thread_GetRepostedThreads_FullMethodName   = "/thread.ThreadService/Thread_GetRepostedThreads"
-	ThreadService_Thread_GetUserThreads_FullMethodName       = "/thread.ThreadService/Thread_GetUserThreads"
-	ThreadService_Thread_GetUserLikedThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserLikedThreads"
-	ThreadService_Thread_GetUserReplies_FullMethodName       = "/thread.ThreadService/Thread_GetUserReplies"
-	ThreadService_Thread_GetUserMediaThreads_FullMethodName  = "/thread.ThreadService/Thread_GetUserMediaThreads"
-	ThreadService_Thread_GetReplyPermission_FullMethodName   = "/thread.ThreadService/Thread_GetReplyPermission"
-	ThreadService_Thread_GetCommunityThreads_FullMethodName  = "/thread.ThreadService/Thread_GetCommunityThreads"
-	ThreadService_Admin_DeleteThread_FullMethodName          = "/thread.ThreadService/Admin_DeleteThread"
-	ThreadService_Admin_AddCategory_FullMethodName           = "/thread.ThreadService/Admin_AddCategory"
-	ThreadService_Admin_DeleteCategory_FullMethodName        = "/thread.ThreadService/Admin_DeleteCategory"
+	ThreadService_Thread_GetTrendingHashtags_FullMethodName     = "/thread.ThreadService/Thread_GetTrendingHashtags"
+	ThreadService_Thread_GetThreadCategories_FullMethodName     = "/thread.ThreadService/Thread_GetThreadCategories"
+	ThreadService_Thread_GetAllThreads_FullMethodName           = "/thread.ThreadService/Thread_GetAllThreads"
+	ThreadService_Thread_GetFollowingThreads_FullMethodName     = "/thread.ThreadService/Thread_GetFollowingThreads"
+	ThreadService_Thread_GetThreadById_FullMethodName           = "/thread.ThreadService/Thread_GetThreadById"
+	ThreadService_Thread_SearchThreads_FullMethodName           = "/thread.ThreadService/Thread_SearchThreads"
+	ThreadService_Thread_DeleteThread_FullMethodName            = "/thread.ThreadService/Thread_DeleteThread"
+	ThreadService_Thread_CreateThread_FullMethodName            = "/thread.ThreadService/Thread_CreateThread"
+	ThreadService_Thread_TogglePinThread_FullMethodName         = "/thread.ThreadService/Thread_TogglePinThread"
+	ThreadService_Thread_VoteThread_FullMethodName              = "/thread.ThreadService/Thread_VoteThread"
+	ThreadService_Thread_ToggleLike_FullMethodName              = "/thread.ThreadService/Thread_ToggleLike"
+	ThreadService_Thread_ToggleBookmark_FullMethodName          = "/thread.ThreadService/Thread_ToggleBookmark"
+	ThreadService_Thread_ToggleRepost_FullMethodName            = "/thread.ThreadService/Thread_ToggleRepost"
+	ThreadService_Thread_GetBookmarkedThreads_FullMethodName    = "/thread.ThreadService/Thread_GetBookmarkedThreads"
+	ThreadService_Thread_GetRepostedThreads_FullMethodName      = "/thread.ThreadService/Thread_GetRepostedThreads"
+	ThreadService_Thread_GetUserThreads_FullMethodName          = "/thread.ThreadService/Thread_GetUserThreads"
+	ThreadService_Thread_GetUserLikedThreads_FullMethodName     = "/thread.ThreadService/Thread_GetUserLikedThreads"
+	ThreadService_Thread_GetUserReplies_FullMethodName          = "/thread.ThreadService/Thread_GetUserReplies"
+	ThreadService_Thread_GetUserMediaThreads_FullMethodName     = "/thread.ThreadService/Thread_GetUserMediaThreads"
+	ThreadService_Thread_GetReplyPermission_FullMethodName      = "/thread.ThreadService/Thread_GetReplyPermission"
+	ThreadService_Thread_GetCommunityThreads_FullMethodName     = "/thread.ThreadService/Thread_GetCommunityThreads"
+	ThreadService_Thread_GetAdvertisementThreads_FullMethodName = "/thread.ThreadService/Thread_GetAdvertisementThreads"
+	ThreadService_Admin_DeleteThread_FullMethodName             = "/thread.ThreadService/Admin_DeleteThread"
+	ThreadService_Admin_AddCategory_FullMethodName              = "/thread.ThreadService/Admin_AddCategory"
+	ThreadService_Admin_DeleteCategory_FullMethodName           = "/thread.ThreadService/Admin_DeleteCategory"
 )
 
 // ThreadServiceClient is the client API for ThreadService service.
@@ -71,6 +72,7 @@ type ThreadServiceClient interface {
 	Thread_GetUserMediaThreads(ctx context.Context, in *UserToUserRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Thread_GetCommunityThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
+	Thread_GetAdvertisementThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
 	Admin_AddCategory(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error)
@@ -295,6 +297,16 @@ func (c *threadServiceClient) Thread_GetCommunityThreads(ctx context.Context, in
 	return out, nil
 }
 
+func (c *threadServiceClient) Thread_GetAdvertisementThreads(ctx context.Context, in *GeneralThreadRequest, opts ...grpc.CallOption) (*ApiResponseThread, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseThread)
+	err := c.cc.Invoke(ctx, ThreadService_Thread_GetAdvertisementThreads_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *threadServiceClient) Admin_DeleteThread(ctx context.Context, in *StringThread, opts ...grpc.CallOption) (*ApiResponseThread, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseThread)
@@ -351,6 +363,7 @@ type ThreadServiceServer interface {
 	Thread_GetUserMediaThreads(context.Context, *UserToUserRequest) (*ApiResponseThread, error)
 	Thread_GetReplyPermission(context.Context, *StringThread) (*ApiResponseThread, error)
 	Thread_GetCommunityThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
+	Thread_GetAdvertisementThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error)
 	// Admin Routes
 	Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error)
 	Admin_AddCategory(context.Context, *StringThread) (*ApiResponseThread, error)
@@ -427,6 +440,9 @@ func (UnimplementedThreadServiceServer) Thread_GetReplyPermission(context.Contex
 }
 func (UnimplementedThreadServiceServer) Thread_GetCommunityThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetCommunityThreads not implemented")
+}
+func (UnimplementedThreadServiceServer) Thread_GetAdvertisementThreads(context.Context, *GeneralThreadRequest) (*ApiResponseThread, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Thread_GetAdvertisementThreads not implemented")
 }
 func (UnimplementedThreadServiceServer) Admin_DeleteThread(context.Context, *StringThread) (*ApiResponseThread, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteThread not implemented")
@@ -836,6 +852,24 @@ func _ThreadService_Thread_GetCommunityThreads_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThreadService_Thread_GetAdvertisementThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralThreadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThreadServiceServer).Thread_GetAdvertisementThreads(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThreadService_Thread_GetAdvertisementThreads_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThreadServiceServer).Thread_GetAdvertisementThreads(ctx, req.(*GeneralThreadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ThreadService_Admin_DeleteThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringThread)
 	if err := dec(in); err != nil {
@@ -980,6 +1014,10 @@ var ThreadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Thread_GetCommunityThreads",
 			Handler:    _ThreadService_Thread_GetCommunityThreads_Handler,
+		},
+		{
+			MethodName: "Thread_GetAdvertisementThreads",
+			Handler:    _ThreadService_Thread_GetAdvertisementThreads_Handler,
 		},
 		{
 			MethodName: "Admin_DeleteThread",

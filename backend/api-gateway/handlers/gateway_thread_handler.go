@@ -603,6 +603,32 @@ func Thread_GetTrendingHashtags(w http.ResponseWriter, r *http.Request) {
 	processThreadResponseWithPayload[pb.GetTrendingHashtagsResponse](resp, err, w)
 }
 
+func Thread_GetCommunityThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetCommunityThreads) is called.")
+
+	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetCommunityThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
+func Thread_GetAdvertisementThreads(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("Thread (GetAdvertisementThreads) is called.")
+
+	req, client := processThreadRequest[pb.GeneralThreadRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Thread_GetAdvertisementThreads(ctx, req)
+	processThreadResponseWithPayload[pb.GetThreadsResponse](resp, err, w)
+}
+
 func Thread_GetThreadCategories(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("Thread (GetCategories) is called.")
 

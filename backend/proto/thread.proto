@@ -38,6 +38,7 @@ service ThreadService {
     rpc Thread_GetReplyPermission (StringThread) returns (ApiResponseThread);
 
     rpc Thread_GetCommunityThreads (GeneralThreadRequest) returns (ApiResponseThread);
+    rpc Thread_GetAdvertisementThreads (GeneralThreadRequest) returns (ApiResponseThread);
 
     // Admin Routes
     rpc Admin_DeleteThread (StringThread) returns (ApiResponseThread);

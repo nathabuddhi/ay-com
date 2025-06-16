@@ -99,6 +99,14 @@ func (s *ThreadServer) Thread_GetThreadCategories(ctx context.Context, req *pb.S
 	return s.Handler.Thread_GetThreadCategories(ctx, req)
 }
 
+func (s *ThreadServer) Thread_GetAdvertisementThreads(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetAdvertisementThreads(ctx, req)
+}
+
+func (s *ThreadServer) Thread_GetCommunityThreads(ctx context.Context, req *pb.GeneralThreadRequest) (*pb.ApiResponseThread, error) {
+	return s.Handler.Thread_GetCommunityThreads(ctx, req)
+}
+
 // ADMIN
 func (s *ThreadServer) Admin_DeleteThread(ctx context.Context, req *pb.StringThread) (*pb.ApiResponseThread, error) {
 	return s.Handler.Admin_DeleteThread(ctx, req)
