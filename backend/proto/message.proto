@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package message;
+
+import "google/protobuf/any.proto";
+
+option go_package = "message/";
+
+service MessageService {
+    // Protected Routes
+    rpc Message_GetAllMessages (StringMessage) returns (ApiResponseMessage);
+    rpc Message_GetMessageById (GeneralMessageRequest) returns (ApiResponseMessage);
+    rpc Message_SearchMessages (GeneralChatRequest) returns (ApiResponseMessage);
+    rpc Message_DeleteMessage (GeneralMessageRequest) returns (ApiResponseMessage);
+    
+    // rpc Message_CreateMessage (PostMessage) returns (ApiResponseMessage);
+    
+    rpc Message_ToggleLike (GeneralMessageRequest) returns (ApiResponseMessage);
+    
+    // rpc Message_GetUserMessages (UserToUserRequest) returns (ApiResponseMessage);
+}
+
+message ApiResponseMessage {
+    bool success = 1;
+    string message = 2;
+    google.protobuf.Any data = 3;
+}
+message StringMessage {
+    string value = 1;
+}
+
+message GeneralChatRequest {
+    string user_id = 1;
+    string chat_id = 2;
+}
+
+message GeneralMessageRequest {
+    string message_id = 1;
+    string chat_id = 2;
+    string user_id = 3;
+}
+
+message BoolMessage {
+    bool value = 1;
+}
