@@ -77,8 +77,6 @@ func (h *Handler) Community_CreateCommunity(ctx context.Context, req *pb.CreateC
 		return &pb.ApiResponseCommunity{Success: false, Message: err.Error()}, nil
 	}
 
-	
-
 	for _, category := range req.Categories {
 		newCategory := models.CommunityCategoryRelation{
 			CommunityId: req.CommunityId,
@@ -144,7 +142,7 @@ func (h *Handler) Community_GetAllUserPendingCommunities(ctx context.Context, re
 	zap.L().Info("Getting all pending communities for user", zap.String("user_id", req.Value))
 
 	var membership []models.CommunityJoinRequest
-	err := h.DB.WithContext(ctx).Where("user_id = ?", req.Value).Find(&membership).Error
+	err := h.DB.WithContext(ctx).Where("user_id = ? AND status = ?", req.Value, "pending").Find(&membership).Error
 	if err != nil {
 		return &pb.ApiResponseCommunity{Success: false, Message: err.Error()}, nil
 	}

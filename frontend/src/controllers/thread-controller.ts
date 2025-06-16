@@ -172,6 +172,28 @@ export async function getRepostedThreads(
     }
 }
 
+export async function getCommunityThreads(
+    community_id: string
+): Promise<ApiResponse<ThreadResponse>> {
+    try {
+        const response = await fetch(`${API_URL}/thread/getcommunitythreads`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                value: community_id,
+            }),
+        });
+        const data: ApiResponse<ThreadResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<ThreadResponse>(error);
+    }
+}
+
 export async function postThread(
     content: string,
     category: string,

@@ -168,7 +168,7 @@
                     <CommunityComponent {community} />
                 {/each}
             </div>
-            {#if filteredCommunities.length === 0}
+            {#if joinedCommunities.length === 0}
                 <p class="no-communities-message">
                     You have not joined any communities yet.
                 </p>

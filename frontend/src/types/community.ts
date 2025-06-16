@@ -28,7 +28,4 @@ export interface CommunityMember {
 
 export interface GetCommunityMembersResponse {
     members: CommunityMember[];
-    total_members: number;
-    total_pages: number;
-    current_page: number;
 }

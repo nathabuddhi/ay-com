@@ -15,7 +15,7 @@
         const response = await sendJoinRequest(community.community_id);
         if (response.success) {
             community.is_pending = true;
-            addToast("success", "Joined community!");
+            addToast("success", "Sent join request succesfully!");
         } else {
             addToast("error", response.message);
         }

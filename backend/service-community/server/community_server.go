@@ -70,6 +70,14 @@ func (s *CommunityServer) Community_GetJoinRequests(ctx context.Context, req *pb
 	return s.Handler.Community_GetPendingUsers(ctx, req)
 }
 
+func (s *CommunityServer) Community_PromoteMember(ctx context.Context, req *pb.GeneralModeratorRequest) (*pb.ApiResponseCommunity, error) {
+	return s.Handler.Community_PromoteMember(ctx, req)
+}
+
+func (s *CommunityServer) Community_DemoteMember(ctx context.Context, req *pb.GeneralModeratorRequest) (*pb.ApiResponseCommunity, error) {
+	return s.Handler.Community_DemoteMember(ctx, req)
+}
+
 // ADMIN
 func (s *CommunityServer) Admin_GetAllCommunityRequests(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
 	return s.Handler.Admin_GetAllCommunityRequests(ctx, req)

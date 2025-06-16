@@ -5,20 +5,27 @@
         getCommunityById,
         getCommunityMembers,
         // getCommunityThreads,
-        // getTopMembers,
         // getCommunityMedia,
         sendJoinRequest,
         acceptJoinRequest,
         declineJoinRequest,
         promoteMember,
         demoteModerator,
+        getPendingJoinCommunities,
+        getCommunityJoinRequests,
     } from "../controllers/community-controller";
     import Post from "../components/Post.svelte";
     import MembersModal from "../components/MembersModal.svelte";
-    import { AVATAR_IMG, THREAD_IMG } from "../env_var";
+    import {
+        AVATAR_IMG,
+        C_BANNER_IMG,
+        C_ICON_IMG,
+        THREAD_IMG,
+    } from "../env_var";
     import type { UserProfile } from "../types/user";
     import type { Thread } from "../types/thread";
     import { getUserById } from "../controllers/user-controller";
+    import { addToast } from "../stores/toast-wrapper";
 
     let communityId = $state("");
 
@@ -29,10 +36,10 @@
     let loading = $state(true);
     let showMembersModal = $state(false);
 
-    // Tab-specific data
     let topMembers = $state<UserProfile[]>([]);
     let topThreads = $state<Thread[]>([]);
     let latestThreads = $state<Thread[]>([]);
+    let allMembers = $state<CommunityMember[]>([]);
     let members = $state<CommunityMember[]>([]);
     let moderators = $state<CommunityMember[]>([]);
     let userProfiles = $state<Record<string, UserProfile>>({});
@@ -40,6 +47,7 @@
     let mediaThreads = $state<Thread[]>([]);
 
     onMount(async () => {
+        communityId = window.location.href.split("/").pop() || "";
         if (communityId) {
             await loadCommunityData();
         }
@@ -48,11 +56,39 @@
     async function loadCommunityData() {
         loading = true;
         try {
-            const response = await getCommunityById(communityId);
-            if (response && response.success && response.payload) {
-                community = response.payload;
-                await loadTabData();
+            const communityRes = await getCommunityById(communityId);
+            if (communityRes && communityRes.success && communityRes.payload) {
+                community = communityRes.payload;
             }
+
+            const membersRes = await getCommunityMembers(communityId);
+            if (membersRes.success && membersRes.payload) {
+                allMembers = membersRes.payload.members;
+                members = allMembers.filter((m) => m.role === "memb er");
+                moderators = allMembers.filter((m) => m.role === "moderator");
+
+                userProfiles = await Promise.all(
+                    allMembers.map(async (member) => {
+                        const user = await getUserById(member.user_id);
+                        return {
+                            user_id: member.user_id,
+                            user,
+                        };
+                    })
+                ).then((profiles) =>
+                    profiles.reduce(
+                        (acc, curr) => {
+                            if (curr.user) {
+                                acc[curr.user_id] = curr.user;
+                            }
+                            return acc;
+                        },
+                        {} as Record<string, UserProfile>
+                    )
+                );
+            }
+
+            await loadTabData();
         } finally {
             loading = false;
         }
@@ -64,25 +100,41 @@
         try {
             switch (activeTab) {
                 case "top":
-                    const [topMembersRes, topThreadsRes] = await Promise.all([
-                        getCommunityMembers(community.community_id),
-                        getCommunityThreads(community.community_id),
-                    ]);
-                    topMembers = topMembersRes;
-                    topThreads = topThreadsRes;
+                    topMembers = allMembers
+                        .map((m) => userProfiles[m.user_id])
+                        .filter(Boolean)
+                        .sort((a, b) => (b.followers ?? 0) - (a.followers ?? 0))
+                        .slice(0, 3);
+
+                    // const topThreadsRes = await getCommunityThreads(
+                    //     community.community_id,
+                    //     "top"
+                    // );
+
+                    // if (topThreadsRes.success && topThreadsRes.payload) {
+                    //     topThreads = topThreadsRes.payload.threads;
+                    // } else {
+                    //     addToast(
+                    //         "error",
+                    //         "Failed to load top threads",
+                    //         "Error"
+                    //     );
+                    //     topThreads = [];
+                    // }
+
                     break;
 
                 case "latest":
-                    latestThreads = await getCommunityThreads(
-                        community.community_id,
-                        "latest"
-                    );
-                    break;
+                // latestThreads = await getCommunityThreads(
+                //     community.community_id,
+                //     "latest"
+                // );
+                // break;
 
                 case "media":
-                    mediaThreads = await getCommunityMedia(
-                        community.community_id
-                    );
+                    // mediaThreads = await getCommunityMedia(
+                    //     community.community_id
+                    // );
                     break;
 
                 case "manage":
@@ -124,6 +176,51 @@
                                 )
                             );
                         }
+
+                        const pendingResponse = await getCommunityJoinRequests(
+                            community.community_id
+                        );
+
+                        if (
+                            pendingResponse.success &&
+                            pendingResponse.payload
+                        ) {
+                            pendingRequests = pendingResponse.payload.members;
+
+                            const pendingProfiles = await Promise.all(
+                                pendingRequests.map(async (member) => {
+                                    const user = await getUserById(
+                                        member.user_id
+                                    );
+                                    return {
+                                        user_id: member.user_id,
+                                        user,
+                                    };
+                                })
+                            ).then((profiles) =>
+                                profiles.reduce(
+                                    (acc, curr) => {
+                                        if (curr.user) {
+                                            acc[curr.user_id] = curr.user;
+                                        }
+                                        return acc;
+                                    },
+                                    {} as Record<string, UserProfile>
+                                )
+                            );
+                            userProfiles = {
+                                ...userProfiles,
+                                ...pendingProfiles,
+                            };
+                        } else {
+                            addToast(
+                                "error",
+                                pendingResponse.message ||
+                                    "Failed to load pending requests.",
+                                "Failed to load user join requests."
+                            );
+                            pendingRequests = [];
+                        }
                     }
                     break;
             }
@@ -137,13 +234,16 @@
         await loadTabData();
     }
 
-    async function handleJoinRequest() {
+    async function handleJoinRequest(e: MouseEvent) {
+        e.stopPropagation();
+
         if (!community) return;
-        try {
-            await sendJoinRequest(community.community_id);
-            await loadCommunityData(); // Refresh community data
-        } catch (error) {
-            console.error("Error requesting to join:", error);
+        const response = await sendJoinRequest(community.community_id);
+        if (response.success) {
+            community.is_pending = true;
+            addToast("success", "Sent join request succesfully!");
+        } else {
+            addToast("error", response.message);
         }
     }
 
@@ -194,6 +294,25 @@
     function navigateToThread(threadId: string) {
         window.location.href = `/thread/${threadId}`;
     }
+
+    $effect(() => {
+        $inspect("CommunityDetailPage", {
+            communityId,
+            community,
+            activeTab,
+            loading,
+            showMembersModal,
+            topMembers,
+            topThreads,
+            latestThreads,
+            allMembers,
+            members,
+            moderators,
+            userProfiles,
+            pendingRequests,
+            mediaThreads,
+        });
+    });
 </script>
 
 {#if loading}
@@ -201,9 +320,10 @@
 {:else if community}
     <div class="community-detail">
         <div class="community-header">
-            {#if community.community_banner_url}
+            {#if community.banner_image}
                 <img
-                    src={community.community_banner_url || "/placeholder.svg"}
+                    src={`${C_BANNER_IMG}${community.banner_image}` ||
+                        "/placeholder.svg"}
                     alt="Community Banner"
                     class="banner"
                 />
@@ -212,7 +332,7 @@
             <div class="community-info">
                 <div class="community-main">
                     <img
-                        src={community.community_image_url ||
+                        src={`${C_ICON_IMG}${community.icon_image}` ||
                             "/placeholder.svg"}
                         alt={community.community_name}
                         class="logo"
@@ -236,13 +356,13 @@
                         {community.member_count} Members
                     </button>
 
-                    {#if community.role === "guest"}
-                        <button class="join-btn" onclick={handleJoinRequest}>
-                            Request to Join
-                        </button>
-                    {:else if community.is_pending}
+                    {#if community.is_pending}
                         <button class="pending-btn" disabled>
                             Request Pending
+                        </button>
+                    {:else if community.role === "guest"}
+                        <button class="join-btn" onclick={handleJoinRequest}>
+                            Request to Join
                         </button>
                     {/if}
                 </div>
@@ -251,32 +371,32 @@
 
         <div class="tabs">
             <button
-                class="tab {activeTab === 'top' ? 'active' : ''}"
+                class="tab-button {activeTab === 'top' ? 'active' : ''}"
                 onclick={() => handleTabChange("top")}
             >
                 Top
             </button>
             <button
-                class="tab {activeTab === 'latest' ? 'active' : ''}"
+                class="tab-button {activeTab === 'latest' ? 'active' : ''}"
                 onclick={() => handleTabChange("latest")}
             >
                 Latest
             </button>
             <button
-                class="tab {activeTab === 'media' ? 'active' : ''}"
+                class="tab-button {activeTab === 'media' ? 'active' : ''}"
                 onclick={() => handleTabChange("media")}
             >
                 Media
             </button>
             <button
-                class="tab {activeTab === 'about' ? 'active' : ''}"
+                class="tab-button {activeTab === 'about' ? 'active' : ''}"
                 onclick={() => handleTabChange("about")}
             >
                 About
             </button>
             {#if community.role === "moderator" || community.role === "owner"}
                 <button
-                    class="tab {activeTab === 'manage' ? 'active' : ''}"
+                    class="tab-button {activeTab === 'manage' ? 'active' : ''}"
                     onclick={() => handleTabChange("manage")}
                 >
                     Manage Members
@@ -284,7 +404,6 @@
             {/if}
         </div>
 
-        <!-- Tab Content -->
         <div class="tab-content">
             {#if activeTab === "top"}
                 <div class="top-content">
@@ -307,9 +426,9 @@
                                         alt={member.username}
                                     />
                                     <span>{member.username}</span>
-                                    <span class="followers"
-                                        >{member.followers} followers</span
-                                    >
+                                    <span class="followers">
+                                        {member.followers ?? 0} followers
+                                    </span>
                                 </div>
                             {/each}
                         </div>
@@ -386,13 +505,17 @@
                     <div class="community-stats">
                         <h3>Community Information</h3>
                         <p>
-                            <strong>Created:</strong>
-                            {new Date(
-                                community.created_at
-                            ).toLocaleDateString()}
+                            <strong>Created At:</strong>
+                            {community.created_at}
                         </p>
                         <p>
-                            <strong>Members:</strong>
+                            <strong>Created By:</strong>
+                            {userProfiles[community.creator_id]
+                                ? userProfiles[community.creator_id].username
+                                : "Unknown"}
+                        </p>
+                        <p>
+                            <strong>Member Count:</strong>
                             {community.member_count}
                         </p>
                     </div>
@@ -404,10 +527,10 @@
                         </div>
                     {/if}
 
+                    <h3>Moderators</h3>
                     <div class="moderators-list">
-                        <h3>Moderators</h3>
                         {#each moderators as moderator}
-                            <div class="moderator-item">
+                            <div class="member-card">
                                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                                 <div
                                     class="moderator-info"
@@ -431,15 +554,6 @@
                                             .username}</span
                                     >
                                 </div>
-                                {#if community.role === "owner"}
-                                    <button
-                                        class="demote-btn"
-                                        onclick={() =>
-                                            handleDemoteModerator(
-                                                moderator.user_id
-                                            )}>Demote</button
-                                    >
-                                {/if}
                             </div>
                         {/each}
                     </div>
@@ -449,8 +563,21 @@
                     <div class="pending-requests">
                         <h3>Pending Join Requests</h3>
                         {#each pendingRequests as request}
-                            <div class="request-item">
-                                <span>User ID: {request.user_id}</span>
+                            <div class="member-card">
+                                <img
+                                    src={AVATAR_IMG +
+                                        request.user_id +
+                                        ".png" || "/placeholder.svg"}
+                                    alt={userProfiles[request.user_id]
+                                        ?.username}
+                                    class="request-avatar"
+                                />
+                                <a
+                                    href={"/profile/" +
+                                        userProfiles[request.user_id]?.username}
+                                >
+                                    @{userProfiles[request.user_id]?.username}
+                                </a>
                                 <div class="actions">
                                     <button
                                         onclick={() =>
@@ -476,6 +603,7 @@
     {#if showMembersModal}
         <MembersModal
             community_id={community.community_id}
+            user_role={community.role}
             bind:is_open={showMembersModal}
         />
     {/if}

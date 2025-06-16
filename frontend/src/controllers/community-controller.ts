@@ -132,6 +132,27 @@ export async function getPendingJoinCommunities(): Promise<
     }
 }
 
+export async function getCommunityJoinRequests(
+    community_id: string
+): Promise<ApiResponse<GetCommunityMembersResponse>> {
+    try {
+        const response = await fetch(`${API_URL}/community/getjoinrequests`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({ value: community_id }),
+        });
+        const data: ApiResponse<GetCommunityMembersResponse> =
+            await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<GetCommunityMembersResponse>(error);
+    }
+}
+
 export async function createNewCommunity(
     formdata: FormData
 ): Promise<ApiResponse<null>> {
@@ -160,8 +181,8 @@ export async function getCommunityMembers(
             headers: {
                 "Content-Type": "application/json",
                 Authorization: await getValidToken(),
-                body: JSON.stringify({ value: community_id }),
             },
+            body: JSON.stringify({ value: community_id }),
         });
         const data: ApiResponse<GetCommunityMembersResponse> =
             await response.json();
@@ -197,7 +218,7 @@ export async function acceptJoinRequest(
     user_id: string
 ): Promise<ApiResponse<number>> {
     try {
-        const response = await fetch(`${API_URL}/community/accept`, {
+        const response = await fetch(`${API_URL}/community/approve`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -218,7 +239,7 @@ export async function declineJoinRequest(
     user_id: string
 ): Promise<ApiResponse<number>> {
     try {
-        const response = await fetch(`${API_URL}/community/decline`, {
+        const response = await fetch(`${API_URL}/community/deny`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

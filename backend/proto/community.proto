@@ -23,6 +23,9 @@ service CommunityService {
     rpc Community_DenyJoinRequest (GeneralModeratorRequest) returns (ApiResponseCommunity);
     rpc Community_GetJoinRequests (StringCommunity) returns (ApiResponseCommunity);
 
+    rpc Community_DemoteMember (GeneralModeratorRequest) returns (ApiResponseCommunity);
+    rpc Community_PromoteMember (GeneralModeratorRequest) returns (ApiResponseCommunity);
+
     // Admin Routes
     rpc Admin_DeleteCategory (StringCommunity) returns (ApiResponseCommunity);
     rpc Admin_AddCategory (StringCommunity) returns (ApiResponseCommunity);
@@ -56,8 +59,13 @@ message BoolCommunity {
     bool value = 1;
 }
 
+message CommunityMember {
+    string user_id = 1;
+    string role = 2;
+}
+
 message GetMembersResponse {
-    repeated string members = 1;
+    repeated CommunityMember members = 1;
 }
 
 message RejectCommunityRequest {

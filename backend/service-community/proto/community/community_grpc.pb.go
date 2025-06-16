@@ -32,6 +32,8 @@ const (
 	CommunityService_Community_ApproveJoinRequest_FullMethodName                = "/community.CommunityService/Community_ApproveJoinRequest"
 	CommunityService_Community_DenyJoinRequest_FullMethodName                   = "/community.CommunityService/Community_DenyJoinRequest"
 	CommunityService_Community_GetJoinRequests_FullMethodName                   = "/community.CommunityService/Community_GetJoinRequests"
+	CommunityService_Community_DemoteMember_FullMethodName                      = "/community.CommunityService/Community_DemoteMember"
+	CommunityService_Community_PromoteMember_FullMethodName                     = "/community.CommunityService/Community_PromoteMember"
 	CommunityService_Admin_DeleteCategory_FullMethodName                        = "/community.CommunityService/Admin_DeleteCategory"
 	CommunityService_Admin_AddCategory_FullMethodName                           = "/community.CommunityService/Admin_AddCategory"
 	CommunityService_Admin_GetAllCommunityRequests_FullMethodName               = "/community.CommunityService/Admin_GetAllCommunityRequests"
@@ -57,6 +59,8 @@ type CommunityServiceClient interface {
 	Community_ApproveJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_DenyJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_GetJoinRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_DemoteMember(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_PromoteMember(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_DeleteCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Admin_AddCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
@@ -203,6 +207,26 @@ func (c *communityServiceClient) Community_GetJoinRequests(ctx context.Context, 
 	return out, nil
 }
 
+func (c *communityServiceClient) Community_DemoteMember(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_DemoteMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_PromoteMember(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_PromoteMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *communityServiceClient) Admin_DeleteCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseCommunity)
@@ -271,6 +295,8 @@ type CommunityServiceServer interface {
 	Community_ApproveJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
 	Community_DenyJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
 	Community_GetJoinRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_DemoteMember(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
+	Community_PromoteMember(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Admin_AddCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
@@ -325,6 +351,12 @@ func (UnimplementedCommunityServiceServer) Community_DenyJoinRequest(context.Con
 }
 func (UnimplementedCommunityServiceServer) Community_GetJoinRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Community_GetJoinRequests not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_DemoteMember(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_DemoteMember not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_PromoteMember(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_PromoteMember not implemented")
 }
 func (UnimplementedCommunityServiceServer) Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteCategory not implemented")
@@ -596,6 +628,42 @@ func _CommunityService_Community_GetJoinRequests_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_Community_DemoteMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralModeratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_DemoteMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_DemoteMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_DemoteMember(ctx, req.(*GeneralModeratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_PromoteMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralModeratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_PromoteMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_PromoteMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_PromoteMember(ctx, req.(*GeneralModeratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommunityService_Admin_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringCommunity)
 	if err := dec(in); err != nil {
@@ -744,6 +812,14 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Community_GetJoinRequests",
 			Handler:    _CommunityService_Community_GetJoinRequests_Handler,
+		},
+		{
+			MethodName: "Community_DemoteMember",
+			Handler:    _CommunityService_Community_DemoteMember_Handler,
+		},
+		{
+			MethodName: "Community_PromoteMember",
+			Handler:    _CommunityService_Community_PromoteMember_Handler,
 		},
 		{
 			MethodName: "Admin_DeleteCategory",

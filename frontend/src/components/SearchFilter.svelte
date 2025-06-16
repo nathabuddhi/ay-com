@@ -43,9 +43,21 @@
                 selectedCategories.some((cat) =>
                     community.categories?.includes(cat)
                 );
-            return matchesQuery || matchesCategory;
+            return matchesQuery && matchesCategory;
         });
     }
+
+    $effect(() => {
+        $inspect(
+            "SearchFilter",
+            {
+                searchQuery,
+                selectedCategories,
+                availableCommunities,
+                filteredCommunities,
+            }
+        );
+    })
 </script>
 
 <div class="search-filter">
@@ -54,7 +66,7 @@
             type="text"
             placeholder="Search communities..."
             bind:value={searchQuery}
-            onchange={handleSearch}
+            onchange={() => handleSearch()}
             onkeydown={(e) => e.key === "Enter" && handleSearch()}
         />
     </div>

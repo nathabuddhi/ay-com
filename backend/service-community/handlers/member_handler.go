@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/nathabuddhi/ay-com/backend/service-community/models"
 	pb "github.com/nathabuddhi/ay-com/backend/service-community/proto/community"
 	"go.uber.org/zap"
@@ -72,11 +74,14 @@ func (h *Handler) Community_GetCommunityMembers(ctx context.Context, req *pb.Str
 	}
 
 	memberReturn := &pb.GetMembersResponse{
-		Members: make([]string, len(members)),
+		Members: make([]*pb.CommunityMember, len(members)),
 	}
 
 	for i, member := range members {
-		memberReturn.Members[i] = member.UserId
+		memberReturn.Members[i] = &pb.CommunityMember{
+			UserId: member.UserId,
+			Role:   member.Role,
+		}
 	}
 
 	returnData, err := anypb.New(memberReturn)
@@ -105,9 +110,12 @@ func (h *Handler) Community_GetPendingUsers(ctx context.Context, req *pb.StringC
 		return &pb.ApiResponseCommunity{Success: true, Message: "No pending users found."}, nil
 	}
 
-	pendingUserList := make([]string, len(pendingUsers))
+	pendingUserList := make([]*pb.CommunityMember, len(pendingUsers))
 	for i, user := range pendingUsers {
-		pendingUserList[i] = user.UserId
+		pendingUserList[i] = &pb.CommunityMember{
+			UserId: user.UserId,
+			Role:   "pending",
+		}
 	}
 
 	returnData, err := anypb.New(&pb.GetMembersResponse{
@@ -142,9 +150,11 @@ func (h *Handler) Community_JoinCommunity(ctx context.Context, req *pb.GeneralCo
 		}
 	}
 	joinRequest = models.CommunityJoinRequest{
+		RequestId:   uuid.New().String(),
 		CommunityId: req.CommunityId,
 		UserId:      req.UserId,
 		Status:      "pending",
+		RequestedAt: time.Now(),
 	}
 	if err := h.DB.WithContext(ctx).Create(&joinRequest).Error; err != nil {
 		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to create join request: " + err.Error()}, nil
@@ -175,7 +185,7 @@ func (h *Handler) Community_ApproveJoinRequest(ctx context.Context, req *pb.Gene
 		return &pb.ApiResponseCommunity{Success: false, Message: "Join request is not pending."}, nil
 	}
 
-	joinRequest.Status = "approved"
+	joinRequest.Status = "accepted"
 	if err := h.DB.WithContext(ctx).Save(&joinRequest).Error; err != nil {
 		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to approve join request: " + err.Error()}, nil
 	}
@@ -220,6 +230,68 @@ func (h *Handler) Community_DenyJoinRequest(ctx context.Context, req *pb.General
 	return &pb.ApiResponseCommunity{
 		Success: true,
 		Message: "Join request rejected successfully.",
+		Data:    nil,
+	}, nil
+}
+
+func (h *Handler) Community_DemoteMember(ctx context.Context, req *pb.GeneralModeratorRequest) (*pb.ApiResponseCommunity, error) {
+	if req.CommunityId == "" || req.UserId == "" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Community ID and User ID cannot be empty."}, nil
+	}
+
+	if !h.IsUserOwner(req.ModeratorId, req.CommunityId) {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Only owners can demote moderators."}, nil
+	}
+
+	var member models.CommunityMember
+	err := h.DB.WithContext(ctx).Where("community_id = ? AND user_id = ? AND role = ?", req.CommunityId, req.UserId, "moderator").First(&member).Error
+	if err != nil {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Member not found: " + err.Error()}, nil
+	}
+
+	if member.Role == "owner" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Cannot demote the owner of the community."}, nil
+	}
+
+	member.Role = "member"
+	if err := h.DB.WithContext(ctx).Save(&member).Error; err != nil {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to demote member: " + err.Error()}, nil
+	}
+
+	return &pb.ApiResponseCommunity{
+		Success: true,
+		Message: "Member demoted successfully.",
+		Data:    nil,
+	}, nil
+}
+
+func (h *Handler) Community_PromoteMember(ctx context.Context, req *pb.GeneralModeratorRequest) (*pb.ApiResponseCommunity, error) {
+	if req.CommunityId == "" || req.UserId == "" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Community ID and User ID cannot be empty."}, nil
+	}
+
+	if !h.IsUserOwner(req.ModeratorId, req.CommunityId) {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Only owners can promote members."}, nil
+	}
+
+	var member models.CommunityMember
+	err := h.DB.WithContext(ctx).Where("community_id = ? AND user_id = ? AND role = ?", req.CommunityId, req.UserId, "member").First(&member).Error
+	if err != nil {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Member not found: " + err.Error()}, nil
+	}
+
+	if member.Role == "owner" {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Cannot promote the owner of the community."}, nil
+	}
+
+	member.Role = "moderator"
+	if err := h.DB.WithContext(ctx).Save(&member).Error; err != nil {
+		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to promote member: " + err.Error()}, nil
+	}
+
+	return &pb.ApiResponseCommunity{
+		Success: true,
+		Message: "Member promoted successfully.",
 		Data:    nil,
 	}, nil
 }

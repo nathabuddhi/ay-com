@@ -345,5 +345,27 @@ func Community_GetJoinRequests(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.Community_GetJoinRequests(ctx, req)
 
+	processCommunityResponseWithPayload[pb.GetMembersResponse](resp, err, w)
+}
+
+func Community_PromoteMember(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.GeneralModeratorRequest](r, w)
+	req.ModeratorId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_PromoteMember(ctx, req)
+
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Community_DemoteMember(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.GeneralModeratorRequest](r, w)
+	req.ModeratorId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_DemoteMember(ctx, req)
+
 	processCommunityResponseWithoutPayload(resp, err, w)
 }
