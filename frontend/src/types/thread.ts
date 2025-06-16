@@ -33,6 +33,7 @@ export interface Thread {
     is_liking: boolean;
     is_bookmarking: boolean;
     is_reposting: boolean;
+    community_id: string;
 }
 
 export interface Media {

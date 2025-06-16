@@ -180,6 +180,9 @@ func Thread_CreateThread(w http.ResponseWriter, r *http.Request) {
 	req.Content = r.FormValue("content")
 	req.Category = r.FormValue("category")
 	req.CommunityId = r.FormValue("community_id")
+	if req.CommunityId != "" {
+		req.IsCommunity = true
+	}
 	req.ReplyPermission = r.FormValue("reply_permission")
 	req.ReplyTo = r.FormValue("reply_to")
 

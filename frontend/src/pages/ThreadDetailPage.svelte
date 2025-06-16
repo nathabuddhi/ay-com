@@ -31,6 +31,7 @@
         is_liking: false,
         is_bookmarking: false,
         is_reposting: false,
+        community_id: "",
     });
     let replies: Thread[] = $state([]);
     let userProfiles: Record<string, UserProfile> = $state({});

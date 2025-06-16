@@ -22,10 +22,13 @@
     import { addToast } from "../stores/toast-wrapper";
     import { processContent } from "../controllers/util";
     import { getUserById } from "../controllers/user-controller";
+    import { getCommunityById } from "../controllers/community-controller";
+    import type { Community } from "../types/community";
 
     let { post }: { post: Thread } = $props<{ post: Thread }>();
     let isLoading: boolean = $state<boolean>(true);
     let isMoreOptionsOpen: boolean = $state<boolean>(false);
+    let community: Community | null = $state<Community | null>(null);
 
     let user = $state<UserProfile>({
         name: "loading",
@@ -64,6 +67,17 @@
         }
 
         isLoading = false;
+
+        if (post.community_id && post.community_id !== "") {
+            const communityResponse = await getCommunityById(post.community_id);
+            if (communityResponse.success && communityResponse.payload) {
+                community = communityResponse.payload;
+            } else {
+                community = null;
+            }
+        } else {
+            community = null;
+        }
     });
 
     function togglePopover() {
@@ -307,6 +321,13 @@
     {/if}
     {#if post.is_advertisement}
         <p class="repost-text">Advertisement Thread</p>
+    {/if}
+    {#if post.community_id && post.community_id !== "" && community}
+        <p class="repost-text">
+            Post from <a href={"/community/" + community.community_id}
+                >{community.community_name}</a
+            >
+        </p>
     {/if}
     <article class="post">
         <div class="post-avatar">

@@ -83,6 +83,12 @@ func (h *Handler) processThreadResponse(ctx context.Context, thread models.Threa
 		IsLiking:        isUserLikingThread,
 		IsReposting:     isUserRepostingThread,
 		IsBookmarking:   isUserBookmarkingThread,
+		CommunityId: func() string {
+			if thread.CommunityId != nil {
+				return *thread.CommunityId
+			}
+			return ""
+		}(),
 	}, nil
 }
 
@@ -146,7 +152,7 @@ func (h *Handler) Thread_CreateThread(ctx context.Context, req *pb.PostThread) (
 	thread := models.Thread{
 		ThreadId:        generatedId,
 		UserId:          req.UserId,
-		CommunityId:     nil,
+		CommunityId:     &req.CommunityId,
 		Content:         req.Content,
 		Category:        req.Category,
 		IsPoll:          req.PollCount > 0,

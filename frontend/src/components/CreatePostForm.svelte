@@ -7,6 +7,8 @@
         postThread,
     } from "../controllers/thread-controller";
     import { onMount } from "svelte";
+    import type { Community } from "../types/community";
+    import { getUserCommunities } from "../controllers/community-controller";
 
     const maxWords: number = 100;
     let postText: string = $state("");
@@ -34,6 +36,8 @@
     let showPoll = $state(false);
 
     let categories: string[] = $state<string[]>(["LOADING"]);
+    let communities: Community[] = $state<Community[]>([]);
+    let selectedCommunity = $state("");
     let selectedCategory: string = $state("");
     const permissions: string[] = [
         "Everyone",
@@ -140,6 +144,7 @@
                     selectedFiles,
                     [],
                     threadId,
+                    "",
                     ""
                 );
             } else if (mode === "post") {
@@ -150,7 +155,8 @@
                     selectedFiles,
                     pollOptions,
                     "",
-                    scheduledAt
+                    scheduledAt,
+                    selectedCommunity
                 );
             } else {
                 throw new Error("Invalid mode specified.");
@@ -201,6 +207,14 @@
                 "Entertainment",
                 "Education",
             ];
+        }
+
+        const communityResponse = await getUserCommunities();
+
+        if (communityResponse.success && communityResponse.payload) {
+            communities = communityResponse.payload.communities;
+        } else {
+            communities = [];
         }
     });
 </script>
@@ -351,17 +365,33 @@
                 {/if}
             </div>
             {#if mode === "post"}
-                <div class="schedule-selector">
-                    <label for="schedule-select">Schedule</label>
-                    <input
-                        type="checkbox"
-                        id="schedule-checkbox"
-                        bind:checked={isScheduled}
-                    />
-                    {#if isScheduled}
-                        <input type="date" bind:value={scheduledDate} />
-                        <input type="time" bind:value={scheduledTime} />
-                    {/if}
+                <div style="display: flex; align-self: center;">
+                    <div class="schedule-selector">
+                        <label for="schedule-select">Schedule</label>
+                        <input
+                            type="checkbox"
+                            id="schedule-checkbox"
+                            bind:checked={isScheduled}
+                        />
+                        {#if isScheduled}
+                            <input type="date" bind:value={scheduledDate} />
+                            <input type="time" bind:value={scheduledTime} />
+                        {/if}
+                    </div>
+                    <div class="category-selector">
+                        <label for="category-select">Community</label>
+                        <select
+                            id="category-select"
+                            bind:value={selectedCommunity}
+                        >
+                            <option value="" selected>Personal</option>
+                            {#each communities as com}
+                                <option value={com.community_id}>
+                                    {com.community_name}
+                                </option>
+                            {/each}
+                        </select>
+                    </div>
                 </div>
             {/if}
         </div>

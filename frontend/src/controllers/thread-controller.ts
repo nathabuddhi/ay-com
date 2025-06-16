@@ -201,13 +201,15 @@ export async function postThread(
     media: FileList | null,
     poll: string[] | null,
     reply: string,
-    schedule: string
+    schedule: string,
+    community: string
 ): Promise<ApiResponse<ThreadResponse>> {
     try {
         const formData = new FormData();
         formData.append("content", content);
         formData.append("category", category);
         formData.append("reply_permission", reply_permission);
+        formData.append("community_id", community);
         formData.append("reply_to", reply || "");
         formData.append("media_count", media?.length.toString() ?? "0");
         formData.append(

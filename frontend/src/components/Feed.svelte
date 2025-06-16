@@ -8,10 +8,13 @@
     } from "../controllers/thread-controller";
     import { addToast } from "../stores/toast-wrapper";
     import CreatePostForm from "./CreatePostForm.svelte";
+    import type { Community } from "../types/community";
+    import { getUserCommunities } from "../controllers/community-controller";
     // import CreatePost from "./CreatePost.svelte";
 
     let forYouPosts = $state<Thread[]>([]);
     let followingPosts = $state<Thread[]>([]);
+    let userCommunities = $state<Community[]>([]);
 
     const tabs = ["For you", "Following"];
     let activeTab = $state<string>("For you");
@@ -21,10 +24,26 @@
     }
 
     onMount(async () => {
+        const communityResponse = await getUserCommunities();
+        if (communityResponse.success) {
+            userCommunities = communityResponse.payload?.communities || [];
+        } else {
+            userCommunities = [];
+        }
+
         const response = await getForYouThreads();
 
         if (response.success) {
-            forYouPosts = response.payload?.threads || [];
+            forYouPosts =
+                response.payload?.threads.filter((t) => {
+                    return (
+                        !t.community_id ||
+                        t.community_id === "" ||
+                        userCommunities
+                            .map((c) => c.community_id)
+                            .includes(t.community_id)
+                    );
+                }) || [];
         } else {
             addToast(
                 "error",

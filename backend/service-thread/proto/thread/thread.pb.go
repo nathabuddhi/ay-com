@@ -605,6 +605,7 @@ type Thread struct {
 	IsLiking        bool                   `protobuf:"varint,15,opt,name=is_liking,json=isLiking,proto3" json:"is_liking,omitempty"`
 	IsBookmarking   bool                   `protobuf:"varint,16,opt,name=is_bookmarking,json=isBookmarking,proto3" json:"is_bookmarking,omitempty"`
 	IsReposting     bool                   `protobuf:"varint,17,opt,name=is_reposting,json=isReposting,proto3" json:"is_reposting,omitempty"`
+	CommunityId     string                 `protobuf:"bytes,18,opt,name=community_id,json=communityId,proto3" json:"community_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -756,6 +757,13 @@ func (x *Thread) GetIsReposting() bool {
 		return x.IsReposting
 	}
 	return false
+}
+
+func (x *Thread) GetCommunityId() string {
+	if x != nil {
+		return x.CommunityId
+	}
+	return ""
 }
 
 type Media struct {
@@ -1453,7 +1461,7 @@ const file_thread_proto_rawDesc = "" +
 	"\tthread_id\x18\x02 \x01(\tR\bthreadId\"O\n" +
 	"\x11UserToUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
-	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"\xc4\x04\n" +
+	"\frequester_id\x18\x02 \x01(\tR\vrequesterId\"\xe7\x04\n" +
 	"\x06Thread\x12\x1b\n" +
 	"\tthread_id\x18\x01 \x01(\tR\bthreadId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x18\n" +
@@ -1475,7 +1483,8 @@ const file_thread_proto_rawDesc = "" +
 	"is_private\x18\x0e \x01(\bR\tisPrivate\x12\x1b\n" +
 	"\tis_liking\x18\x0f \x01(\bR\bisLiking\x12%\n" +
 	"\x0eis_bookmarking\x18\x10 \x01(\bR\risBookmarking\x12!\n" +
-	"\fis_reposting\x18\x11 \x01(\bR\visReposting\"S\n" +
+	"\fis_reposting\x18\x11 \x01(\bR\visReposting\x12!\n" +
+	"\fcommunity_id\x18\x12 \x01(\tR\vcommunityId\"S\n" +
 	"\x05Media\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tmedia_url\x18\x02 \x01(\tR\bmediaUrl\x12\x1d\n" +

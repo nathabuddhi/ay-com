@@ -117,6 +117,7 @@ message Thread {
     bool is_liking = 15;
     bool is_bookmarking = 16;
     bool is_reposting = 17;
+    string community_id = 18;
 }
 
 message Media {
