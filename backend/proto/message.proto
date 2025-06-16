@@ -8,12 +8,14 @@ option go_package = "message/";
 
 service MessageService {
     // Protected Routes
+
+    rpc Message_GetUserRooms (StringMessage) returns (ApiResponseMessage);
     rpc Message_GetAllMessages (StringMessage) returns (ApiResponseMessage);
     rpc Message_GetMessageById (GeneralMessageRequest) returns (ApiResponseMessage);
     rpc Message_SearchMessages (GeneralChatRequest) returns (ApiResponseMessage);
-    rpc Message_DeleteMessage (GeneralMessageRequest) returns (ApiResponseMessage);
+    rpc Message_UnsendMessage (GeneralMessageRequest) returns (ApiResponseMessage);
     
-    // rpc Message_CreateMessage (PostMessage) returns (ApiResponseMessage);
+    rpc Message_CreateMessage (SendMessage) returns (ApiResponseMessage);
     
     rpc Message_ToggleLike (GeneralMessageRequest) returns (ApiResponseMessage);
     
@@ -42,4 +44,10 @@ message GeneralMessageRequest {
 
 message BoolMessage {
     bool value = 1;
+}
+
+message SendMessage {
+    string chat_id = 1;
+    string user_id = 2;
+    string content = 3;
 }

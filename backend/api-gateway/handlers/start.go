@@ -61,6 +61,7 @@ func InitSecuredRoutes(r *mux.Router) {
 	InitSecuredNotificationRoutes(secured)
 	InitSecuredThreadRoutes(secured)
 	InitSecuredCommunityRoutes(secured)
+	InitSecuredMessageRoutes(secured)
 	zap.L().Info("Secured Routes Initialized.")
 
 	InitAdminRoutes(secured)
@@ -172,4 +173,8 @@ func InitSecuredCommunityRoutes(secured *mux.Router) {
 	secured.HandleFunc("/community/deny", Community_DenyMember).Methods("POST")
 	secured.HandleFunc("/community/promote", Community_PromoteMember).Methods("POST")
 	secured.HandleFunc("/community/demote", Community_DemoteMember).Methods("POST")
+}
+
+func InitSecuredMessageRoutes(secured *mux.Router) {
+	// secured.HandleFunc("/message/create", Message_).Methods("POST")
 }
