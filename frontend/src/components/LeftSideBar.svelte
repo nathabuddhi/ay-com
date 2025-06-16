@@ -30,7 +30,7 @@
     });
 
     let showLogoutMenu = $state(false);
-    let mobileNavOpen = $state(true);
+    let mobileNavOpen = $state(false);
 
     function toggleLogoutMenu(): void {
         showLogoutMenu = !showLogoutMenu;
@@ -45,17 +45,16 @@
     const path = $state(window.location.pathname);
 </script>
 
+<button
+    class="hamburger"
+    onclick={toggleMobileNav}
+    aria-label="Toggle navigation"
+>
+    <Menu />
+</button>
 <aside class="left-sidebar {mobileNavOpen ? 'open' : ''}">
     <div class="sidebar-content">
         <div class="logo">
-            <button
-                class="hamburger"
-                onclick={toggleMobileNav}
-                aria-label="Toggle navigation"
-            >
-                <Menu />
-            </button>
-
             <a href="/home">AY</a>
         </div>
 
