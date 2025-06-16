@@ -2,12 +2,15 @@ export interface Community {
     community_id: string;
     community_name: string;
     creator_id: string;
-    category: string[];
+    categories: string[];
     description: string;
     rules: string;
     created_at: string;
-    community_image_url: string;
-    community_banner_url: string;
+    icon_image: string;
+    banner_image: string;
+    member_count: number;
+    role: string;
+    is_pending: boolean;
 }
 
 export interface GetCommunitiesResponse {
@@ -16,4 +19,16 @@ export interface GetCommunitiesResponse {
 
 export interface GetCategoriesResponse {
     categories: string[];
+}
+
+export interface CommunityMember {
+    user_id: string;
+    role: string;
+}
+
+export interface GetCommunityMembersResponse {
+    members: CommunityMember[];
+    total_members: number;
+    total_pages: number;
+    current_page: number;
 }

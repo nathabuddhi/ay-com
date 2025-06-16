@@ -14,7 +14,14 @@ service CommunityService {
     rpc Community_GetUserPendingCommunities (StringCommunity) returns (ApiResponseCommunity);
     rpc Community_GetUserPendingApprovalCommunities (StringCommunity) returns (ApiResponseCommunity);
     rpc Community_GetCategories (StringCommunity) returns (GetCategoriesResponse);
-    rpc Community_GetCommunityById (StringCommunity) returns (ApiResponseCommunity);
+    rpc Community_GetCommunityById (GeneralCommunityRequest) returns (ApiResponseCommunity);
+    rpc Community_GetCommunityMembers (StringCommunity) returns (ApiResponseCommunity);
+
+    rpc Community_JoinCommunity (GeneralCommunityRequest) returns (ApiResponseCommunity);
+    rpc Community_LeaveCommunity (GeneralCommunityRequest) returns (ApiResponseCommunity);
+    rpc Community_ApproveJoinRequest (GeneralModeratorRequest) returns (ApiResponseCommunity);
+    rpc Community_DenyJoinRequest (GeneralModeratorRequest) returns (ApiResponseCommunity);
+    rpc Community_GetJoinRequests (StringCommunity) returns (ApiResponseCommunity);
 
     // Admin Routes
     rpc Admin_DeleteCategory (StringCommunity) returns (ApiResponseCommunity);
@@ -34,8 +41,23 @@ message StringCommunity {
     string value = 1;
 }
 
+message GeneralCommunityRequest {
+    string community_id = 1;
+    string user_id = 2;
+}
+
+message GeneralModeratorRequest {
+    string community_id = 1;
+    string user_id = 2;
+    string moderator_id = 3;
+}
+
 message BoolCommunity {
     bool value = 1;
+}
+
+message GetMembersResponse {
+    repeated string members = 1;
 }
 
 message RejectCommunityRequest {
@@ -62,6 +84,8 @@ message Community {
     string banner_image = 8;
     string icon_image = 9;
     int32 member_count = 10;
+    string role = 11;
+    bool is_pending = 12;
 }
 
 message CreateCommunityRequest {

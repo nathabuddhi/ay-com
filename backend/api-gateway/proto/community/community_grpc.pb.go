@@ -26,6 +26,12 @@ const (
 	CommunityService_Community_GetUserPendingApprovalCommunities_FullMethodName = "/community.CommunityService/Community_GetUserPendingApprovalCommunities"
 	CommunityService_Community_GetCategories_FullMethodName                     = "/community.CommunityService/Community_GetCategories"
 	CommunityService_Community_GetCommunityById_FullMethodName                  = "/community.CommunityService/Community_GetCommunityById"
+	CommunityService_Community_GetCommunityMembers_FullMethodName               = "/community.CommunityService/Community_GetCommunityMembers"
+	CommunityService_Community_JoinCommunity_FullMethodName                     = "/community.CommunityService/Community_JoinCommunity"
+	CommunityService_Community_LeaveCommunity_FullMethodName                    = "/community.CommunityService/Community_LeaveCommunity"
+	CommunityService_Community_ApproveJoinRequest_FullMethodName                = "/community.CommunityService/Community_ApproveJoinRequest"
+	CommunityService_Community_DenyJoinRequest_FullMethodName                   = "/community.CommunityService/Community_DenyJoinRequest"
+	CommunityService_Community_GetJoinRequests_FullMethodName                   = "/community.CommunityService/Community_GetJoinRequests"
 	CommunityService_Admin_DeleteCategory_FullMethodName                        = "/community.CommunityService/Admin_DeleteCategory"
 	CommunityService_Admin_AddCategory_FullMethodName                           = "/community.CommunityService/Admin_AddCategory"
 	CommunityService_Admin_GetAllCommunityRequests_FullMethodName               = "/community.CommunityService/Admin_GetAllCommunityRequests"
@@ -44,7 +50,13 @@ type CommunityServiceClient interface {
 	Community_GetUserPendingCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_GetUserPendingApprovalCommunities(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Community_GetCategories(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
-	Community_GetCommunityById(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetCommunityById(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetCommunityMembers(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_JoinCommunity(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_LeaveCommunity(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_ApproveJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_DenyJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
+	Community_GetJoinRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_DeleteCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
 	Admin_AddCategory(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error)
@@ -121,10 +133,70 @@ func (c *communityServiceClient) Community_GetCategories(ctx context.Context, in
 	return out, nil
 }
 
-func (c *communityServiceClient) Community_GetCommunityById(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+func (c *communityServiceClient) Community_GetCommunityById(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseCommunity)
 	err := c.cc.Invoke(ctx, CommunityService_Community_GetCommunityById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_GetCommunityMembers(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetCommunityMembers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_JoinCommunity(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_JoinCommunity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_LeaveCommunity(ctx context.Context, in *GeneralCommunityRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_LeaveCommunity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_ApproveJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_ApproveJoinRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_DenyJoinRequest(ctx context.Context, in *GeneralModeratorRequest, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_DenyJoinRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) Community_GetJoinRequests(ctx context.Context, in *StringCommunity, opts ...grpc.CallOption) (*ApiResponseCommunity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseCommunity)
+	err := c.cc.Invoke(ctx, CommunityService_Community_GetJoinRequests_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +264,13 @@ type CommunityServiceServer interface {
 	Community_GetUserPendingCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Community_GetUserPendingApprovalCommunities(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Community_GetCategories(context.Context, *StringCommunity) (*GetCategoriesResponse, error)
-	Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_GetCommunityById(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error)
+	Community_GetCommunityMembers(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
+	Community_JoinCommunity(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error)
+	Community_LeaveCommunity(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error)
+	Community_ApproveJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
+	Community_DenyJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error)
+	Community_GetJoinRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	// Admin Routes
 	Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
 	Admin_AddCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error)
@@ -227,8 +305,26 @@ func (UnimplementedCommunityServiceServer) Community_GetUserPendingApprovalCommu
 func (UnimplementedCommunityServiceServer) Community_GetCategories(context.Context, *StringCommunity) (*GetCategoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCategories not implemented")
 }
-func (UnimplementedCommunityServiceServer) Community_GetCommunityById(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+func (UnimplementedCommunityServiceServer) Community_GetCommunityById(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCommunityById not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_GetCommunityMembers(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetCommunityMembers not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_JoinCommunity(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_JoinCommunity not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_LeaveCommunity(context.Context, *GeneralCommunityRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_LeaveCommunity not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_ApproveJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_ApproveJoinRequest not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_DenyJoinRequest(context.Context, *GeneralModeratorRequest) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_DenyJoinRequest not implemented")
+}
+func (UnimplementedCommunityServiceServer) Community_GetJoinRequests(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Community_GetJoinRequests not implemented")
 }
 func (UnimplementedCommunityServiceServer) Admin_DeleteCategory(context.Context, *StringCommunity) (*ApiResponseCommunity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_DeleteCategory not implemented")
@@ -375,7 +471,7 @@ func _CommunityService_Community_GetCategories_Handler(srv interface{}, ctx cont
 }
 
 func _CommunityService_Community_GetCommunityById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StringCommunity)
+	in := new(GeneralCommunityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -387,7 +483,115 @@ func _CommunityService_Community_GetCommunityById_Handler(srv interface{}, ctx c
 		FullMethod: CommunityService_Community_GetCommunityById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommunityServiceServer).Community_GetCommunityById(ctx, req.(*StringCommunity))
+		return srv.(CommunityServiceServer).Community_GetCommunityById(ctx, req.(*GeneralCommunityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_GetCommunityMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetCommunityMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetCommunityMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetCommunityMembers(ctx, req.(*StringCommunity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_JoinCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralCommunityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_JoinCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_JoinCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_JoinCommunity(ctx, req.(*GeneralCommunityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_LeaveCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralCommunityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_LeaveCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_LeaveCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_LeaveCommunity(ctx, req.(*GeneralCommunityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_ApproveJoinRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralModeratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_ApproveJoinRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_ApproveJoinRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_ApproveJoinRequest(ctx, req.(*GeneralModeratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_DenyJoinRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GeneralModeratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_DenyJoinRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_DenyJoinRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_DenyJoinRequest(ctx, req.(*GeneralModeratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_Community_GetJoinRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringCommunity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).Community_GetJoinRequests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_Community_GetJoinRequests_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).Community_GetJoinRequests(ctx, req.(*StringCommunity))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -516,6 +720,30 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Community_GetCommunityById",
 			Handler:    _CommunityService_Community_GetCommunityById_Handler,
+		},
+		{
+			MethodName: "Community_GetCommunityMembers",
+			Handler:    _CommunityService_Community_GetCommunityMembers_Handler,
+		},
+		{
+			MethodName: "Community_JoinCommunity",
+			Handler:    _CommunityService_Community_JoinCommunity_Handler,
+		},
+		{
+			MethodName: "Community_LeaveCommunity",
+			Handler:    _CommunityService_Community_LeaveCommunity_Handler,
+		},
+		{
+			MethodName: "Community_ApproveJoinRequest",
+			Handler:    _CommunityService_Community_ApproveJoinRequest_Handler,
+		},
+		{
+			MethodName: "Community_DenyJoinRequest",
+			Handler:    _CommunityService_Community_DenyJoinRequest_Handler,
+		},
+		{
+			MethodName: "Community_GetJoinRequests",
+			Handler:    _CommunityService_Community_GetJoinRequests_Handler,
 		},
 		{
 			MethodName: "Admin_DeleteCategory",

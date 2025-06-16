@@ -63,7 +63,7 @@ func (h *Handler) Community_GetAllUserPendingApprovalCommunities(ctx context.Con
 
 	communitiesResponse := make([]*pb.Community, len(communities))
 	for i, community := range communities {
-		community, err := h.GetCommunityById(community.CommunityId)
+		community, err := h.User_GetCommunityById(community.CommunityId, req.Value)
 		if err != nil {
 			zap.L().Error("Failed to get community by ID", zap.String("community_id", community.CommunityId), zap.Error(err))
 			continue

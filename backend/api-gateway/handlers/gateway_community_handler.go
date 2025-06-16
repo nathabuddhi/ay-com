@@ -249,9 +249,10 @@ func Community_GetCommunityById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !checkRedisData("getcommunity/"+community_id, w) {
-		req := &pb.StringCommunity{}
+		req := &pb.GeneralCommunityRequest{}
 
-		req.Value = community_id
+		req.CommunityId = community_id
+		req.UserId = r.Context().Value(middleware.UserIdKey).(string)
 
 		ctx, cancel := createContext()
 		defer cancel()
@@ -267,6 +268,7 @@ func Community_GetAllCommunities(w http.ResponseWriter, r *http.Request) {
 	client := pb.NewCommunityServiceClient(conn)
 
 	req := &pb.StringCommunity{}
+	req.Value = r.Context().Value(middleware.UserIdKey).(string)
 
 	ctx, cancel := createContext()
 	defer cancel()
@@ -289,4 +291,59 @@ func Community_GetUserPendingCommunities(w http.ResponseWriter, r *http.Request)
 	resp, err := client.Community_GetUserPendingCommunities(ctx, req)
 
 	processCommunityResponseWithPayload[pb.GetCommunitiesResponse](resp, err, w)
+}
+
+func Community_GetCommunityMembers(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.StringCommunity](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetCommunityMembers(ctx, req)
+
+	processCommunityResponseWithPayload[pb.GetMembersResponse](resp, err, w)
+}
+
+func Community_ApproveMember(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.GeneralModeratorRequest](r, w)
+	req.ModeratorId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_ApproveJoinRequest(ctx, req)
+
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Community_JoinCommunity(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.GeneralCommunityRequest](r, w)
+	req.UserId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_JoinCommunity(ctx, req)
+
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Community_DenyMember(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.GeneralModeratorRequest](r, w)
+	req.ModeratorId = r.Context().Value(middleware.UserIdKey).(string)
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_DenyJoinRequest(ctx, req)
+
+	processCommunityResponseWithoutPayload(resp, err, w)
+}
+
+func Community_GetJoinRequests(w http.ResponseWriter, r *http.Request) {
+	req, client := processCommunityRequest[pb.StringCommunity](r, w)
+
+	ctx, cancel := createContext()
+	defer cancel()
+
+	resp, err := client.Community_GetJoinRequests(ctx, req)
+
+	processCommunityResponseWithoutPayload(resp, err, w)
 }

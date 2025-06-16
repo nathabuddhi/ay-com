@@ -28,7 +28,7 @@ func (h *Handler) Admin_GetAllCommunityRequests(ctx context.Context, req *pb.Str
 	}
 
 	for i, community := range communities {
-		getAllCommunitiesResponse.Communities[i], _ = h.GetCommunityById(community.CommunityId)
+		getAllCommunitiesResponse.Communities[i], _ = h.Admin_GetCommunityById(community.CommunityId)
 	}
 
 	returnData, err := anypb.New(getAllCommunitiesResponse)
@@ -61,6 +61,17 @@ func (h *Handler) Admin_ApproveCommunity(ctx context.Context, req *pb.StringComm
 		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to approve community."}, nil
 	}
 
+	owner := models.CommunityMember{
+		CommunityId: req.Value,
+		UserId:      community.CreatorId,
+		Role:        "owner",
+		JoinedAt:    community.CreatedAt,
+	}
+
+	if err := h.DB.WithContext(ctx).Create(&owner).Error; err != nil {
+		h.DB.WithContext(ctx).Delete(&community)
+		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to register community owner: " + err.Error()}, nil
+	}
 	rabbitmq.PublishSendNotification("system", community.CreatorId, "", "Your new community "+community.CommunityName+" has been approved.", "Your previous community request has been approved and has been created. Your community is live and can now be accessed by all users within AY.com. Thankyou.", "system")
 
 	return &pb.ApiResponseCommunity{

@@ -44,7 +44,6 @@
 
     onMount(async () => {
         const response = await getUserById(post.user_id);
-        console.log("Fetching thread owner with user_id:", post.user_id);
         if (response) {
             user = response;
         } else {
@@ -253,7 +252,6 @@
     }
 </script>
 
-<p class="repost-text">{post.is_reposting && "You Reposted"}</p>
 {#if isLoading}
     <article class="post loading-skeleton">
         <div class="post-avatar">
@@ -301,6 +299,15 @@
         </div>
     </article>
 {:else}
+    {#if post.is_reposting}
+        <p class="repost-text">You Reposted</p>
+    {/if}
+    {#if post.is_advertisement && post.is_reposting}
+        <br />
+    {/if}
+    {#if post.is_advertisement}
+        <p class="repost-text">Advertisement Thread</p>
+    {/if}
     <article class="post">
         <div class="post-avatar">
             <img src={`${AVATAR_IMG}/${post.user_id}.png`} alt={post.user_id} />

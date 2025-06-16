@@ -158,4 +158,9 @@ func InitSecuredCommunityRoutes(secured *mux.Router) {
 	secured.HandleFunc("/community/getusercommunities", Community_GetUserCommunities).Methods("GET")
 	secured.HandleFunc("/community/getuserpendingcommunities", Community_GetUserPendingCommunities).Methods("GET")
 	secured.HandleFunc("/community/get/{id}", Community_GetCommunityById).Methods("GET")
+	secured.HandleFunc("/community/getmembers", Community_GetCommunityMembers).Methods("GET")
+	secured.HandleFunc("/community/getjoinrequests", Community_GetJoinRequests).Methods("POST")
+	secured.HandleFunc("/community/join", Community_JoinCommunity).Methods("POST")
+	secured.HandleFunc("/community/approve", Community_ApproveMember).Methods("POST")
+	secured.HandleFunc("/community/deny", Community_DenyMember).Methods("POST")
 }

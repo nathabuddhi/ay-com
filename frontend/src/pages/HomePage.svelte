@@ -14,6 +14,8 @@
     import PremiumPage from "./PremiumPage.svelte";
     import AdminPage from "./AdminPage.svelte";
     import CreateCommunityPage from "./CreateCommunityPage.svelte";
+    import CommunitiesPage from "./CommunitiesPage.svelte";
+    import CommunityDetailPage from "./CommunityDetailPage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
@@ -48,10 +50,10 @@
             <AdminPage />
         {:else if currpage.includes("community/create")}
             <CreateCommunityPage />
-            <!-- {:else if currpage.includes("community/")}
+        {:else if currpage.includes("community/")}
             <CommunityDetailPage />
         {:else if currpage.includes("communities")}
-            <CommunityPage /> -->
+            <CommunitiesPage />
         {/if}
     </main>
     <RightBar />

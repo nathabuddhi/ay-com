@@ -89,6 +89,8 @@
         iconPreview = null;
         banner = null;
         bannerPreview = null;
+
+        selectedCategories = [];
     }
 </script>
 

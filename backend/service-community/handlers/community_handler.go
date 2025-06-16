@@ -25,7 +25,7 @@ func (h *Handler) Community_GetAllCommunities(ctx context.Context, req *pb.Strin
 	zap.L().Info("Getting all communities")
 
 	var communities []models.Community
-	err := h.DB.WithContext(ctx).Where("is_pending = ?", false).Find(&communities).Error
+	err := h.DB.WithContext(ctx).Where("is_pending = ? AND is_rejected = ?", false, false).Find(&communities).Error
 	if err != nil {
 		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to get communities."}, nil
 	}
@@ -39,7 +39,7 @@ func (h *Handler) Community_GetAllCommunities(ctx context.Context, req *pb.Strin
 	}
 
 	for i, community := range communities {
-		getAllCommunitiesResponse.Communities[i], _ = h.GetCommunityById(community.CommunityId)
+		getAllCommunitiesResponse.Communities[i], _ = h.User_GetCommunityById(community.CommunityId, req.Value)
 	}
 
 	returnData, err := anypb.New(getAllCommunitiesResponse)
@@ -77,17 +77,7 @@ func (h *Handler) Community_CreateCommunity(ctx context.Context, req *pb.CreateC
 		return &pb.ApiResponseCommunity{Success: false, Message: err.Error()}, nil
 	}
 
-	owner := models.CommunityMember{
-		CommunityId: req.CommunityId,
-		UserId:      req.UserId,
-		Role:        "owner",
-		JoinedAt:    community.CreatedAt,
-	}
-
-	if err := h.DB.WithContext(ctx).Create(&owner).Error; err != nil {
-		h.DB.WithContext(ctx).Delete(&community)
-		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to register community owner: " + err.Error()}, nil
-	}
+	
 
 	for _, category := range req.Categories {
 		newCategory := models.CommunityCategoryRelation{
@@ -97,7 +87,6 @@ func (h *Handler) Community_CreateCommunity(ctx context.Context, req *pb.CreateC
 
 		if err := h.DB.WithContext(ctx).Create(&newCategory).Error; err != nil {
 			h.DB.WithContext(ctx).Delete(&community)
-			h.DB.WithContext(ctx).Delete(&owner)
 			return &pb.ApiResponseCommunity{Success: false, Message: "Failed to register category: " + err.Error()}, nil
 		}
 	}
@@ -124,7 +113,7 @@ func (h *Handler) Community_GetAllUserCommunities(ctx context.Context, req *pb.S
 
 	communities := make([]*pb.Community, len(membership))
 	for i, member := range membership {
-		community, err := h.GetCommunityById(member.CommunityId)
+		community, err := h.User_GetCommunityById(member.CommunityId, req.Value)
 		if err != nil {
 			zap.L().Error("Failed to get community by ID", zap.String("community_id", member.CommunityId), zap.Error(err))
 			continue
@@ -166,7 +155,7 @@ func (h *Handler) Community_GetAllUserPendingCommunities(ctx context.Context, re
 
 	communities := make([]*pb.Community, len(membership))
 	for i, member := range membership {
-		community, err := h.GetCommunityById(member.CommunityId)
+		community, err := h.User_GetCommunityById(member.CommunityId, req.Value)
 		if err != nil {
 			zap.L().Error("Failed to get community by ID", zap.String("community_id", member.CommunityId), zap.Error(err))
 			continue
@@ -193,10 +182,10 @@ func (h *Handler) Community_GetAllUserPendingCommunities(ctx context.Context, re
 	}, nil
 }
 
-func (h *Handler) Community_GetCommunityById(ctx context.Context, req *pb.StringCommunity) (*pb.ApiResponseCommunity, error) {
-	zap.L().Info("Getting community by ID", zap.String("community_id", req.Value))
+func (h *Handler) Community_GetCommunityById(ctx context.Context, req *pb.GeneralCommunityRequest) (*pb.ApiResponseCommunity, error) {
+	zap.L().Info("Getting community by ID", zap.String("community_id", req.CommunityId))
 
-	community, err := h.GetCommunityById(req.Value)
+	community, err := h.User_GetCommunityById(req.CommunityId, req.UserId)
 	if err != nil {
 		return &pb.ApiResponseCommunity{Success: false, Message: "Failed to get community: " + err.Error()}, nil
 	}

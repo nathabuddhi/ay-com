@@ -16,7 +16,7 @@ func (h *Handler) GetMemberCount(communityId string) int32 {
 	return int32(memberCount)
 }
 
-func (h *Handler) GetCommunityById(communityId string) (*pb.Community, error) {
+func (h *Handler) Admin_GetCommunityById(communityId string) (*pb.Community, error) {
 	var community models.Community
 	err := h.DB.Where("community_id = ? AND is_rejected = ?", communityId, false).First(&community).Error
 	if err != nil {
@@ -33,5 +33,27 @@ func (h *Handler) GetCommunityById(communityId string) (*pb.Community, error) {
 		CreatedAt:     community.CreatedAt.String(),
 		Categories:    h.GetCommunityCategories(communityId),
 		MemberCount:   h.GetMemberCount(community.CommunityId),
+	}, nil
+}
+
+func (h *Handler) User_GetCommunityById(communityId string, requesterId string) (*pb.Community, error) {
+	var community models.Community
+	err := h.DB.Where("community_id = ? AND is_rejected = ?", communityId, false).First(&community).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Community{
+		CommunityId:   community.CommunityId,
+		CommunityName: community.CommunityName,
+		Description:   community.Description,
+		IconImage:     community.IconImage,
+		BannerImage:   community.BannerImage,
+		CreatorId:     community.CreatorId,
+		CreatedAt:     community.CreatedAt.String(),
+		Categories:    h.GetCommunityCategories(communityId),
+		MemberCount:   h.GetMemberCount(community.CommunityId),
+		Role:          h.GetUserRole(requesterId, communityId),
+		IsPending:     h.IsUserPendingJoin(requesterId, communityId),
 	}, nil
 }
