@@ -2374,50 +2374,6 @@ func (x *IsUserFollowingRequest) GetFollowingId() string {
 	return ""
 }
 
-type SearchPeopleRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Keyword       string                 `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SearchPeopleRequest) Reset() {
-	*x = SearchPeopleRequest{}
-	mi := &file_user_proto_msgTypes[40]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SearchPeopleRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SearchPeopleRequest) ProtoMessage() {}
-
-func (x *SearchPeopleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_proto_msgTypes[40]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SearchPeopleRequest.ProtoReflect.Descriptor instead.
-func (*SearchPeopleRequest) Descriptor() ([]byte, []int) {
-	return file_user_proto_rawDescGZIP(), []int{40}
-}
-
-func (x *SearchPeopleRequest) GetKeyword() string {
-	if x != nil {
-		return x.Keyword
-	}
-	return ""
-}
-
 type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
@@ -2433,7 +2389,7 @@ type LoginResponse struct {
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_user_proto_msgTypes[41]
+	mi := &file_user_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2445,7 +2401,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_proto_msgTypes[41]
+	mi := &file_user_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2458,7 +2414,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_user_proto_rawDescGZIP(), []int{41}
+	return file_user_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *LoginResponse) GetToken() string {
@@ -2521,7 +2477,7 @@ type BlockedUser struct {
 
 func (x *BlockedUser) Reset() {
 	*x = BlockedUser{}
-	mi := &file_user_proto_msgTypes[42]
+	mi := &file_user_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2533,7 +2489,7 @@ func (x *BlockedUser) String() string {
 func (*BlockedUser) ProtoMessage() {}
 
 func (x *BlockedUser) ProtoReflect() protoreflect.Message {
-	mi := &file_user_proto_msgTypes[42]
+	mi := &file_user_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2546,7 +2502,7 @@ func (x *BlockedUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockedUser.ProtoReflect.Descriptor instead.
 func (*BlockedUser) Descriptor() ([]byte, []int) {
-	return file_user_proto_rawDescGZIP(), []int{42}
+	return file_user_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *BlockedUser) GetUserId() string {
@@ -2579,7 +2535,7 @@ type AllBlockedUserResponse struct {
 
 func (x *AllBlockedUserResponse) Reset() {
 	*x = AllBlockedUserResponse{}
-	mi := &file_user_proto_msgTypes[43]
+	mi := &file_user_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2591,7 +2547,7 @@ func (x *AllBlockedUserResponse) String() string {
 func (*AllBlockedUserResponse) ProtoMessage() {}
 
 func (x *AllBlockedUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_proto_msgTypes[43]
+	mi := &file_user_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2604,7 +2560,7 @@ func (x *AllBlockedUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllBlockedUserResponse.ProtoReflect.Descriptor instead.
 func (*AllBlockedUserResponse) Descriptor() ([]byte, []int) {
-	return file_user_proto_rawDescGZIP(), []int{43}
+	return file_user_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *AllBlockedUserResponse) GetBlocked() []*BlockedUser {
@@ -2624,7 +2580,7 @@ type RefreshTokenResponse struct {
 
 func (x *RefreshTokenResponse) Reset() {
 	*x = RefreshTokenResponse{}
-	mi := &file_user_proto_msgTypes[44]
+	mi := &file_user_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2636,7 +2592,7 @@ func (x *RefreshTokenResponse) String() string {
 func (*RefreshTokenResponse) ProtoMessage() {}
 
 func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_proto_msgTypes[44]
+	mi := &file_user_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2649,7 +2605,7 @@ func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
 func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
-	return file_user_proto_rawDescGZIP(), []int{44}
+	return file_user_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *RefreshTokenResponse) GetRefreshToken() string {
@@ -2664,6 +2620,50 @@ func (x *RefreshTokenResponse) GetAccessToken() string {
 		return x.AccessToken
 	}
 	return ""
+}
+
+type SearchPeopleResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*UserProfile         `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPeopleResponse) Reset() {
+	*x = SearchPeopleResponse{}
+	mi := &file_user_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPeopleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPeopleResponse) ProtoMessage() {}
+
+func (x *SearchPeopleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPeopleResponse.ProtoReflect.Descriptor instead.
+func (*SearchPeopleResponse) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *SearchPeopleResponse) GetUsers() []*UserProfile {
+	if x != nil {
+		return x.Users
+	}
+	return nil
 }
 
 var File_user_proto protoreflect.FileDescriptor
@@ -2843,9 +2843,7 @@ const file_user_proto_rawDesc = "" +
 	"\x16IsUserFollowingRequest\x12\x1f\n" +
 	"\vfollower_id\x18\x01 \x01(\tR\n" +
 	"followerId\x12!\n" +
-	"\ffollowing_id\x18\x02 \x01(\tR\vfollowingId\"/\n" +
-	"\x13SearchPeopleRequest\x12\x18\n" +
-	"\akeyword\x18\x01 \x01(\tR\akeyword\"\xcf\x01\n" +
+	"\ffollowing_id\x18\x02 \x01(\tR\vfollowingId\"\xcf\x01\n" +
 	"\rLoginResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1a\n" +
@@ -2863,7 +2861,9 @@ const file_user_proto_rawDesc = "" +
 	"\ablocked\x18\x01 \x03(\v2\x11.user.BlockedUserR\ablocked\"^\n" +
 	"\x14RefreshTokenResponse\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12!\n" +
-	"\faccess_token\x18\x02 \x01(\tR\vaccessToken2\xc7\x16\n" +
+	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\"?\n" +
+	"\x14SearchPeopleResponse\x12'\n" +
+	"\x05users\x18\x01 \x03(\v2\x11.user.UserProfileR\x05users2\xbc\x16\n" +
 	"\vUserService\x12=\n" +
 	"\rUser_Register\x12\x15.user.RegisterRequest\x1a\x15.user.ApiResponseUser\x127\n" +
 	"\n" +
@@ -2877,8 +2877,7 @@ const file_user_proto_rawDesc = "" +
 	"\x0fUser_GetProfile\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12@\n" +
 	"\x0eUser_GetUserId\x12\x17.user.GetProfileRequest\x1a\x15.user.ApiResponseUser\x12I\n" +
 	"\x13User_ChangePassword\x12\x1b.user.ChangePasswordRequest\x1a\x15.user.ApiResponseUser\x12K\n" +
-	"\x12User_UpdateProfile\x12\x1e.user.UpdateUserProfileRequest\x1a\x15.user.ApiResponseUser\x12E\n" +
-	"\x11User_SearchPeople\x12\x19.user.SearchPeopleRequest\x1a\x15.user.ApiResponseUser\x12>\n" +
+	"\x12User_UpdateProfile\x12\x1e.user.UpdateUserProfileRequest\x1a\x15.user.ApiResponseUser\x12>\n" +
 	"\x13User_GetSelfProfile\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12A\n" +
 	"\x0fUser_FollowUser\x12\x17.user.FollowUserRequest\x1a\x15.user.ApiResponseUser\x12?\n" +
 	"\x0eUser_BlockUser\x12\x16.user.BlockUserRequest\x1a\x15.user.ApiResponseUser\x12E\n" +
@@ -2895,7 +2894,8 @@ const file_user_proto_rawDesc = "" +
 	"\x12User_IsUserPrivate\x12\x1d.user.IsAccountPrivateRequest\x1a\x0e.user.BoolUser\x12D\n" +
 	"\x14User_IsUserFollowing\x12\x1c.user.IsUserFollowingRequest\x1a\x0e.user.BoolUser\x12<\n" +
 	"\x11User_RefreshToken\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12C\n" +
-	"\x0fUser_SendReport\x12\x19.user.CreateReportRequest\x1a\x15.user.ApiResponseUser\x125\n" +
+	"\x0fUser_SendReport\x12\x19.user.CreateReportRequest\x1a\x15.user.ApiResponseUser\x12:\n" +
+	"\x0fUser_SearchUser\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x125\n" +
 	"\x11Admin_IsUserAdmin\x12\x10.user.StringUser\x1a\x0e.user.BoolUser\x12K\n" +
 	" Admin_GetAllVerifyAccountRequest\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12F\n" +
 	"\x1bAdmin_ApprovePremiumRequest\x12\x10.user.StringUser\x1a\x15.user.ApiResponseUser\x12O\n" +
@@ -2961,11 +2961,11 @@ var file_user_proto_goTypes = []any{
 	(*UpdateUserProfileRequest)(nil),         // 37: user.UpdateUserProfileRequest
 	(*IsAccountPrivateRequest)(nil),          // 38: user.IsAccountPrivateRequest
 	(*IsUserFollowingRequest)(nil),           // 39: user.IsUserFollowingRequest
-	(*SearchPeopleRequest)(nil),              // 40: user.SearchPeopleRequest
-	(*LoginResponse)(nil),                    // 41: user.LoginResponse
-	(*BlockedUser)(nil),                      // 42: user.BlockedUser
-	(*AllBlockedUserResponse)(nil),           // 43: user.AllBlockedUserResponse
-	(*RefreshTokenResponse)(nil),             // 44: user.RefreshTokenResponse
+	(*LoginResponse)(nil),                    // 40: user.LoginResponse
+	(*BlockedUser)(nil),                      // 41: user.BlockedUser
+	(*AllBlockedUserResponse)(nil),           // 42: user.AllBlockedUserResponse
+	(*RefreshTokenResponse)(nil),             // 43: user.RefreshTokenResponse
+	(*SearchPeopleResponse)(nil),             // 44: user.SearchPeopleResponse
 	(*anypb.Any)(nil),                        // 45: google.protobuf.Any
 }
 var file_user_proto_depIdxs = []int32{
@@ -2975,20 +2975,20 @@ var file_user_proto_depIdxs = []int32{
 	30, // 3: user.GetAllVerifyAccountResponse.requests:type_name -> user.VerifyAccountRequest
 	8,  // 4: user.AllFollowersResponse.followers:type_name -> user.StringUser
 	8,  // 5: user.AllFollowingResponse.following:type_name -> user.StringUser
-	42, // 6: user.AllBlockedUserResponse.blocked:type_name -> user.BlockedUser
-	13, // 7: user.UserService.User_Register:input_type -> user.RegisterRequest
-	14, // 8: user.UserService.User_Login:input_type -> user.LoginRequest
-	15, // 9: user.UserService.User_RequestVerificationCode:input_type -> user.VerificationRequest
-	16, // 10: user.UserService.User_ValidateVerificationCode:input_type -> user.ValidateCodeRequest
-	18, // 11: user.UserService.User_GetSecurityQuestion:input_type -> user.GetSecurityQuestionRequest
-	20, // 12: user.UserService.User_ValidateSecurityAnswer:input_type -> user.ValidateSecurityAnswerRequest
-	19, // 13: user.UserService.User_ResetPassword:input_type -> user.ResetPasswordRequest
-	8,  // 14: user.UserService.User_GetFollowRecommendations:input_type -> user.StringUser
-	12, // 15: user.UserService.User_GetProfile:input_type -> user.GetProfileRequest
-	12, // 16: user.UserService.User_GetUserId:input_type -> user.GetProfileRequest
-	17, // 17: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
-	37, // 18: user.UserService.User_UpdateProfile:input_type -> user.UpdateUserProfileRequest
-	40, // 19: user.UserService.User_SearchPeople:input_type -> user.SearchPeopleRequest
+	41, // 6: user.AllBlockedUserResponse.blocked:type_name -> user.BlockedUser
+	11, // 7: user.SearchPeopleResponse.users:type_name -> user.UserProfile
+	13, // 8: user.UserService.User_Register:input_type -> user.RegisterRequest
+	14, // 9: user.UserService.User_Login:input_type -> user.LoginRequest
+	15, // 10: user.UserService.User_RequestVerificationCode:input_type -> user.VerificationRequest
+	16, // 11: user.UserService.User_ValidateVerificationCode:input_type -> user.ValidateCodeRequest
+	18, // 12: user.UserService.User_GetSecurityQuestion:input_type -> user.GetSecurityQuestionRequest
+	20, // 13: user.UserService.User_ValidateSecurityAnswer:input_type -> user.ValidateSecurityAnswerRequest
+	19, // 14: user.UserService.User_ResetPassword:input_type -> user.ResetPasswordRequest
+	8,  // 15: user.UserService.User_GetFollowRecommendations:input_type -> user.StringUser
+	12, // 16: user.UserService.User_GetProfile:input_type -> user.GetProfileRequest
+	12, // 17: user.UserService.User_GetUserId:input_type -> user.GetProfileRequest
+	17, // 18: user.UserService.User_ChangePassword:input_type -> user.ChangePasswordRequest
+	37, // 19: user.UserService.User_UpdateProfile:input_type -> user.UpdateUserProfileRequest
 	8,  // 20: user.UserService.User_GetSelfProfile:input_type -> user.StringUser
 	21, // 21: user.UserService.User_FollowUser:input_type -> user.FollowUserRequest
 	22, // 22: user.UserService.User_BlockUser:input_type -> user.BlockUserRequest
@@ -3006,29 +3006,29 @@ var file_user_proto_depIdxs = []int32{
 	39, // 34: user.UserService.User_IsUserFollowing:input_type -> user.IsUserFollowingRequest
 	8,  // 35: user.UserService.User_RefreshToken:input_type -> user.StringUser
 	1,  // 36: user.UserService.User_SendReport:input_type -> user.CreateReportRequest
-	8,  // 37: user.UserService.Admin_IsUserAdmin:input_type -> user.StringUser
-	8,  // 38: user.UserService.Admin_GetAllVerifyAccountRequest:input_type -> user.StringUser
-	8,  // 39: user.UserService.Admin_ApprovePremiumRequest:input_type -> user.StringUser
-	10, // 40: user.UserService.Admin_RejectPremiumRequest:input_type -> user.RejectPremiumRequest
-	8,  // 41: user.UserService.Admin_GetAllUsers:input_type -> user.StringUser
-	8,  // 42: user.UserService.Admin_ToggleUserBan:input_type -> user.StringUser
-	2,  // 43: user.UserService.Admin_SendNewsLetter:input_type -> user.SendNewsLetterRequest
-	8,  // 44: user.UserService.Admin_GetAllReports:input_type -> user.StringUser
-	8,  // 45: user.UserService.Admin_ApproveReport:input_type -> user.StringUser
-	8,  // 46: user.UserService.Admin_RejectReport:input_type -> user.StringUser
-	0,  // 47: user.UserService.User_Register:output_type -> user.ApiResponseUser
-	0,  // 48: user.UserService.User_Login:output_type -> user.ApiResponseUser
-	0,  // 49: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 50: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
-	0,  // 51: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
-	0,  // 52: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
-	0,  // 53: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
-	0,  // 54: user.UserService.User_GetFollowRecommendations:output_type -> user.ApiResponseUser
-	0,  // 55: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
-	0,  // 56: user.UserService.User_GetUserId:output_type -> user.ApiResponseUser
-	0,  // 57: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
-	0,  // 58: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
-	0,  // 59: user.UserService.User_SearchPeople:output_type -> user.ApiResponseUser
+	8,  // 37: user.UserService.User_SearchUser:input_type -> user.StringUser
+	8,  // 38: user.UserService.Admin_IsUserAdmin:input_type -> user.StringUser
+	8,  // 39: user.UserService.Admin_GetAllVerifyAccountRequest:input_type -> user.StringUser
+	8,  // 40: user.UserService.Admin_ApprovePremiumRequest:input_type -> user.StringUser
+	10, // 41: user.UserService.Admin_RejectPremiumRequest:input_type -> user.RejectPremiumRequest
+	8,  // 42: user.UserService.Admin_GetAllUsers:input_type -> user.StringUser
+	8,  // 43: user.UserService.Admin_ToggleUserBan:input_type -> user.StringUser
+	2,  // 44: user.UserService.Admin_SendNewsLetter:input_type -> user.SendNewsLetterRequest
+	8,  // 45: user.UserService.Admin_GetAllReports:input_type -> user.StringUser
+	8,  // 46: user.UserService.Admin_ApproveReport:input_type -> user.StringUser
+	8,  // 47: user.UserService.Admin_RejectReport:input_type -> user.StringUser
+	0,  // 48: user.UserService.User_Register:output_type -> user.ApiResponseUser
+	0,  // 49: user.UserService.User_Login:output_type -> user.ApiResponseUser
+	0,  // 50: user.UserService.User_RequestVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 51: user.UserService.User_ValidateVerificationCode:output_type -> user.ApiResponseUser
+	0,  // 52: user.UserService.User_GetSecurityQuestion:output_type -> user.ApiResponseUser
+	0,  // 53: user.UserService.User_ValidateSecurityAnswer:output_type -> user.ApiResponseUser
+	0,  // 54: user.UserService.User_ResetPassword:output_type -> user.ApiResponseUser
+	0,  // 55: user.UserService.User_GetFollowRecommendations:output_type -> user.ApiResponseUser
+	0,  // 56: user.UserService.User_GetProfile:output_type -> user.ApiResponseUser
+	0,  // 57: user.UserService.User_GetUserId:output_type -> user.ApiResponseUser
+	0,  // 58: user.UserService.User_ChangePassword:output_type -> user.ApiResponseUser
+	0,  // 59: user.UserService.User_UpdateProfile:output_type -> user.ApiResponseUser
 	0,  // 60: user.UserService.User_GetSelfProfile:output_type -> user.ApiResponseUser
 	0,  // 61: user.UserService.User_FollowUser:output_type -> user.ApiResponseUser
 	0,  // 62: user.UserService.User_BlockUser:output_type -> user.ApiResponseUser
@@ -3046,21 +3046,22 @@ var file_user_proto_depIdxs = []int32{
 	9,  // 74: user.UserService.User_IsUserFollowing:output_type -> user.BoolUser
 	0,  // 75: user.UserService.User_RefreshToken:output_type -> user.ApiResponseUser
 	0,  // 76: user.UserService.User_SendReport:output_type -> user.ApiResponseUser
-	9,  // 77: user.UserService.Admin_IsUserAdmin:output_type -> user.BoolUser
-	0,  // 78: user.UserService.Admin_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
-	0,  // 79: user.UserService.Admin_ApprovePremiumRequest:output_type -> user.ApiResponseUser
-	0,  // 80: user.UserService.Admin_RejectPremiumRequest:output_type -> user.ApiResponseUser
-	0,  // 81: user.UserService.Admin_GetAllUsers:output_type -> user.ApiResponseUser
-	0,  // 82: user.UserService.Admin_ToggleUserBan:output_type -> user.ApiResponseUser
-	0,  // 83: user.UserService.Admin_SendNewsLetter:output_type -> user.ApiResponseUser
-	0,  // 84: user.UserService.Admin_GetAllReports:output_type -> user.ApiResponseUser
-	0,  // 85: user.UserService.Admin_ApproveReport:output_type -> user.ApiResponseUser
-	0,  // 86: user.UserService.Admin_RejectReport:output_type -> user.ApiResponseUser
-	47, // [47:87] is the sub-list for method output_type
-	7,  // [7:47] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	0,  // 77: user.UserService.User_SearchUser:output_type -> user.ApiResponseUser
+	9,  // 78: user.UserService.Admin_IsUserAdmin:output_type -> user.BoolUser
+	0,  // 79: user.UserService.Admin_GetAllVerifyAccountRequest:output_type -> user.ApiResponseUser
+	0,  // 80: user.UserService.Admin_ApprovePremiumRequest:output_type -> user.ApiResponseUser
+	0,  // 81: user.UserService.Admin_RejectPremiumRequest:output_type -> user.ApiResponseUser
+	0,  // 82: user.UserService.Admin_GetAllUsers:output_type -> user.ApiResponseUser
+	0,  // 83: user.UserService.Admin_ToggleUserBan:output_type -> user.ApiResponseUser
+	0,  // 84: user.UserService.Admin_SendNewsLetter:output_type -> user.ApiResponseUser
+	0,  // 85: user.UserService.Admin_GetAllReports:output_type -> user.ApiResponseUser
+	0,  // 86: user.UserService.Admin_ApproveReport:output_type -> user.ApiResponseUser
+	0,  // 87: user.UserService.Admin_RejectReport:output_type -> user.ApiResponseUser
+	48, // [48:88] is the sub-list for method output_type
+	8,  // [8:48] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }

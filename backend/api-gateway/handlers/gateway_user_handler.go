@@ -701,23 +701,13 @@ func User_DeactivateAccount(w http.ResponseWriter, r *http.Request) {
 	processUserResponseWithoutPayload(resp, err, w)
 }
 
-// User_SearchPeople godoc
-// @Summary Search for people
-// @Description Search for users based on criteria
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param searchPeople body pb.SearchPeopleRequest true "Search people request"
-// @Success 200 {object} types.ApiResponse
-// @Failure 400 {object} types.ApiResponse
-// @Router /user/searchpeople [post]
-func User_SearchPeople(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("User Search People is called.")
-	req, client := processUserRequest[pb.SearchPeopleRequest](r, w)
+func User_SearchUser(w http.ResponseWriter, r *http.Request) {
+	zap.L().Info("User Search Users is called.")
+	req, client := processUserRequest[pb.StringUser](r, w)
 	ctx, cancel := createContext()
 	defer cancel()
-	resp, err := client.User_SearchPeople(ctx, req)
-	processUserResponseWithoutPayload(resp, err, w)
+	resp, err := client.User_SearchUser(ctx, req)
+	processUserResponseWithPayload[pb.SearchPeopleResponse](resp, err, w)
 }
 
 // User_RefreshToken godoc

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"sort"
 	"time"
 
 	"github.com/nathabuddhi/ay-com/backend/service-user/models"
@@ -304,4 +305,140 @@ func (h *Handlers) User_GetSelfProfile(ctx context.Context, req *pb.StringUser) 
 		Message: "Get Self Profile successful.",
 		Data:    returnData,
 	}, nil
+}
+
+type userWithDistance struct {
+	user     models.User
+	distance int
+}
+
+func (h *Handlers) User_SearchUser(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	zap.L().Info("User Searching", zap.String("query", req.Value))
+
+	var users []models.User
+	if err := h.DB.Where("is_deactivated = ? AND is_banned = ?", false, false).Find(&users).Error; err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "Error fetching users: " + err.Error(),
+		}, nil
+	}
+
+	var userDistances []userWithDistance
+	for _, user := range users {
+		distance := h.FindDamerauLevenshteinDistance(req.Value, user.Username, user.Name)
+		userDistances = append(userDistances, userWithDistance{user: user, distance: distance})
+	}
+
+	sort.Slice(userDistances, func(i, j int) bool {
+		return userDistances[i].distance < userDistances[j].distance
+	})
+
+	var result []*pb.UserProfile
+	for _, uwd := range userDistances {
+		bio := safeString(uwd.user.Bio)
+		followers, err := h.GetFollowers(uwd.user.UserId)
+		following, err2 := h.GetFollowing(uwd.user.UserId)
+		if err != nil {
+			followers = 0
+		} else if err2 != nil {
+			following = 0
+		}
+		result = append(result, &pb.UserProfile{
+			UserId:      uwd.user.UserId,
+			Username:    uwd.user.Username,
+			Name:        uwd.user.Name,
+			Bio:         bio,
+			IsVerified:  uwd.user.IsVerified,
+			Gender:      uwd.user.Gender,
+			DateOfBirth: uwd.user.DateOfBirth.Format("2006-01-02"),
+			Email:       uwd.user.Email,
+			JoinDate:    uwd.user.JoinedAt.Format("2006-01-02"),
+			Followers:   int32(followers),
+			Following:   int32(following),
+		})
+	}
+
+	returnData, err := anypb.New(&pb.SearchPeopleResponse{Users: result})
+	if err != nil {
+		return &pb.ApiResponseUser{
+			Success: false,
+			Message: "An error occured: " + err.Error(),
+			Data:    nil,
+		}, nil
+	}
+
+	return &pb.ApiResponseUser{
+		Success: true,
+		Message: "User search successful.",
+		Data:    returnData,
+	}, nil
+}
+
+func (h *Handlers) FindDamerauLevenshteinDistance(query string, username string, fullname string) int {
+	distanceUsername := damerauLevenshtein(query, username)
+	distanceFullname := damerauLevenshtein(query, fullname)
+
+	if distanceUsername < distanceFullname {
+		return distanceUsername
+	}
+	return distanceFullname
+}
+
+func damerauLevenshtein(s1, s2 string) int {
+	len1 := len(s1)
+	len2 := len(s2)
+
+	d := make([][]int, len1+1)
+	for i := range d {
+		d[i] = make([]int, len2+1)
+	}
+
+	for i := 0; i <= len1; i++ {
+		d[i][0] = i
+	}
+	for j := 0; j <= len2; j++ {
+		d[0][j] = j
+	}
+
+	for i := 1; i <= len1; i++ {
+		for j := 1; j <= len2; j++ {
+			cost := 0
+			if s1[i-1] != s2[j-1] {
+				cost = 1
+			}
+
+			d[i][j] = min3(
+				d[i-1][j]+1,
+				d[i][j-1]+1,
+				d[i-1][j-1]+cost,
+			)
+
+			if i > 1 && j > 1 && s1[i-1] == s2[j-2] && s1[i-2] == s2[j-1] {
+				d[i][j] = min2(d[i][j], d[i-2][j-2]+1)
+			}
+		}
+	}
+
+	return d[len1][len2]
+}
+
+func min2(a, b int) int {
+	if a < b {
+		return a
+	}
+
+	return b
+}
+
+func min3(a, b, c int) int {
+	if a < b {
+		if a < c {
+			return a
+		}
+		return c
+	}
+	if b < c {
+		return b
+	}
+	return c
 }

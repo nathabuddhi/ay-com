@@ -81,7 +81,6 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 	secured.HandleFunc("/user/getprofile/{username}", User_GetProfile).Methods("GET")
 	secured.HandleFunc("/user/getuserid", User_GetUserId).Methods("POST")
 	secured.HandleFunc("/user/getselfprofile", User_GetSelfProfile).Methods("POST")
-	secured.HandleFunc("/user/searchpeople", User_SearchPeople).Methods("POST")
 	secured.HandleFunc("/user/changepassword", User_ChangePassword).Methods("PATCH")
 	secured.HandleFunc("/user/updateprofile", User_UpdateProfile).Methods("PATCH")
 
@@ -106,6 +105,7 @@ func InitSecuredUserRoutes(secured *mux.Router) {
 
 	secured.HandleFunc("/user/getfollowrecommendations", User_GetFollowRecommendations).Methods("GET")
 	secured.HandleFunc("/user/report", User_ReportUser).Methods("POST")
+	secured.HandleFunc("/user/search", User_SearchUser).Methods("POST")
 }
 
 func InitSecuredNotificationRoutes(secured *mux.Router) {

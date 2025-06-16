@@ -49,3 +49,7 @@ export interface RefreshTokenResponse {
 export interface GetFollowRecommendationsResponse {
     user_ids: string[];
 }
+
+export interface GetProfilesResponse {
+    users: UserProfile[];
+}

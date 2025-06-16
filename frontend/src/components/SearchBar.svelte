@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { SearchIcon } from "@lucide/svelte";
+    import { ClockIcon, SearchIcon } from "@lucide/svelte";
     import { onMount } from "svelte";
+    import ExploreMic from "./ExploreMic.svelte";
 
-    let searchQuery = "";
-    let isSearchFocused = false;
-    let recentSearches: string[] = [];
-    let debounceTimeout: ReturnType<typeof setTimeout>;
+    let searchQuery = $state("");
+    let isSearchFocused = $state(false);
+    let recentSearches: string[] = $state([]);
 
     onMount(() => {
         const savedSearches = localStorage.getItem("recentSearches");
@@ -13,13 +13,6 @@
             recentSearches = JSON.parse(savedSearches);
         }
     });
-
-    function searchDebouncer() {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-            handleSearch(new KeyboardEvent("keydown", { key: "Enter" }));
-        }, 300);
-    }
 
     function handleSearch(event: KeyboardEvent) {
         if (event.key === "Enter" && searchQuery.trim()) {
@@ -61,8 +54,8 @@
             onfocus={() => (isSearchFocused = true)}
             onblur={() => setTimeout(() => (isSearchFocused = false), 200)}
             onkeydown={handleSearch}
-            oninput={searchDebouncer}
         />
+        <ExploreMic bind:query={searchQuery} />
     </div>
 
     {#if isSearchFocused && recentSearches.length > 0}
@@ -83,18 +76,7 @@
                         onclick={() => selectRecentSearch(search)}
                     >
                         <div class="search-history-icon">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
+                            <ClockIcon />
                         </div>
                         <span>{search}</span>
                     </li>
@@ -104,7 +86,7 @@
     {/if}
 </div>
 
-<!-- svelte-ignore css-unused-selector -->
+<!-- svelte-ignore css_unused_selector -->
 <style lang="scss">
     @use "../styles/home.scss";
 </style>

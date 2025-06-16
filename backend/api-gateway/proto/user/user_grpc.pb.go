@@ -31,7 +31,6 @@ const (
 	UserService_User_GetUserId_FullMethodName                   = "/user.UserService/User_GetUserId"
 	UserService_User_ChangePassword_FullMethodName              = "/user.UserService/User_ChangePassword"
 	UserService_User_UpdateProfile_FullMethodName               = "/user.UserService/User_UpdateProfile"
-	UserService_User_SearchPeople_FullMethodName                = "/user.UserService/User_SearchPeople"
 	UserService_User_GetSelfProfile_FullMethodName              = "/user.UserService/User_GetSelfProfile"
 	UserService_User_FollowUser_FullMethodName                  = "/user.UserService/User_FollowUser"
 	UserService_User_BlockUser_FullMethodName                   = "/user.UserService/User_BlockUser"
@@ -49,6 +48,7 @@ const (
 	UserService_User_IsUserFollowing_FullMethodName             = "/user.UserService/User_IsUserFollowing"
 	UserService_User_RefreshToken_FullMethodName                = "/user.UserService/User_RefreshToken"
 	UserService_User_SendReport_FullMethodName                  = "/user.UserService/User_SendReport"
+	UserService_User_SearchUser_FullMethodName                  = "/user.UserService/User_SearchUser"
 	UserService_Admin_IsUserAdmin_FullMethodName                = "/user.UserService/Admin_IsUserAdmin"
 	UserService_Admin_GetAllVerifyAccountRequest_FullMethodName = "/user.UserService/Admin_GetAllVerifyAccountRequest"
 	UserService_Admin_ApprovePremiumRequest_FullMethodName      = "/user.UserService/Admin_ApprovePremiumRequest"
@@ -78,7 +78,6 @@ type UserServiceClient interface {
 	User_GetUserId(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_UpdateProfile(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
-	User_SearchPeople(ctx context.Context, in *SearchPeopleRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_GetSelfProfile(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
@@ -96,6 +95,7 @@ type UserServiceClient interface {
 	User_IsUserFollowing(ctx context.Context, in *IsUserFollowingRequest, opts ...grpc.CallOption) (*BoolUser, error)
 	User_RefreshToken(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	User_SendReport(ctx context.Context, in *CreateReportRequest, opts ...grpc.CallOption) (*ApiResponseUser, error)
+	User_SearchUser(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error)
 	Admin_GetAllVerifyAccountRequest(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error)
@@ -231,16 +231,6 @@ func (c *userServiceClient) User_UpdateProfile(ctx context.Context, in *UpdateUs
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApiResponseUser)
 	err := c.cc.Invoke(ctx, UserService_User_UpdateProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) User_SearchPeople(ctx context.Context, in *SearchPeopleRequest, opts ...grpc.CallOption) (*ApiResponseUser, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiResponseUser)
-	err := c.cc.Invoke(ctx, UserService_User_SearchPeople_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -417,6 +407,16 @@ func (c *userServiceClient) User_SendReport(ctx context.Context, in *CreateRepor
 	return out, nil
 }
 
+func (c *userServiceClient) User_SearchUser(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*ApiResponseUser, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApiResponseUser)
+	err := c.cc.Invoke(ctx, UserService_User_SearchUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Admin_IsUserAdmin(ctx context.Context, in *StringUser, opts ...grpc.CallOption) (*BoolUser, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BoolUser)
@@ -534,7 +534,6 @@ type UserServiceServer interface {
 	User_GetUserId(context.Context, *GetProfileRequest) (*ApiResponseUser, error)
 	User_ChangePassword(context.Context, *ChangePasswordRequest) (*ApiResponseUser, error)
 	User_UpdateProfile(context.Context, *UpdateUserProfileRequest) (*ApiResponseUser, error)
-	User_SearchPeople(context.Context, *SearchPeopleRequest) (*ApiResponseUser, error)
 	User_GetSelfProfile(context.Context, *StringUser) (*ApiResponseUser, error)
 	User_FollowUser(context.Context, *FollowUserRequest) (*ApiResponseUser, error)
 	User_BlockUser(context.Context, *BlockUserRequest) (*ApiResponseUser, error)
@@ -552,6 +551,7 @@ type UserServiceServer interface {
 	User_IsUserFollowing(context.Context, *IsUserFollowingRequest) (*BoolUser, error)
 	User_RefreshToken(context.Context, *StringUser) (*ApiResponseUser, error)
 	User_SendReport(context.Context, *CreateReportRequest) (*ApiResponseUser, error)
+	User_SearchUser(context.Context, *StringUser) (*ApiResponseUser, error)
 	// Admin routes
 	Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error)
 	Admin_GetAllVerifyAccountRequest(context.Context, *StringUser) (*ApiResponseUser, error)
@@ -609,9 +609,6 @@ func (UnimplementedUserServiceServer) User_ChangePassword(context.Context, *Chan
 func (UnimplementedUserServiceServer) User_UpdateProfile(context.Context, *UpdateUserProfileRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_UpdateProfile not implemented")
 }
-func (UnimplementedUserServiceServer) User_SearchPeople(context.Context, *SearchPeopleRequest) (*ApiResponseUser, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method User_SearchPeople not implemented")
-}
 func (UnimplementedUserServiceServer) User_GetSelfProfile(context.Context, *StringUser) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_GetSelfProfile not implemented")
 }
@@ -662,6 +659,9 @@ func (UnimplementedUserServiceServer) User_RefreshToken(context.Context, *String
 }
 func (UnimplementedUserServiceServer) User_SendReport(context.Context, *CreateReportRequest) (*ApiResponseUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method User_SendReport not implemented")
+}
+func (UnimplementedUserServiceServer) User_SearchUser(context.Context, *StringUser) (*ApiResponseUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User_SearchUser not implemented")
 }
 func (UnimplementedUserServiceServer) Admin_IsUserAdmin(context.Context, *StringUser) (*BoolUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Admin_IsUserAdmin not implemented")
@@ -926,24 +926,6 @@ func _UserService_User_UpdateProfile_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).User_UpdateProfile(ctx, req.(*UpdateUserProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_User_SearchPeople_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchPeopleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).User_SearchPeople(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_User_SearchPeople_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).User_SearchPeople(ctx, req.(*SearchPeopleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1254,6 +1236,24 @@ func _UserService_User_SendReport_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_User_SearchUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).User_SearchUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_User_SearchUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).User_SearchUser(ctx, req.(*StringUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Admin_IsUserAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StringUser)
 	if err := dec(in); err != nil {
@@ -1490,10 +1490,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_User_UpdateProfile_Handler,
 		},
 		{
-			MethodName: "User_SearchPeople",
-			Handler:    _UserService_User_SearchPeople_Handler,
-		},
-		{
 			MethodName: "User_GetSelfProfile",
 			Handler:    _UserService_User_GetSelfProfile_Handler,
 		},
@@ -1560,6 +1556,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "User_SendReport",
 			Handler:    _UserService_User_SendReport_Handler,
+		},
+		{
+			MethodName: "User_SearchUser",
+			Handler:    _UserService_User_SearchUser_Handler,
 		},
 		{
 			MethodName: "Admin_IsUserAdmin",

@@ -16,6 +16,7 @@
     import CreateCommunityPage from "./CreateCommunityPage.svelte";
     import CommunitiesPage from "./CommunitiesPage.svelte";
     import CommunityDetailPage from "./CommunityDetailPage.svelte";
+    import ExplorePage from "./ExplorePage.svelte";
 
     onMount(async () => {
         if (!(await isLoggedIn())) {
@@ -54,6 +55,8 @@
             <CommunityDetailPage />
         {:else if currpage.includes("communities")}
             <CommunitiesPage />
+        {:else if currpage.includes("explore")}
+            <ExplorePage />
         {/if}
     </main>
     <RightBar />

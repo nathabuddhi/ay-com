@@ -21,7 +21,6 @@ service UserService {
     rpc User_GetUserId (GetProfileRequest) returns (ApiResponseUser);
     rpc User_ChangePassword (ChangePasswordRequest) returns (ApiResponseUser);
     rpc User_UpdateProfile (UpdateUserProfileRequest) returns (ApiResponseUser);
-    rpc User_SearchPeople (SearchPeopleRequest) returns (ApiResponseUser);
     rpc User_GetSelfProfile (StringUser) returns (ApiResponseUser);
 
     rpc User_FollowUser (FollowUserRequest) returns (ApiResponseUser);
@@ -45,6 +44,8 @@ service UserService {
     rpc User_RefreshToken(StringUser) returns (ApiResponseUser);
 
     rpc User_SendReport(CreateReportRequest) returns (ApiResponseUser);
+
+    rpc User_SearchUser(StringUser) returns (ApiResponseUser);
 
     // Admin routes
     rpc Admin_IsUserAdmin(StringUser) returns (BoolUser);
@@ -297,10 +298,6 @@ message IsUserFollowingRequest {
     string following_id = 2;
 }
 
-message SearchPeopleRequest {
-    string keyword = 1;
-}
-
 message LoginResponse {
     string token = 1;
     string user_id = 2;
@@ -324,4 +321,8 @@ message AllBlockedUserResponse {
 message RefreshTokenResponse {
     string refresh_token = 1;
     string access_token = 2;
+}
+
+message SearchPeopleResponse {
+    repeated UserProfile users = 1;
 }

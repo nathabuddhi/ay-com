@@ -918,6 +918,7 @@ $tablet: 768px;
 
     .search-input-container {
         position: relative;
+        display: flex;
 
         .search-icon {
             position: absolute;
@@ -937,7 +938,7 @@ $tablet: 768px;
         }
 
         input {
-            width: 100%;
+            max-width: 100%;
             padding: 12px 12px 12px 44px;
             border-radius: 9999px;
             background-color: var(--search-background);

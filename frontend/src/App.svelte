@@ -13,6 +13,7 @@
     import HomePage from "./pages/HomePage.svelte";
     import SettingsPage from "./pages/SettingsPage.svelte";
     import ToastContainer from "./components/ToastContainer.svelte";
+    import ExplorePage from "./pages/ExplorePage.svelte";
 
     let route: string = "/";
 
@@ -87,6 +88,9 @@
         <HomePage />
     </Route>
     <Route path="/admin">
+        <HomePage />
+    </Route>
+    <Route path="/explore">
         <HomePage />
     </Route>
     <Route path="/settings">

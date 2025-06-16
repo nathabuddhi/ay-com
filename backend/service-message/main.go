@@ -55,7 +55,7 @@ func main() {
 	db := database.InitDB()
 	// rabbitmq.InitRabbitMQ()
 
-	lis, err := net.Listen("tcp", ":5002")
+	lis, err := net.Listen("tcp", ":5003")
 	if err != nil {
 		zap.L().Fatal("Failed to listen: " + err.Error())
 	}
@@ -65,9 +65,9 @@ func main() {
 	grpcServer := grpc.NewServer()
 
 	pb.RegisterMessageServiceServer(grpcServer, server)
-	zap.L().Info("Thread Service gRPC server started successfully.")
+	zap.L().Info("Message Service gRPC server started successfully.")
 
-	zap.L().Info("Thread Service Running. Listening on port 5002.")
+	zap.L().Info("Message Service Running. Listening on port 5003.")
 	if err := grpcServer.Serve(lis); err != nil {
 		zap.L().Fatal("Failed to serve: " + err.Error())
 	}

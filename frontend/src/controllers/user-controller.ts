@@ -5,6 +5,7 @@ import type {
 } from "../types/api";
 import type {
     GetFollowRecommendationsResponse,
+    GetProfilesResponse,
     LoginResponse,
     Settings,
     UserProfile,
@@ -568,5 +569,27 @@ export async function reportUser(
         return data;
     } catch (error) {
         return returnDefaultError<null>(error);
+    }
+}
+
+export async function searchUsers(
+    query: string
+): Promise<ApiResponse<GetProfilesResponse>> {
+    try {
+        const response = await fetch(`${API_URL}/user/search`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: await getValidToken(),
+            },
+            body: JSON.stringify({
+                value: query,
+            }),
+        });
+        const data: ApiResponse<GetProfilesResponse> = await response.json();
+
+        return data;
+    } catch (error) {
+        return returnDefaultError<GetProfilesResponse>(error);
     }
 }

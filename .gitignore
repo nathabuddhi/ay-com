@@ -2,3 +2,5 @@
 *.exe
 *.exe~
 temp_mailsender.go
+__pycache__
+pytorch_model.bin

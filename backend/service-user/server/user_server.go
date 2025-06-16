@@ -134,6 +134,10 @@ func (s *UserServer) User_SendReport(ctx context.Context, req *pb.CreateReportRe
 	return s.Handlers.User_CreateReport(ctx, req)
 }
 
+func (s *UserServer) User_SearchUser(ctx context.Context, req *pb.StringUser) (*pb.ApiResponseUser, error) {
+	return s.Handlers.User_SearchUser(ctx, req)
+}
+
 // ADMIN======================
 func (s *UserServer) Admin_IsUserAdmin(ctx context.Context, req *pb.StringUser) (*pb.BoolUser, error) {
 	return s.Handlers.Admin_IsUserAdmin(ctx, req)
